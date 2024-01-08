@@ -30,21 +30,33 @@ namespace OPJosMod.Patches
                 FieldInfo rayHitField = typeof(JetpackItem).GetField("rayHit", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo forcesField = typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo jetpackPowerField = typeof(JetpackItem).GetField("jetpackPower", BindingFlags.NonPublic | BindingFlags.Instance);
-                //FieldInfo jetpackActivatedField = typeof(JetpackItem).GetField("jetpackActivated", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo jetpackActivatedField = typeof(JetpackItem).GetField("jetpackActivated", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (rayHitField != null && forcesField != null && jetpackPowerField != null)
+                if (rayHitField != null && forcesField != null && jetpackPowerField != null && jetpackActivatedField != null)
                 {
                     RaycastHit rayHit = (RaycastHit)rayHitField.GetValue(__instance);
                     Vector3 forces = (Vector3)forcesField.GetValue(__instance);
                     float jetpackPower = (float)jetpackPowerField.GetValue(__instance);
-                    //bool jetpackActivated = (bool)jetpackActivatedField.GetValue(__instance);
+                    bool jetpackActivated = (bool)jetpackActivatedField.GetValue(__instance);
 
                     //make player not take fall damage
                     __instance.playerHeldBy.takingFallDamage = false;
                     __instance.playerHeldBy.averageVelocity = 0f;//make game think u arent going fast so u dont hurt yourself
                     __instance.itemProperties.requiresBattery = false; // make it have infinite battery
 
-                    //----------update function---------------             
+                    //----------update function---------------
+                    if (jetpackActivated)
+                    {
+                        jetpackPower = Mathf.Clamp(jetpackPower + Time.deltaTime * 10f, 0f, 500f);
+                    }
+                    else
+                    {
+                        jetpackPower = Mathf.Clamp(jetpackPower - Time.deltaTime * 75f, 0f, 1000f);
+                        if (__instance.playerHeldBy.thisController.isGrounded)
+                        {
+                            jetpackPower = 0f;
+                        }
+                    }
                     forces = Vector3.Lerp(forces, Vector3.ClampMagnitude(__instance.playerHeldBy.transform.up * jetpackPower, 400f), Time.deltaTime);
 
                     if (!__instance.playerHeldBy.isPlayerDead &&
