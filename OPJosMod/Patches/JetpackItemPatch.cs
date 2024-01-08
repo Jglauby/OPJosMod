@@ -30,18 +30,19 @@ namespace OPJosMod.Patches
                 FieldInfo rayHitField = typeof(JetpackItem).GetField("rayHit", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo forcesField = typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance);
                 FieldInfo jetpackPowerField = typeof(JetpackItem).GetField("jetpackPower", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo jetpackActivatedField = typeof(JetpackItem).GetField("jetpackActivated", BindingFlags.NonPublic | BindingFlags.Instance);
+                //FieldInfo jetpackActivatedField = typeof(JetpackItem).GetField("jetpackActivated", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (rayHitField != null && forcesField != null && jetpackPowerField != null && jetpackActivatedField != null)
+                if (rayHitField != null && forcesField != null && jetpackPowerField != null)
                 {
                     RaycastHit rayHit = (RaycastHit)rayHitField.GetValue(__instance);
                     Vector3 forces = (Vector3)forcesField.GetValue(__instance);
                     float jetpackPower = (float)jetpackPowerField.GetValue(__instance);
-                    bool jetpackActivated = (bool)jetpackActivatedField.GetValue(__instance);
+                    //bool jetpackActivated = (bool)jetpackActivatedField.GetValue(__instance);
 
                     //make player not take fall damage
                     __instance.playerHeldBy.takingFallDamage = false;
                     __instance.playerHeldBy.averageVelocity = 0f;//make game think u arent going fast so u dont hurt yourself
+                    __instance.itemProperties.requiresBattery = false; // make it have infinite battery
 
                     //----------update function---------------             
                     forces = Vector3.Lerp(forces, Vector3.ClampMagnitude(__instance.playerHeldBy.transform.up * jetpackPower, 400f), Time.deltaTime);
