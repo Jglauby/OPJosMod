@@ -13,8 +13,8 @@ namespace OPJosMod
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "BigGayPeePeeSuck.OpJosMod";
-        private const string modName = "OpJosMod";
+        private const string modGUID = "OpJosMod.SaferJetpack";
+        private const string modName = "SaferJetpack";
         private const string modVersion = "1.0.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
@@ -31,10 +31,11 @@ namespace OPJosMod
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
 
-            mls.LogInfo("mod has started");
+            mls.LogInfo("SaferJetpack mod has started");
 
             harmony.PatchAll(typeof(OpJosMod));
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
+            Patches.JetpackItemPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(Patches.JetpackItemPatch));
         }
     }
 }
