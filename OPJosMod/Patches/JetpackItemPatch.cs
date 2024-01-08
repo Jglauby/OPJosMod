@@ -41,26 +41,10 @@ namespace OPJosMod.Patches
 
                     //make player not take fall damage
                     __instance.playerHeldBy.takingFallDamage = false;
+                    __instance.playerHeldBy.averageVelocity = 0f;//make game think u arent going fast so u dont hurt yourself
 
-                    //----------update function---------------
-                    //base.Update();                    
-                    if (jetpackActivated)
-                    {
-                        jetpackPower = Mathf.Clamp(jetpackPower + Time.deltaTime * 10f, 0f, 500f);
-                    }
-                    else
-                    {
-                        jetpackPower = Mathf.Clamp(jetpackPower - Time.deltaTime * 75f, 0f, 1000f);
-                        if (__instance.playerHeldBy.thisController.isGrounded)
-                        {
-                            jetpackPower = 0f;
-                        }
-                    }
+                    //----------update function---------------             
                     forces = Vector3.Lerp(forces, Vector3.ClampMagnitude(__instance.playerHeldBy.transform.up * jetpackPower, 400f), Time.deltaTime);
-                    if (!__instance.playerHeldBy.jetpackControls)
-                    {
-                        forces = Vector3.zero;
-                    }
 
                     if (!__instance.playerHeldBy.isPlayerDead &&
                         Physics.Raycast(__instance.playerHeldBy.transform.position, forces, out rayHit, 25f, StartOfRound.Instance.allPlayersCollideWithMask) &&
@@ -68,6 +52,7 @@ namespace OPJosMod.Patches
                         rayHit.distance < 4f)
                     {
                         //if (mls != null) { mls.LogInfo("SaferJetpack(success): should kill but won't"); }
+                        __instance.playerHeldBy.externalForces += forces;
                         throw new Exception("SaferJetpack: Cancelling original Update method");
                     }
                     //-----update funciton-------

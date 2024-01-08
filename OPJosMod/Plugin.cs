@@ -35,6 +35,7 @@ namespace OPJosMod
 
             harmony.PatchAll(typeof(OpJosMod));
             Patches.JetpackItemPatch.SetLogSource(mls);
+
             harmony.PatchAll(typeof(Patches.JetpackItemPatch));
         }
     }
