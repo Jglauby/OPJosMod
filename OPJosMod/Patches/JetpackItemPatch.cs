@@ -67,7 +67,7 @@ namespace OPJosMod.Patches
                         forces.magnitude - rayHit.distance > 50f &&
                         rayHit.distance < 4f)
                     {
-                        if (mls != null) { mls.LogInfo("SaferJetpack(success): should kill but won't"); }
+                        //if (mls != null) { mls.LogInfo("SaferJetpack(success): should kill but won't"); }
                         throw new Exception("SaferJetpack: Cancelling original Update method");
                     }
                     //-----update funciton-------
