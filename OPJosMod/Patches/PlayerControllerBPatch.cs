@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod.Patches
+namespace OPJosMod.GodMode.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
@@ -18,11 +18,12 @@ namespace OPJosMod.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void patchUpdate(PlayerControllerB __instance)
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPrefix]
+        static void patchKillPlayer(PlayerControllerB __instance)
         {
-            
+            mls.LogMessage("should've died but didn't");
+            throw new Exception("actually don't kill");
         }
     }
 }
