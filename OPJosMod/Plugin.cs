@@ -21,7 +21,7 @@ namespace OPJosMod
         private static OpJosMod Instance;
 
         internal ManualLogSource mls;
-
+        //update namespaces, and the strings for names
         void Awake()
         {
             if (Instance == null)
