@@ -1,7 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.Patches;
+using OPJosMod.BetterStamina.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,9 +31,11 @@ namespace OPJosMod.BetterStamina
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
 
-            mls.LogInfo("mod has started");
+            mls.LogInfo("Better stamina mod has started");
 
             harmony.PatchAll(typeof(OpJosMod));
+
+            Patches.PlayerControllerBPatch.SetLogSource(mls);
             harmony.PatchAll(typeof(PlayerControllerBPatch));
         }
     }
