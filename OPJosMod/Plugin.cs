@@ -34,6 +34,8 @@ namespace OPJosMod
             mls.LogInfo("mod has started");
 
             harmony.PatchAll(typeof(OpJosMod));
+
+            Patches.PlayerControllerBPatch.SetLogSource(mls);
             harmony.PatchAll(typeof(PlayerControllerBPatch));
         }
     }
