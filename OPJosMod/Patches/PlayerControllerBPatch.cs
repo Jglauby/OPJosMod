@@ -11,11 +11,11 @@ namespace OPJosMod.Patches
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
     {
-        [HarmonyPatch("Update")]//if can use typeof(PlayerControllerB.Update)
+        [HarmonyPatch("Update")]
         [HarmonyPostfix]
-        static void patchUpdate(ref float ___sprintMeter)
+        static void patchUpdate(PlayerControllerB __instance)
         {
-            ___sprintMeter = 1f;
+            
         }
     }
 }
