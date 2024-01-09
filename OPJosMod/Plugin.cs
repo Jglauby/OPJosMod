@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod
+namespace OPJosMod.BetterStamina
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin

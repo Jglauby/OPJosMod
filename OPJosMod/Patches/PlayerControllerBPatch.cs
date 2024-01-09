@@ -12,10 +12,10 @@ namespace OPJosMod.Patches
     internal class PlayerControllerBPatch
     {
         [HarmonyPatch("Update")]
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            
+            __instance.sprintTime = 15f;
         }
     }
 }
