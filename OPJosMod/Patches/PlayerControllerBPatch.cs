@@ -25,5 +25,14 @@ namespace OPJosMod.GodMode.Patches
             mls.LogMessage("should've died but didn't");
             throw new Exception("actually don't kill");
         }
+
+        [HarmonyPatch("DamagePlayer")]
+        [HarmonyPostfix]
+        static void patchDamagePlayer(PlayerControllerB __instance)
+        {
+            __instance.health = 100;
+            HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+            //look into making it so you "die" and ragdoll when u get oneshot. but then when u click a button it stands you back up
+        }
     }
 }
