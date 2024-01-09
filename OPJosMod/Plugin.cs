@@ -14,8 +14,8 @@ namespace OPJosMod.BetterStamina
     public class OpJosMod : BaseUnityPlugin
     {
         private const string modGUID = "OpJosMod.BetterStamina";
-        private const string modName = "OpJosMod";
-        private const string modVersion = "1.0.0.0";
+        private const string modName = "Better Stamina";
+        private const string modVersion = "1.0.0.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
