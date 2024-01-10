@@ -1,12 +1,17 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.GodMode.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -21,17 +26,46 @@ namespace OPJosMod.GodMode.Patches
             mls = logSource;
         }
 
+        //one for one private functions that existin player controller b
+        private static void ChangeAudioListenerToObject(PlayerControllerB __instance, GameObject addToObject)
+        {
+            __instance.activeAudioListener.transform.SetParent(addToObject.transform);
+            __instance.activeAudioListener.transform.localEulerAngles = Vector3.zero;
+            __instance.activeAudioListener.transform.localPosition = Vector3.zero;
+            StartOfRound.Instance.audioListener = __instance.activeAudioListener;
+        }
+
+        //one for one private functions that exist in player controller b
+        private static void StopHoldInteractionOnTrigger(PlayerControllerB __instance)
+        {
+            HUDManager.Instance.holdFillAmount = 0f;
+            if (__instance.previousHoveringOverTrigger != null)
+            {
+                __instance.previousHoveringOverTrigger.StopInteraction();
+            }
+            if (__instance.hoveringOverTrigger != null)
+            {
+                __instance.hoveringOverTrigger.StopInteraction();
+            }
+        }
+
+        private static FastBufferWriter __beginSendServerRpc(uint rpcMethodId, ServerRpcParams serverRpcParams, RpcDelivery rpcDelivery)
+        {
+            return new FastBufferWriter(1024, Allocator.Temp, 65536);
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
-        static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody)
+        static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
         {
-            mls.LogMessage("should've died but didn't");
+            mls.LogMessage("died kinda");
+            MethodInfo methodInfo = AccessTools.Method(typeof(PlayerControllerB), "KillPlayerServerRpc");
             FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            if (wasUnderWaterLastFrameField != null)
+            if (wasUnderWaterLastFrameField != null && methodInfo != null)
             {
                 bool wasUnderWaterLastFrameValue = (bool)wasUnderWaterLastFrameField.GetValue(__instance);
-
+            
                 //killplayer function
                 if (__instance.IsOwner && !__instance.isPlayerDead && __instance.AllowPlayerDeath())
                 {
@@ -65,24 +99,138 @@ namespace OPJosMod.GodMode.Patches
                     HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
                     HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
                     HUDManager.Instance.HideHUD(hide: true);
-                    StopHoldInteractionOnTrigger(__instance);
-                    //KillPlayerServerRpc((int)playerClientId, spawnBody, bodyVelocity, (int)causeOfDeath, deathAnimation);
-
+                    StopHoldInteractionOnTrigger(__instance);           
+            
                     if (spawnBody)
                     {
                         __instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
                     }
-
+            
                     StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
                     __instance.isInGameOverAnimation = 1.5f;
                     __instance.cursorTip.text = "";
                     __instance.cursorIcon.enabled = false;
                     __instance.DropAllHeldItems(true);
                     __instance.DisableJetpackControlsLocally();
+
+                    //"kill" server side
+                    //killPlayerServer(__instance, (int)__instance.playerClientId, spawnBody, bodyVelocity, (int)causeOfDeath, deathAnimation);
+                    System.Reflection.MethodInfo killPlayerServerRpc = typeof(PlayerControllerB).GetMethod("KillPlayerServerRpc", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (killPlayerServerRpc != null)
+                    {
+                        // Invoke the private method with the provided parameters
+                        killPlayerServerRpc.Invoke(__instance, new object[] { (int)__instance.playerClientId, spawnBody, bodyVelocity, causeOfDeath, deathAnimation });
+                    }
+                    else
+                    {
+                        mls.LogMessage("killPlayerServerRpc method not found");
+                    }
                 }
             }
-
+            
             throw new Exception("actually don't kill");
+        }
+
+        //snippet from KillPlayerServerRpc, goal is to despawn me, and drop a dead body
+        private static void killPlayerServer(PlayerControllerB __instance, int playerId, bool spawnBody, Vector3 bodyVelocity, int causeOfDeath, int deathAnimation)
+        {
+            NetworkManager networkManager = __instance.NetworkManager;
+            if ((object)networkManager == null || !networkManager.IsListening)
+            {
+                return;
+            }
+
+            // Use reflection to access the protected internal field __rpc_exec_stage
+            FieldInfo rpcExecStageField = typeof(PlayerControllerB).GetField("__rpc_exec_stage", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            __RpcExecStage rpcExecStage = (__RpcExecStage)rpcExecStageField.GetValue(__instance);
+
+            if (rpcExecStage != __RpcExecStage.Server && (networkManager.IsClient || networkManager.IsHost))
+            {
+                if (__instance.OwnerClientId != networkManager.LocalClientId)
+                {
+                    if (networkManager.LogLevel <= Unity.Netcode.LogLevel.Normal)
+                    {
+                        Debug.LogError("Only the owner can invoke a ServerRpc that requires ownership!");
+                    }
+                    return;
+                }
+
+                ServerRpcParams serverRpcParams = default(ServerRpcParams);
+                FastBufferWriter bufferWriter = __beginSendServerRpc(1346025125u, serverRpcParams, RpcDelivery.Reliable);
+                BytePacker.WriteValueBitPacked(bufferWriter, playerId);
+                bufferWriter.WriteValueSafe(in spawnBody, default(FastBufferWriter.ForPrimitives));
+                bufferWriter.WriteValueSafe(in bodyVelocity);
+                BytePacker.WriteValueBitPacked(bufferWriter, causeOfDeath);
+                BytePacker.WriteValueBitPacked(bufferWriter, deathAnimation);
+
+                MethodInfo endSendServerRpcMethod = typeof(PlayerControllerB).GetMethod("__endSendServerRpc", BindingFlags.Instance | BindingFlags.NonPublic);
+                endSendServerRpcMethod.Invoke(__instance, new object[] { bufferWriter, 1346025125u, serverRpcParams, RpcDelivery.Reliable });
+                //__endSendServerRpc(ref bufferWriter, 1346025125u, serverRpcParams, RpcDelivery.Reliable);
+
+                return;
+            }
+
+            if (rpcExecStage != __RpcExecStage.Server || (!networkManager.IsServer && !networkManager.IsHost))
+            {
+                return;
+            }
+
+            //__instance.playersManager.livingPlayers--;
+            //if (__instance.playersManager.livingPlayers == 0)
+            //{
+            //    __instance.playersManager.allPlayersDead = true;
+            //    __instance.playersManager.ShipLeaveAutomatically();
+            //}
+
+            if (!spawnBody)
+            {
+                PlayerControllerB component = __instance.playersManager.allPlayerObjects[playerId].GetComponent<PlayerControllerB>();
+                for (int i = 0; i < component.ItemSlots.Length; i++)
+                {
+                    GrabbableObject grabbableObject = component.ItemSlots[i];
+                    if (grabbableObject != null)
+                    {
+                        grabbableObject.gameObject.GetComponent<NetworkObject>().Despawn();
+                    }
+                }
+            }
+            else
+            {
+                GameObject obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.ragdollGrabbableObjectPrefab, __instance.playersManager.propsContainer);
+                obj.GetComponent<NetworkObject>().Spawn();
+                obj.GetComponent<RagdollGrabbableObject>().bodyID.Value = (int)__instance.playerClientId;
+            }
+
+            return;
+        }
+
+        [HarmonyPatch("KillPlayerServerRpc")]
+        [HarmonyPrefix]
+        static void patchKillPlayerServerRpc(PlayerControllerB __instance, ref int playerId, ref bool spawnBody, ref Vector3 bodyVelocity, ref int causeOfDeath, ref int deathAnimation)
+        {
+            mls.LogMessage("KillPlayerServerRpc hit");
+
+            //System.Reflection.MethodInfo killPlayerClientRpc = typeof(PlayerControllerB).GetMethod("KillPlayerClientRpc", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            //if (killPlayerClientRpc != null)
+            //{
+            //    // Invoke the private method with the provided parameters
+            //    killPlayerClientRpc.Invoke(__instance, new object[] { playerId, spawnBody, bodyVelocity, causeOfDeath, deathAnimation });
+            //}
+            //else
+            //{
+            //    mls.LogMessage("KillPlayerClientRpc method not found");
+            //}
+            //
+            //throw new Exception("don't call the actually kill player rpc");
+        }
+
+        [HarmonyPatch("KillPlayerClientRpc")]
+        [HarmonyPrefix]
+        static void patchKillPlayerClientRpc(PlayerControllerB __instance)
+        {
+            mls.LogMessage("KillPlayerClientRpc hit");
+          
+            //throw new Exception("don't call the actually kill player rpc");
         }
 
         [HarmonyPatch("DamagePlayer")]
@@ -104,32 +252,17 @@ namespace OPJosMod.GodMode.Patches
             }          
         }
 
-        //one for one private functions that existin player controller b
-        private static void ChangeAudioListenerToObject(PlayerControllerB __instance, GameObject addToObject)
-        {
-            __instance.activeAudioListener.transform.SetParent(addToObject.transform);
-            __instance.activeAudioListener.transform.localEulerAngles = Vector3.zero;
-            __instance.activeAudioListener.transform.localPosition = Vector3.zero;
-            StartOfRound.Instance.audioListener = __instance.activeAudioListener;
-        }
-
-        //one for one private functions that exist in player controller b
-        private static void StopHoldInteractionOnTrigger(PlayerControllerB __instance)
-        {
-            HUDManager.Instance.holdFillAmount = 0f;
-            if (__instance.previousHoveringOverTrigger != null)
-            {
-                __instance.previousHoveringOverTrigger.StopInteraction();
-            }
-            if (__instance.hoveringOverTrigger != null)
-            {
-                __instance.hoveringOverTrigger.StopInteraction();
-            }
-        }
-
         //slightly modified version of ReviveDeadPlayers from the StartOfRound object
         private static void ReviveDeadPlayer(PlayerControllerB __instance)
         {
+            Vector3 respawnLocation = new Vector3 (0, 0, 0);
+
+            var playerScripts = __instance.playersManager.allPlayerScripts;
+            foreach (PlayerControllerB script in playerScripts)
+            {
+
+            }
+
             Debug.Log("Reviving players A");
             __instance.ResetPlayerBloodObjects(__instance.isPlayerDead);
             if (!__instance.isPlayerDead && !__instance.isPlayerControlled)
@@ -152,14 +285,15 @@ namespace OPJosMod.GodMode.Patches
                 __instance.wasInElevatorLastFrame = false;
                 __instance.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
 
-                if(__instance.deadBody != null)
+                if (__instance.deadBody != null)
                 {
-                    __instance.TeleportPlayer(__instance.deadBody.transform.position);
+                    respawnLocation = __instance.deadBody.transform.position;
                 }
                 else
                 {
-                    __instance.TeleportPlayer(__instance.transform.position);
+                    respawnLocation = __instance.transform.position;
                 }
+                __instance.TeleportPlayer(respawnLocation);
 
                 __instance.setPositionOfDeadPlayer = false;
                 __instance.DisablePlayerModel(__instance.gameObject, enable: true, disableLocalArms: true);
@@ -234,6 +368,38 @@ namespace OPJosMod.GodMode.Patches
             HUDManager.Instance.audioListenerLowPass.enabled = false;
             HUDManager.Instance.HideHUD(hide: false);
 
+            RagdollGrabbableObject[] array = UnityEngine.Object.FindObjectsOfType<RagdollGrabbableObject>();
+            RagdollGrabbableObject myDeadRagdoll = null;
+            foreach (RagdollGrabbableObject ragdoll in array)
+            {
+                if (ragdoll.ragdoll.playerScript.playerClientId == __instance.deadBody.playerScript.playerClientId)
+                {
+                    myDeadRagdoll = ragdoll;
+                }
+            }
+
+            //if (myDeadRagdoll != null)
+            //{
+            //    if (myDeadRagdoll.isHeld)
+            //    {
+            //        if (__instance.IsServer)//was base.IsServer and this code is from StartOfRound
+            //        {
+            //            if (myDeadRagdoll.NetworkObject.IsSpawned)
+            //            {
+            //                myDeadRagdoll.NetworkObject.Despawn();
+            //            }
+            //            else
+            //            {
+            //                UnityEngine.Object.Destroy(myDeadRagdoll.gameObject);
+            //            }
+            //        }
+            //    }
+            //    else if (myDeadRagdoll.isHeld && myDeadRagdoll.playerHeldBy != null)
+            //    {
+            //        myDeadRagdoll.playerHeldBy.DropAllHeldItems();
+            //    }
+            //}
+
             DeadBodyInfo[] array2 = UnityEngine.Object.FindObjectsOfType<DeadBodyInfo>();
             for (int k = 0; k < array2.Length; k++)
             {
@@ -244,6 +410,13 @@ namespace OPJosMod.GodMode.Patches
             //startOfRound.UpdatePlayerVoiceEffects();
 
             //ResetMiscValues();
+            //revivePlayerServer(__instance);
+        }
+
+        //snagged from PlayerHasRevivedServerRpc from StartOfRound
+        private static void revivePlayerServer(PlayerControllerB __instance)
+        {
+            
         }
     }
 }
