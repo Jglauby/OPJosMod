@@ -23,7 +23,7 @@ namespace OPJosMod.GodMode.Patches
 
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
-        static void patchKillPlayer(PlayerControllerB __instance)
+        static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody)
         {
             mls.LogMessage("should've died but didn't");
             FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -68,7 +68,10 @@ namespace OPJosMod.GodMode.Patches
                     StopHoldInteractionOnTrigger(__instance);
                     //KillPlayerServerRpc((int)playerClientId, spawnBody, bodyVelocity, (int)causeOfDeath, deathAnimation);
 
-                    __instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance);
+                    if (spawnBody)
+                    {
+                        __instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
+                    }
 
                     StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
                     __instance.isInGameOverAnimation = 1.5f;
@@ -148,7 +151,16 @@ namespace OPJosMod.GodMode.Patches
                 __instance.isInsideFactory = false;
                 __instance.wasInElevatorLastFrame = false;
                 __instance.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
-                __instance.TeleportPlayer(__instance.gameplayCamera.gameObject.transform.position);//work on positon
+
+                if(__instance.deadBody != null)
+                {
+                    __instance.TeleportPlayer(__instance.deadBody.transform.position);
+                }
+                else
+                {
+                    __instance.TeleportPlayer(__instance.transform.position);
+                }
+
                 __instance.setPositionOfDeadPlayer = false;
                 __instance.DisablePlayerModel(__instance.gameObject, enable: true, disableLocalArms: true);
                 __instance.helmetLight.enabled = false;
