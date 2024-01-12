@@ -54,6 +54,11 @@ namespace OPJosMod.GodMode.Patches
             return new FastBufferWriter(1024, Allocator.Temp, 65536);
         }
 
+        private static FastBufferWriter __beginSendClientRpc(uint rpcMethodId, ClientRpcParams clientRpcParams, RpcDelivery rpcDelivery)
+        {
+            return new FastBufferWriter(1024, Allocator.Temp, 65536);
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
@@ -65,7 +70,7 @@ namespace OPJosMod.GodMode.Patches
             if (wasUnderWaterLastFrameField != null && methodInfo != null)
             {
                 bool wasUnderWaterLastFrameValue = (bool)wasUnderWaterLastFrameField.GetValue(__instance);
-            
+
                 //killplayer function
                 if (__instance.IsOwner && !__instance.isPlayerDead && __instance.AllowPlayerDeath())
                 {
@@ -99,13 +104,13 @@ namespace OPJosMod.GodMode.Patches
                     HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
                     HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
                     HUDManager.Instance.HideHUD(hide: true);
-                    StopHoldInteractionOnTrigger(__instance);           
-            
+                    StopHoldInteractionOnTrigger(__instance);
+
                     if (spawnBody)
                     {
                         __instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
                     }
-            
+
                     StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
                     __instance.isInGameOverAnimation = 1.5f;
                     __instance.cursorTip.text = "";
@@ -113,13 +118,15 @@ namespace OPJosMod.GodMode.Patches
                     __instance.DropAllHeldItems(true);
                     __instance.DisableJetpackControlsLocally();
 
-                    //"kill" server side
-                    //killPlayerServer(__instance, (int)__instance.playerClientId, spawnBody, bodyVelocity, (int)causeOfDeath, deathAnimation);
+
+                    //spawn dead body server
+                    //spawnDeadBodyServer(__instance);
+
                     System.Reflection.MethodInfo killPlayerServerRpc = typeof(PlayerControllerB).GetMethod("KillPlayerServerRpc", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     if (killPlayerServerRpc != null)
                     {
                         // Invoke the private method with the provided parameters
-                        killPlayerServerRpc.Invoke(__instance, new object[] { (int)__instance.playerClientId, spawnBody, bodyVelocity, causeOfDeath, deathAnimation });
+                        //killPlayerServerRpc.Invoke(__instance, new object[] { (int)__instance.playerClientId, spawnBody, bodyVelocity, causeOfDeath, deathAnimation });
                     }
                     else
                     {
@@ -127,81 +134,40 @@ namespace OPJosMod.GodMode.Patches
                     }
                 }
             }
-            
+
             throw new Exception("actually don't kill");
         }
 
-        //snippet from KillPlayerServerRpc, goal is to despawn me, and drop a dead body
-        private static void killPlayerServer(PlayerControllerB __instance, int playerId, bool spawnBody, Vector3 bodyVelocity, int causeOfDeath, int deathAnimation)
+        private static void spawnDeadBodyServer(PlayerControllerB __instance)
         {
-            NetworkManager networkManager = __instance.NetworkManager;
-            if ((object)networkManager == null || !networkManager.IsListening)
+            mls.LogMessage("entered spawn dead body server function");
+
+            try
             {
-                return;
+                mls.LogMessage("trying to add a new dumby character to server");
+                ulong clientId = __instance.playerClientId;
+                int connectedPlayers = __instance.playersManager.allPlayerScripts.Length; // Assuming at least one player is already connected
+                ulong[] connectedPlayerIdsOrdered = __instance.playersManager.allPlayerScripts.OrderBy(x => x.playerClientId).Select(x => x.playerClientId).ToArray();
+                int assignedPlayerObjectId = Array.IndexOf(connectedPlayerIdsOrdered, clientId);
+                int serverMoneyAmount = 0; // Provide an appropriate amount
+                int levelID = __instance.playersManager.currentLevelID; // Provide an appropriate level ID
+                int profitQuota = TimeOfDay.Instance.profitQuota; // Provide an appropriate profit quota
+                int timeUntilDeadline = (int)TimeOfDay.Instance.timeUntilDeadline; // Provide an appropriate time until the deadline
+                int quotaFulfilled = TimeOfDay.Instance.quotaFulfilled; // Provide an appropriate value
+                int randomSeed = __instance.playersManager.randomMapSeed; // Provide an appropriate random seed
+                bool isChallenge = __instance.playersManager.isChallengeFile; // Revive scenario might not be a challenge
+
+                // Call the OnPlayerConnectedClientRpc method with simulated parameters
+                MethodInfo methodInfo = typeof(StartOfRound).GetMethod("OnPlayerConnectedClientRpc", BindingFlags.NonPublic | BindingFlags.Instance);
+                methodInfo.Invoke(__instance.playersManager, new object[] { clientId, connectedPlayers, connectedPlayerIdsOrdered, assignedPlayerObjectId,
+                    serverMoneyAmount, levelID, profitQuota, timeUntilDeadline, quotaFulfilled, randomSeed, isChallenge });
+
+                __instance.playersManager.PlayerHasRevivedServerRpc();
             }
-
-            // Use reflection to access the protected internal field __rpc_exec_stage
-            FieldInfo rpcExecStageField = typeof(PlayerControllerB).GetField("__rpc_exec_stage", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            __RpcExecStage rpcExecStage = (__RpcExecStage)rpcExecStageField.GetValue(__instance);
-
-            if (rpcExecStage != __RpcExecStage.Server && (networkManager.IsClient || networkManager.IsHost))
+            catch (Exception e)
             {
-                if (__instance.OwnerClientId != networkManager.LocalClientId)
-                {
-                    if (networkManager.LogLevel <= Unity.Netcode.LogLevel.Normal)
-                    {
-                        Debug.LogError("Only the owner can invoke a ServerRpc that requires ownership!");
-                    }
-                    return;
-                }
-
-                ServerRpcParams serverRpcParams = default(ServerRpcParams);
-                FastBufferWriter bufferWriter = __beginSendServerRpc(1346025125u, serverRpcParams, RpcDelivery.Reliable);
-                BytePacker.WriteValueBitPacked(bufferWriter, playerId);
-                bufferWriter.WriteValueSafe(in spawnBody, default(FastBufferWriter.ForPrimitives));
-                bufferWriter.WriteValueSafe(in bodyVelocity);
-                BytePacker.WriteValueBitPacked(bufferWriter, causeOfDeath);
-                BytePacker.WriteValueBitPacked(bufferWriter, deathAnimation);
-
-                MethodInfo endSendServerRpcMethod = typeof(PlayerControllerB).GetMethod("__endSendServerRpc", BindingFlags.Instance | BindingFlags.NonPublic);
-                endSendServerRpcMethod.Invoke(__instance, new object[] { bufferWriter, 1346025125u, serverRpcParams, RpcDelivery.Reliable });
-                //__endSendServerRpc(ref bufferWriter, 1346025125u, serverRpcParams, RpcDelivery.Reliable);
-
-                return;
+                mls.LogError(e);
             }
-
-            if (rpcExecStage != __RpcExecStage.Server || (!networkManager.IsServer && !networkManager.IsHost))
-            {
-                return;
-            }
-
-            //__instance.playersManager.livingPlayers--;
-            //if (__instance.playersManager.livingPlayers == 0)
-            //{
-            //    __instance.playersManager.allPlayersDead = true;
-            //    __instance.playersManager.ShipLeaveAutomatically();
-            //}
-
-            if (!spawnBody)
-            {
-                PlayerControllerB component = __instance.playersManager.allPlayerObjects[playerId].GetComponent<PlayerControllerB>();
-                for (int i = 0; i < component.ItemSlots.Length; i++)
-                {
-                    GrabbableObject grabbableObject = component.ItemSlots[i];
-                    if (grabbableObject != null)
-                    {
-                        grabbableObject.gameObject.GetComponent<NetworkObject>().Despawn();
-                    }
-                }
-            }
-            else
-            {
-                GameObject obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.ragdollGrabbableObjectPrefab, __instance.playersManager.propsContainer);
-                obj.GetComponent<NetworkObject>().Spawn();
-                obj.GetComponent<RagdollGrabbableObject>().bodyID.Value = (int)__instance.playerClientId;
-            }
-
-            return;
         }
 
         [HarmonyPatch("KillPlayerServerRpc")]
@@ -249,6 +215,7 @@ namespace OPJosMod.GodMode.Patches
             {
                 mls.LogMessage("attempting to revive");
                 ReviveDeadPlayer(__instance);
+                //respawnPlayerServer(__instance);
             }          
         }
 
@@ -256,107 +223,121 @@ namespace OPJosMod.GodMode.Patches
         private static void ReviveDeadPlayer(PlayerControllerB __instance)
         {
             Vector3 respawnLocation = new Vector3 (0, 0, 0);
-
-            var playerScripts = __instance.playersManager.allPlayerScripts;
-            foreach (PlayerControllerB script in playerScripts)
+            if (__instance.deadBody != null)
             {
-
+                respawnLocation = __instance.deadBody.transform.position;
+            }
+            else
+            {
+                respawnLocation = __instance.transform.position;
             }
 
-            Debug.Log("Reviving players A");
-            __instance.ResetPlayerBloodObjects(__instance.isPlayerDead);
-            if (!__instance.isPlayerDead && !__instance.isPlayerControlled)
+            var allPlayerScripts = __instance.playersManager.allPlayerScripts;
+            var playerIndex = (int)__instance.playerClientId;
+            //
+            __instance.playersManager.allPlayersDead = false;
+
+            if (playerIndex < 0 || playerIndex >= allPlayerScripts.Length)
             {
+                mls.LogError("Invalid player index for revival.");
                 return;
             }
-            __instance.isClimbingLadder = false;
-            __instance.ResetZAndXRotation();
-            __instance.thisController.enabled = true;
-            __instance.health = 100;
-            __instance.disableLookInput = false;
-            Debug.Log("Reviving players B");
-            if (__instance.isPlayerDead)
+
+            mls.LogMessage($"Reviving player {playerIndex}");
+
+            allPlayerScripts[playerIndex].ResetPlayerBloodObjects(allPlayerScripts[playerIndex].isPlayerDead);
+
+            allPlayerScripts[playerIndex].isClimbingLadder = false;
+            allPlayerScripts[playerIndex].ResetZAndXRotation();
+            allPlayerScripts[playerIndex].thisController.enabled = true;
+            allPlayerScripts[playerIndex].health = 100;
+            allPlayerScripts[playerIndex].disableLookInput = false;
+
+            mls.LogMessage("Reviving players B");
+
+            if (allPlayerScripts[playerIndex].isPlayerDead)
             {
-                __instance.isPlayerDead = false;
-                __instance.isPlayerControlled = true;
-                __instance.isInElevator = true;
-                __instance.isInHangarShipRoom = true;
-                __instance.isInsideFactory = false;
-                __instance.wasInElevatorLastFrame = false;
-                __instance.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
+                // Revival process for the specified player
+                allPlayerScripts[playerIndex].isPlayerDead = false;
+                allPlayerScripts[playerIndex].isPlayerControlled = true;
+                allPlayerScripts[playerIndex].isInElevator = true;
+                allPlayerScripts[playerIndex].isInHangarShipRoom = true;
+                allPlayerScripts[playerIndex].isInsideFactory = false;
+                allPlayerScripts[playerIndex].wasInElevatorLastFrame = false;
+                __instance.playersManager.SetPlayerObjectExtrapolate(enable: false);
+                allPlayerScripts[playerIndex].TeleportPlayer(respawnLocation);
+                allPlayerScripts[playerIndex].setPositionOfDeadPlayer = false;
+                allPlayerScripts[playerIndex].DisablePlayerModel(__instance.playersManager.allPlayerObjects[playerIndex], enable: true, disableLocalArms: true);
+                allPlayerScripts[playerIndex].helmetLight.enabled = false;
 
-                if (__instance.deadBody != null)
-                {
-                    respawnLocation = __instance.deadBody.transform.position;
-                }
-                else
-                {
-                    respawnLocation = __instance.transform.position;
-                }
-                __instance.TeleportPlayer(respawnLocation);
+                mls.LogMessage("Reviving players C");
 
-                __instance.setPositionOfDeadPlayer = false;
-                __instance.DisablePlayerModel(__instance.gameObject, enable: true, disableLocalArms: true);
-                __instance.helmetLight.enabled = false;
-                Debug.Log("Reviving players C");
-                __instance.Crouch(crouch: false);
-                __instance.criticallyInjured = false;
-                if (__instance.playerBodyAnimator != null)
+                allPlayerScripts[playerIndex].Crouch(crouch: false);
+                allPlayerScripts[playerIndex].criticallyInjured = false;
+
+                if (allPlayerScripts[playerIndex].playerBodyAnimator != null)
                 {
-                    __instance.playerBodyAnimator.SetBool("Limp", value: false);
+                    allPlayerScripts[playerIndex].playerBodyAnimator.SetBool("Limp", value: false);
                 }
-                __instance.bleedingHeavily = false;
-                __instance.activatingItem = false;
-                __instance.twoHanded = false;
-                __instance.inSpecialInteractAnimation = false;
-                __instance.disableSyncInAnimation = false;
-                __instance.inAnimationWithEnemy = null;
-                __instance.holdingWalkieTalkie = false;
-                __instance.speakingToWalkieTalkie = false;
-                Debug.Log("Reviving players D");
-                __instance.isSinking = false;
-                __instance.isUnderwater = false;
-                __instance.sinkingValue = 0f;
-                __instance.statusEffectAudio.Stop();
-                __instance.DisableJetpackControlsLocally();
-                __instance.health = 100;
-                Debug.Log("Reviving players E");
-                __instance.mapRadarDotAnimator.SetBool("dead", value: false);
-                if (__instance.IsOwner)
+
+                allPlayerScripts[playerIndex].bleedingHeavily = false;
+                allPlayerScripts[playerIndex].activatingItem = false;
+                allPlayerScripts[playerIndex].twoHanded = false;
+                allPlayerScripts[playerIndex].inSpecialInteractAnimation = false;
+                allPlayerScripts[playerIndex].disableSyncInAnimation = false;
+                allPlayerScripts[playerIndex].inAnimationWithEnemy = null;
+                allPlayerScripts[playerIndex].holdingWalkieTalkie = false;
+                allPlayerScripts[playerIndex].speakingToWalkieTalkie = false;
+
+                mls.LogMessage("Reviving players D");
+
+                allPlayerScripts[playerIndex].isSinking = false;
+                allPlayerScripts[playerIndex].isUnderwater = false;
+                allPlayerScripts[playerIndex].sinkingValue = 0f;
+                allPlayerScripts[playerIndex].statusEffectAudio.Stop();
+                allPlayerScripts[playerIndex].DisableJetpackControlsLocally();
+                allPlayerScripts[playerIndex].health = 100;
+
+                mls.LogMessage("Reviving players E");
+
+                allPlayerScripts[playerIndex].mapRadarDotAnimator.SetBool("dead", value: false);
+
+                if (allPlayerScripts[playerIndex].IsOwner)
                 {
                     HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", value: false);
-                    __instance.hasBegunSpectating = false;
+                    allPlayerScripts[playerIndex].hasBegunSpectating = false;
                     HUDManager.Instance.RemoveSpectateUI();
                     HUDManager.Instance.gameOverAnimator.SetTrigger("revive");
-                    __instance.hinderedMultiplier = 1f;
-                    __instance.isMovementHindered = 0;
-                    __instance.sourcesCausingSinking = 0;
-                    Debug.Log("Reviving players E2");
-                    //__instance.reverbPreset = new ReverbPreset();
+                    allPlayerScripts[playerIndex].hinderedMultiplier = 1f;
+                    allPlayerScripts[playerIndex].isMovementHindered = 0;
+                    allPlayerScripts[playerIndex].sourcesCausingSinking = 0;
+
+                    mls.LogMessage("Reviving players E2");
+
+                    allPlayerScripts[playerIndex].reverbPreset = __instance.playersManager.shipReverb;
                 }
             }
 
-            Debug.Log("Reviving players F");
+            mls.LogMessage("Reviving players F");
+
+            // Additional revival steps for the specified player
             SoundManager.Instance.earsRingingTimer = 0f;
-            __instance.voiceMuffledByEnemy = false;
-            //SoundManager.Instance.playerVoicePitchTargets[__instance.playerLevelNumber] = 1f;
-            //SoundManager.Instance.SetPlayerPitch(1f, __instance.playerLevelNumber);
-            if (__instance.currentVoiceChatIngameSettings == null)
+            allPlayerScripts[playerIndex].voiceMuffledByEnemy = false;
+            SoundManager.Instance.playerVoicePitchTargets[playerIndex] = 1f;
+            SoundManager.Instance.SetPlayerPitch(1f, playerIndex);
+
+            if (allPlayerScripts[playerIndex].currentVoiceChatIngameSettings == null)
             {
-                //RefreshPlayerVoicePlaybackObjects();
+                __instance.playersManager.RefreshPlayerVoicePlaybackObjects();
             }
-            if (__instance.currentVoiceChatIngameSettings != null)
+
+            if (allPlayerScripts[playerIndex].currentVoiceChatIngameSettings != null &&
+                allPlayerScripts[playerIndex].currentVoiceChatIngameSettings.voiceAudio != null)
             {
-                if (__instance.currentVoiceChatIngameSettings.voiceAudio == null)
-                {
-                    __instance.currentVoiceChatIngameSettings.InitializeComponents();
-                }
-                if (__instance.currentVoiceChatIngameSettings.voiceAudio == null)
-                {
-                    return;
-                }
-                __instance.currentVoiceChatIngameSettings.voiceAudio.GetComponent<OccludeAudio>().overridingLowPass = false;
+                allPlayerScripts[playerIndex].currentVoiceChatIngameSettings.voiceAudio.GetComponent<OccludeAudio>().overridingLowPass = false;
             }
+
+            mls.LogMessage("Reviving players G");
 
             PlayerControllerB playerControllerB = GameNetworkManager.Instance.localPlayerController;
             playerControllerB.bleedingHeavily = false;
@@ -366,57 +347,149 @@ namespace OPJosMod.GodMode.Patches
             HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
             playerControllerB.spectatedPlayerScript = null;
             HUDManager.Instance.audioListenerLowPass.enabled = false;
-            HUDManager.Instance.HideHUD(hide: false);
-
+            mls.LogMessage("Reviving players H");
+            __instance.playersManager.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);
             RagdollGrabbableObject[] array = UnityEngine.Object.FindObjectsOfType<RagdollGrabbableObject>();
-            RagdollGrabbableObject myDeadRagdoll = null;
-            foreach (RagdollGrabbableObject ragdoll in array)
+            for (int j = 0; j < array.Length; j++)
             {
-                if (ragdoll.ragdoll.playerScript.playerClientId == __instance.deadBody.playerScript.playerClientId)
+                if (!array[j].isHeld)
                 {
-                    myDeadRagdoll = ragdoll;
+                    if (__instance.playersManager.IsServer)
+                    {
+                        if (array[j].NetworkObject.IsSpawned)
+                        {
+                            array[j].NetworkObject.Despawn();
+                        }
+                        else
+                        {
+                            UnityEngine.Object.Destroy(array[j].gameObject);
+                        }
+                    }
+                }
+                else if (array[j].isHeld && array[j].playerHeldBy != null)
+                {
+                    array[j].playerHeldBy.DropAllHeldItems();
                 }
             }
-
-            //if (myDeadRagdoll != null)
-            //{
-            //    if (myDeadRagdoll.isHeld)
-            //    {
-            //        if (__instance.IsServer)//was base.IsServer and this code is from StartOfRound
-            //        {
-            //            if (myDeadRagdoll.NetworkObject.IsSpawned)
-            //            {
-            //                myDeadRagdoll.NetworkObject.Despawn();
-            //            }
-            //            else
-            //            {
-            //                UnityEngine.Object.Destroy(myDeadRagdoll.gameObject);
-            //            }
-            //        }
-            //    }
-            //    else if (myDeadRagdoll.isHeld && myDeadRagdoll.playerHeldBy != null)
-            //    {
-            //        myDeadRagdoll.playerHeldBy.DropAllHeldItems();
-            //    }
-            //}
-
             DeadBodyInfo[] array2 = UnityEngine.Object.FindObjectsOfType<DeadBodyInfo>();
             for (int k = 0; k < array2.Length; k++)
             {
                 UnityEngine.Object.Destroy(array2[k].gameObject);
             }
+            __instance.playersManager.livingPlayers = __instance.playersManager.connectedPlayersAmount + 1;
+            __instance.playersManager.allPlayersDead = false;
+            __instance.playersManager.UpdatePlayerVoiceEffects();
 
-            //StartOfRound startOfRound = new StartOfRound();
-            //startOfRound.UpdatePlayerVoiceEffects();
+            //__instance.playersManager.shipAnimator.ResetTrigger("ShipLeave");
 
-            //ResetMiscValues();
-            //revivePlayerServer(__instance);
+            respawnPlayerServer(__instance);
         }
 
-        //snagged from PlayerHasRevivedServerRpc from StartOfRound
-        private static void revivePlayerServer(PlayerControllerB __instance)
+        private static void respawnPlayerServer(PlayerControllerB __instance)
         {
-            
+            mls.LogMessage("hit respawn player server");
+            try
+            {
+                // Simulate relevant information for a new player
+                //ulong clientId = __instance.playerClientId;
+                //int connectedPlayers = __instance.playersManager.allPlayerScripts.Length; // Assuming at least one player is already connected
+                //ulong[] connectedPlayerIdsOrdered = __instance.playersManager.allPlayerScripts.OrderBy(x => x.playerClientId).Select(x => x.playerClientId).ToArray();
+                //int assignedPlayerObjectId = Array.IndexOf(connectedPlayerIdsOrdered, clientId);
+                //int serverMoneyAmount = 0; // Provide an appropriate amount
+                //int levelID = __instance.playersManager.currentLevelID; // Provide an appropriate level ID
+                //int profitQuota = TimeOfDay.Instance.profitQuota; // Provide an appropriate profit quota
+                //int timeUntilDeadline = (int)TimeOfDay.Instance.timeUntilDeadline; // Provide an appropriate time until the deadline
+                //int quotaFulfilled = TimeOfDay.Instance.quotaFulfilled; // Provide an appropriate value
+                //int randomSeed = __instance.playersManager.randomMapSeed; // Provide an appropriate random seed
+                //bool isChallenge = __instance.playersManager.isChallengeFile; // Revive scenario might not be a challenge
+                //
+                //// Call the OnPlayerConnectedClientRpc method with simulated parameters
+                //MethodInfo methodInfo = typeof(StartOfRound).GetMethod("OnPlayerConnectedClientRpc", BindingFlags.NonPublic | BindingFlags.Instance);
+                //methodInfo.Invoke(__instance.playersManager, new object[] { clientId, connectedPlayers, connectedPlayerIdsOrdered, assignedPlayerObjectId, 
+                //    serverMoneyAmount, levelID, profitQuota, timeUntilDeadline, quotaFulfilled, randomSeed, isChallenge });
+
+
+
+                //call UpdatePlayerPositionRpc
+               //mls.LogMessage("trying to call UpdatePlayerPositionRpc");
+               //mls.LogMessage(__instance);
+               //Vector3 newPos = __instance.transform.position;
+               //bool inElevator = __instance.isInElevator;
+               //bool inShipRoom = __instance.isInHangarShipRoom;
+               //bool exhausted = __instance.isExhausted;
+               //bool isPlayerGrounded = __instance.isGroundedOnServer;
+               //
+               //MethodInfo methodInfo = typeof(PlayerControllerB).GetMethod("UpdatePlayerPositionServerRpc", BindingFlags.NonPublic | BindingFlags.Instance);
+               //methodInfo.Invoke(__instance, new object[] { newPos, inElevator, inShipRoom, exhausted, isPlayerGrounded });
+
+                //call player has revived
+                mls.LogMessage("calling PlayerHasRevivedServerRpc");
+                //__instance.playersManager.PlayerHasRevivedServerRpc();
+
+
+
+
+
+
+
+
+
+
+                mls.LogMessage("undo died values kinda");
+                FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (wasUnderWaterLastFrameField != null)
+                {
+                    bool wasUnderWaterLastFrameValue = (bool)wasUnderWaterLastFrameField.GetValue(__instance);
+
+                    //killplayer function
+                    if (__instance.IsOwner && __instance.isPlayerDead)
+                    {
+                        __instance.isPlayerDead = false;
+                        __instance.isPlayerControlled = true;
+                        __instance.thisPlayerModelArms.enabled = true;
+                        __instance.localVisor.position = __instance.playersManager.notSpawnedPosition.position;
+                        __instance.DisablePlayerModel(__instance.gameObject, true);
+                        //__instance.isInsideFactory = true;
+                        //__instance.IsInspectingItem = false;
+                        //__instance.inTerminalMenu = false;
+                       // __instance.twoHanded = false;
+                        //__instance.carryWeight = 1f;
+                        //__instance.fallValue = 0f;
+                        //__instance.fallValueUncapped = 0f;
+                        //__instance.takingFallDamage = false;
+                        //__instance.isSinking = false;
+                        //__instance.isUnderwater = false;
+                        StartOfRound.Instance.drowningTimer = 1f;
+                        HUDManager.Instance.setUnderwaterFilter = false;
+                        wasUnderWaterLastFrameField.SetValue(__instance, false);
+                        __instance.sourcesCausingSinking = 0;
+                        __instance.sinkingValue = 0f;
+                        __instance.hinderedMultiplier = 1f;
+                        __instance.isMovementHindered = 0;
+                        __instance.inAnimationWithEnemy = null;
+                        //UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse = false;
+                        ChangeAudioListenerToObject(__instance, __instance.playersManager.spectateCamera.gameObject);
+                        SoundManager.Instance.SetDiageticMixerSnapshot();
+                        HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
+                        //HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
+                        //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+                        HUDManager.Instance.HideHUD(hide: false);
+                        StopHoldInteractionOnTrigger(__instance);
+
+                        StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.activeCamera);
+                        //__instance.isInGameOverAnimation = 1.5f;
+                        //__instance.cursorTip.text = "";
+                        __instance.cursorIcon.enabled = true;
+                        //__instance.DropAllHeldItems(true);
+                        //__instance.DisableJetpackControlsLocally();
+                    }
+                }
+            }        
+            catch (Exception e)
+            {
+                mls.LogError(e);
+            }
         }
     }
 }
