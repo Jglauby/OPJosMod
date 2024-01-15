@@ -99,6 +99,9 @@ namespace OPJosMod.GodMode.Patches
                     if (spawnBody)
                     {
                         __instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
+
+                        //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
+                        spawnFakeDeadBody(__instance);
                     }
 
                     StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
@@ -113,12 +116,51 @@ namespace OPJosMod.GodMode.Patches
             throw new Exception("actually don't kill");
         }
 
+        private static void spawnFakeDeadBody(PlayerControllerB __instance)
+        {
+            mls.LogMessage("loading fake dead body");//maybe there is a test body you can spawn? like dumby player?
+            try
+            {
+                Vector3 spawnPosition = __instance.transform.position;
+                float yRot = __instance.transform.rotation.eulerAngles.y;
+
+                EnemyType enemyType = new EnemyType
+                {
+                    name = "MaskedPlayerEnemy",
+                    enemyPrefab = StartOfRound.Instance.currentLevel.Enemies[0].enemyType.enemyPrefab //StartOfRound.Instance.ragdollGrabbableObjectPrefab
+                };
+
+                //GameObject obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.ragdollGrabbableObjectPrefab, __instance.playersManager.propsContainer);
+                //obj.GetComponent<NetworkObject>().Spawn();
+                //obj.GetComponent<RagdollGrabbableObject>().bodyID.Value = (int)__instance.playerClientId;
+
+                mls.LogMessage($"spawnPosition: {spawnPosition}");
+                mls.LogMessage($"yRot: {yRot}");
+                mls.LogMessage($"enemyType name: {enemyType.name}");
+                mls.LogMessage($"enemyType prefab: {enemyType.enemyPrefab}");
+                RoundManager.Instance.SpawnEnemyGameObject(spawnPosition, yRot, -1, StartOfRound.Instance.currentLevel.Enemies[0].enemyType);
+                //SpawnEnemyGameObject(spawnPosition, yRot, -1, enemyType);
+            }
+            catch (Exception e)
+            {
+                mls.LogError(e);
+            }
+        }
+
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPostfix]
         static void patchDamagePlayer(PlayerControllerB __instance)
         {
             //__instance.health = 100;
             //HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+        }
+
+        [HarmonyPatch("DamagePlayer")]
+        [HarmonyPrefix]
+        static void tempPatch(PlayerControllerB __instance)
+        {
+            __instance.health = 0;
+            HUDManager.Instance.UpdateHealthUI(__instance.health, false);
         }
 
         [HarmonyPatch("ActivateItem_performed")]
