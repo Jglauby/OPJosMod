@@ -3,12 +3,14 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.GodMode.Enums;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
@@ -49,97 +51,167 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
+        private static IEnumerator killSpawnedEnemy(PlayerControllerB __instance, float time, MaskedPlayerEnemy spawnedEnemy)
+        {
+            mls.LogMessage("Before delay - Time: " + Time.time);
+            yield return new WaitForSeconds(time);
+            mls.LogMessage("After delay - Time: " + Time.time);
+
+            spawnedEnemy.HitEnemy(1, __instance);
+        }
+
+        private static IEnumerator fakeKillPlayer(PlayerControllerB __instance, float time, int deathAnimation, bool spawnBody, 
+            Vector3 bodyVelocity, CauseOfDeath causeOfDeath, Vector3 deathLocation, FieldInfo wasUnderWaterLastFrameField)
+        {
+            mls.LogMessage("Before delay - Time: " + Time.time);
+            yield return new WaitForSeconds(time);
+            mls.LogMessage("After delay - Time: " + Time.time);
+
+            __instance.isPlayerDead = true;
+            __instance.isPlayerControlled = false;
+            __instance.thisPlayerModelArms.enabled = false;
+            __instance.localVisor.position = StartOfRound.Instance.notSpawnedPosition.position;
+            __instance.DisablePlayerModel(__instance.gameObject);
+            __instance.isInsideFactory = false;
+            __instance.IsInspectingItem = false;
+            __instance.inTerminalMenu = false;
+            __instance.twoHanded = false;
+            __instance.carryWeight = 1f;
+            __instance.fallValue = 0f;
+            __instance.fallValueUncapped = 0f;
+            __instance.takingFallDamage = false;
+            __instance.isSinking = false;
+            __instance.isUnderwater = false;
+            StartOfRound.Instance.drowningTimer = 1f;
+            HUDManager.Instance.setUnderwaterFilter = false;
+            wasUnderWaterLastFrameField.SetValue(__instance, false);
+            __instance.sourcesCausingSinking = 0;
+            __instance.sinkingValue = 0f;
+            __instance.hinderedMultiplier = 1f;
+            __instance.isMovementHindered = 0;
+            __instance.inAnimationWithEnemy = null;
+            UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse = false;
+            ChangeAudioListenerToObject(__instance, StartOfRound.Instance.spectateCamera.gameObject);
+            SoundManager.Instance.SetDiageticMixerSnapshot();
+            HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
+            HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
+            HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+            HUDManager.Instance.HideHUD(hide: true);
+            StopHoldInteractionOnTrigger(__instance);
+
+            if (spawnBody)
+            {
+                //__instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
+
+                //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
+                spawnFakeDeadBody(__instance, deathAnimation, deathLocation);
+            }
+
+            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+            __instance.isInGameOverAnimation = 1.5f;
+            __instance.cursorTip.text = "";
+            __instance.cursorIcon.enabled = false;
+            //__instance.DropAllHeldItems(true);
+            __instance.DisableJetpackControlsLocally();
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
         {
             mls.LogMessage("died kinda");
-            MethodInfo methodInfo = AccessTools.Method(typeof(PlayerControllerB), "KillPlayerServerRpc");
             FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            if (wasUnderWaterLastFrameField != null && methodInfo != null)
+            if (wasUnderWaterLastFrameField != null)
             {
-                bool wasUnderWaterLastFrameValue = (bool)wasUnderWaterLastFrameField.GetValue(__instance);
+                Vector3 deathLocation = __instance.transform.position;
 
-                //killplayer function
                 if (__instance.IsOwner && !__instance.isPlayerDead && __instance.AllowPlayerDeath())
                 {
-                    __instance.isPlayerDead = true;
-                    __instance.isPlayerControlled = false;
-                    __instance.thisPlayerModelArms.enabled = false;
-                    __instance.localVisor.position = StartOfRound.Instance.notSpawnedPosition.position;
-                    __instance.DisablePlayerModel(__instance.gameObject);
-                    __instance.isInsideFactory = false;
-                    __instance.IsInspectingItem = false;
-                    __instance.inTerminalMenu = false;
-                    __instance.twoHanded = false;
-                    __instance.carryWeight = 1f;
-                    __instance.fallValue = 0f;
-                    __instance.fallValueUncapped = 0f;
-                    __instance.takingFallDamage = false;
-                    __instance.isSinking = false;
-                    __instance.isUnderwater = false;
-                    StartOfRound.Instance.drowningTimer = 1f;
-                    HUDManager.Instance.setUnderwaterFilter = false;
-                    wasUnderWaterLastFrameField.SetValue(__instance, false);
-                    __instance.sourcesCausingSinking = 0;
-                    __instance.sinkingValue = 0f;
-                    __instance.hinderedMultiplier = 1f;
-                    __instance.isMovementHindered = 0;
-                    __instance.inAnimationWithEnemy = null;
-                    UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse = false;
-                    ChangeAudioListenerToObject(__instance, StartOfRound.Instance.spectateCamera.gameObject);
-                    SoundManager.Instance.SetDiageticMixerSnapshot();
-                    HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
-                    HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
-                    HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
-                    HUDManager.Instance.HideHUD(hide: true);
-                    StopHoldInteractionOnTrigger(__instance);
-
-                    if (spawnBody)
-                    {
-                        __instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
-
-                        //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
-                        spawnFakeDeadBody(__instance);
-                    }
-
-                    StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
-                    __instance.isInGameOverAnimation = 1.5f;
-                    __instance.cursorTip.text = "";
-                    __instance.cursorIcon.enabled = false;
-                    __instance.DropAllHeldItems(true);
-                    __instance.DisableJetpackControlsLocally();
-                }
+                    __instance.DropAllHeldItemsAndSync();
+                    __instance.transform.localPosition = new Vector3(0, -75, 0);
+                    __instance.StartCoroutine(fakeKillPlayer(__instance, 0.25f, deathAnimation, spawnBody, bodyVelocity, causeOfDeath, deathLocation, wasUnderWaterLastFrameField));                 
+                }   
+            }
+            else
+            {
+                mls.LogError("private field was not found in patch kill player");
             }
 
             throw new Exception("actually don't kill");
         }
 
-        private static void spawnFakeDeadBody(PlayerControllerB __instance)
+        private static void spawnFakeDeadBody(PlayerControllerB __instance, int deathAnimation, Vector3 deathLocation)
         {
             mls.LogMessage("loading fake dead body");//maybe there is a test body you can spawn? like dumby player?
             try
             {
-                Vector3 spawnPosition = __instance.transform.position;
+                Vector3 spawnPosition = deathLocation;
                 float yRot = __instance.transform.rotation.eulerAngles.y;
+                EnemyType enemyType = StartOfRound.Instance.levels[5].Enemies[10].enemyType; //5 level rend, 10 maskedPlayerEnemy    , this part fails when not host, its null?
 
-                EnemyType enemyType = new EnemyType
+                //debuggin info sent to spawn function
+                //mls.LogMessage($"spawnPosition: {spawnPosition}");
+                //mls.LogMessage($"yRot: {yRot}");
+                //mls.LogMessage($"enemyType name: {enemyType.name}");
+                //mls.LogMessage($"enemyType prefab: {enemyType.enemyPrefab}");
+                //int enemyCount = StartOfRound.Instance.currentLevel.Enemies.Count;
+                //mls.LogMessage("enemy array size: " + enemyCount);
+                //for (int i = 0; i < enemyCount; i++)
+                //{
+                //    mls.LogMessage($"enemy {i}: {StartOfRound.Instance.currentLevel.Enemies[i].enemyType.name}");
+                //}
+                var spawnedBody = RoundManager.Instance.SpawnEnemyGameObject(spawnPosition, yRot, -1, enemyType);
+
+                mls.LogMessage("kill spawned enemy");
+                List<EnemyAI> array = RoundManager.Instance.SpawnedEnemies;
+                mls.LogMessage($"enemies found in round {array.Count()}");
+                
+                if (array.Count > 0) 
                 {
-                    name = "MaskedPlayerEnemy",
-                    enemyPrefab = StartOfRound.Instance.currentLevel.Enemies[0].enemyType.enemyPrefab //StartOfRound.Instance.ragdollGrabbableObjectPrefab
-                };
+                    EnemyAI closestEnemy = array[0];
+                    float minDistance = Vector3.Distance(array[0].transform.position, spawnPosition);
+                
+                    for (int i = 1; i < array.Count; i++)
+                    {
+                        float distance = Vector3.Distance(array[i].transform.position, spawnPosition);
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            closestEnemy = array[i];
+                        }
+                    }
+                    mls.LogMessage($"kill closest enemy {closestEnemy}");
+                    closestEnemy.Start();
+                    closestEnemy.enemyHP = 0;
 
-                //GameObject obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.ragdollGrabbableObjectPrefab, __instance.playersManager.propsContainer);
-                //obj.GetComponent<NetworkObject>().Spawn();
-                //obj.GetComponent<RagdollGrabbableObject>().bodyID.Value = (int)__instance.playerClientId;
+                    MaskedPlayerEnemy spawnedMaskedPlayer = closestEnemy as MaskedPlayerEnemy;
+                    spawnedMaskedPlayer.creatureAnimator = closestEnemy.gameObject.GetComponentInChildren<Animator>();
 
-                mls.LogMessage($"spawnPosition: {spawnPosition}");
-                mls.LogMessage($"yRot: {yRot}");
-                mls.LogMessage($"enemyType name: {enemyType.name}");
-                mls.LogMessage($"enemyType prefab: {enemyType.enemyPrefab}");
-                RoundManager.Instance.SpawnEnemyGameObject(spawnPosition, yRot, -1, StartOfRound.Instance.currentLevel.Enemies[0].enemyType);
-                //SpawnEnemyGameObject(spawnPosition, yRot, -1, enemyType);
+                    mls.LogMessage($"spawnedMaskedPlayer.isEnemyDead = {spawnedMaskedPlayer.isEnemyDead}");
+                    mls.LogMessage($"spawnedMaskedPlayer.NetwworkManager.IsListening = {spawnedMaskedPlayer.NetworkManager.IsListening}");
+                    mls.LogMessage($"spawnedMaskedPlayer.NetworkObject.IsSpawned = {spawnedMaskedPlayer.NetworkObject.IsSpawned}");
+                    __instance.StartCoroutine(killSpawnedEnemy(__instance, 0.25f, spawnedMaskedPlayer));
+
+                    //spawnedMaskedPlayer.CreateMimicClientRpc(spawnedBody, !spawnedMaskedPlayer.isOutside, (int)__instance.playerClientId);
+                    //NetworkManager.Destroy(closestEnemy);
+                }
+                else
+                {
+                    mls.LogError("couldn't find the spawned enemy");
+                }
+
+                //debuggin level enemies, shows all enemies that can spawn on each level
+                //var allLevels = StartOfRound.Instance.levels;
+                //mls.LogMessage("all levels");
+                //for (int i = 0; i < allLevels.Count(); i++)
+                //{
+                //    mls.LogMessage($"level {i}: {allLevels[i].name}");
+                //    foreach(var enemy in allLevels[i].Enemies)
+                //    {
+                //        mls.LogMessage($"enemy: {enemy.enemyType.name}");
+                //    }
+                //}
             }
             catch (Exception e)
             {
@@ -163,6 +235,14 @@ namespace OPJosMod.GodMode.Patches
             HUDManager.Instance.UpdateHealthUI(__instance.health, false);
         }
 
+        [HarmonyPatch("Crouch")]
+        [HarmonyPrefix]
+        static void patchCrouch(PlayerControllerB __instance)
+        {
+           //mls.LogMessage("clicked crouch, try to teleport my location");
+           //__instance.transform.localPosition = new Vector3(0, -100, 0);
+        }
+
         [HarmonyPatch("ActivateItem_performed")]
         [HarmonyPostfix]
         static void patchActivateItem_performed(PlayerControllerB __instance)
@@ -179,6 +259,7 @@ namespace OPJosMod.GodMode.Patches
         {
             try
             {
+                //need to make this location of fake dead body, if possible
                 Vector3 respawnLocation = new Vector3(0, 0, 0);
                 if (__instance.deadBody != null)
                 {
@@ -186,7 +267,7 @@ namespace OPJosMod.GodMode.Patches
                 }
                 else
                 {
-                    respawnLocation = __instance.transform.position;
+                    //respawnLocation = __instance.transform.position;
                 }
 
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
