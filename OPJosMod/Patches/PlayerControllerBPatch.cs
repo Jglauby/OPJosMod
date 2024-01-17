@@ -2,10 +2,12 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OPJosMod.HealthRegen.Patches
 {
@@ -18,36 +20,48 @@ namespace OPJosMod.HealthRegen.Patches
             mls = logSource;
         }
 
-        private static int healRatePosition = 0;
-        private static int healRate = 4500;
         private static int healAmount = 5;
+        private static bool isHealing = false;
 
         [HarmonyPatch("Update")]
         [HarmonyPrefix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            if (__instance.health < 100 && healRatePosition >= healRate)
+            if (__instance.health < 100 && !isHealing)
             {
-                if (__instance.criticallyInjured || __instance.health <= 10)//take a bit longer to get out of that state
+                __instance.StartCoroutine(HealPlayer(__instance, 10f));
+            }
+        }
+
+        private static IEnumerator HealPlayer(PlayerControllerB player, float frequency)
+        {
+            isHealing = true;
+
+            yield return new WaitForSeconds(frequency);
+
+            int healthToAddCritical = 1;
+            int healthToAdd = 4;
+
+            if (player.criticallyInjured || player.health <= 10)
+            {
+                player.health += healthToAddCritical;
+            }
+            else
+            {
+                if (player.health + healthToAdd >= 100)
                 {
-                    __instance.health += 1;
+                    player.health = 100;
                 }
                 else
                 {
-                    if (__instance.health + healAmount >= 100)//full hp
-                    {
-                        __instance.health = 100;
-                    }
-                    else
-                    {
-                        __instance.health += healAmount;
-                    }
-                    HUDManager.Instance.UpdateHealthUI(__instance.health, false);
-                }           
-                healRatePosition = 0;
-                mls.LogMessage("updated health to:" + __instance.health);
+                    player.health += healthToAdd;
+                }
+                HUDManager.Instance.UpdateHealthUI(player.health, false);
             }
-            healRatePosition += 1;
+
+            mls.LogMessage($"updated health to:{player.health} at: {Time.time}");
+
+            isHealing = false;
         }
     }
 }
