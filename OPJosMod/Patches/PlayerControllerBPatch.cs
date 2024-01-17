@@ -39,9 +39,6 @@ namespace OPJosMod.BetterStamina.Patches
                 ///------modified snipit from update function----------
                 if (__instance.isPlayerControlled && !__instance.isPlayerDead)
                 {
-                    __instance.localVisor.position = __instance.localVisorTargetPoint.position;
-                    __instance.localVisor.rotation = Quaternion.Lerp(__instance.localVisor.rotation, __instance.localVisorTargetPoint.rotation, 53f * Mathf.Clamp(Time.deltaTime, 0.0167f, 20f));
-                    
                     float num2 = 1f;
                     if (!__instance.isSprinting && __instance.isMovementHindered <= 0)
                     {
