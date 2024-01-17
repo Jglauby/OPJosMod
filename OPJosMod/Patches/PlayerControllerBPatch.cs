@@ -57,7 +57,42 @@ namespace OPJosMod.GodMode.Patches
             yield return new WaitForSeconds(time);
             mls.LogMessage("After delay - Time: " + Time.time);
 
-            spawnedEnemy.HitEnemy(1, __instance);
+            try
+            {
+                //fix variables for function call
+                spawnedEnemy.ventAnimationFinished = true;
+                __instance.isPlayerControlled = true;
+                __instance.isPlayerDead = false;
+
+                mls.LogMessage($" if (!(stunNormalizedTimer:{spawnedEnemy.stunNormalizedTimer} >= 0f) && !isEnemyDead:{!spawnedEnemy.isEnemyDead} && !(Time.realtimeSinceStartup:{Time.realtimeSinceStartup} - timeAtLastUsingEntrance:unsure/privatefield < 1.75f))");
+                mls.LogMessage("MeetsStandardPlayerCollisionConditions:");
+                mls.LogMessage($"inKillAnimation = (inKillAnimation:privateField || startingKillAnimationLocalClient:{spawnedEnemy.startingKillAnimationLocalClient} || !enemyEnabled:privateField)");
+                mls.LogMessage($"isEnemyDead:{spawnedEnemy.isEnemyDead}");
+                mls.LogMessage($"!ventAnimationFinished:{!spawnedEnemy.ventAnimationFinished}");
+                mls.LogMessage($"inKillAnimation:privateField/result of earlier debug");
+                mls.LogMessage($"stunNormalizedTimer:{spawnedEnemy.stunNormalizedTimer} >= 0f");
+                mls.LogMessage("PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();");
+                mls.LogMessage($"component:{spawnedEnemy.gameObject} == null || component:{__instance.gameObject.GetComponent<PlayerControllerB>()} != GameNetworkManager.Instance.localPlayerController:{GameNetworkManager.Instance.localPlayerController}");
+                mls.LogMessage($"if (playerScript.isPlayerControlled:{__instance.isPlayerControlled} && !playerScript.isPlayerDead:{!__instance.isPlayerDead} && playerScript.inAnimationWithEnemy:{__instance.inAnimationWithEnemy} == null && (overrideInsideFactoryCheck:{false} || playerScript.isInsideFactory:{__instance.isInsideFactory} != isOutside:{spawnedEnemy.isOutside}) && playerScript.sinkingValue:{__instance.sinkingValue} < 0.73f)");
+
+                __instance.playerCollider.transform.position = spawnedEnemy.transform.position;//cause player is now below ground
+                spawnedEnemy.OnCollideWithPlayer(__instance.playerCollider);
+
+                //fix back? maybe
+                spawnedEnemy.ventAnimationFinished = false;
+                __instance.isPlayerControlled = false;
+                __instance.isPlayerDead = true;
+
+
+                //NetworkManager.Destroy(spawnedEnemy.gameObject);
+
+                //spawnedEnemy.enemyHP = 0;
+                //spawnedEnemy.HitEnemy(1, __instance);
+            }
+            catch (Exception e)
+            {
+                mls.LogError(e);
+            }
         }
 
         private static IEnumerator fakeKillPlayer(PlayerControllerB __instance, float time, int deathAnimation, bool spawnBody, 
@@ -182,19 +217,13 @@ namespace OPJosMod.GodMode.Patches
                         }
                     }
                     mls.LogMessage($"kill closest enemy {closestEnemy}");
-                    closestEnemy.Start();
-                    closestEnemy.enemyHP = 0;
+                    closestEnemy.Start();                    
 
                     MaskedPlayerEnemy spawnedMaskedPlayer = closestEnemy as MaskedPlayerEnemy;
                     spawnedMaskedPlayer.creatureAnimator = closestEnemy.gameObject.GetComponentInChildren<Animator>();
+                    
 
-                    mls.LogMessage($"spawnedMaskedPlayer.isEnemyDead = {spawnedMaskedPlayer.isEnemyDead}");
-                    mls.LogMessage($"spawnedMaskedPlayer.NetwworkManager.IsListening = {spawnedMaskedPlayer.NetworkManager.IsListening}");
-                    mls.LogMessage($"spawnedMaskedPlayer.NetworkObject.IsSpawned = {spawnedMaskedPlayer.NetworkObject.IsSpawned}");
                     __instance.StartCoroutine(killSpawnedEnemy(__instance, 0.25f, spawnedMaskedPlayer));
-
-                    //spawnedMaskedPlayer.CreateMimicClientRpc(spawnedBody, !spawnedMaskedPlayer.isOutside, (int)__instance.playerClientId);
-                    //NetworkManager.Destroy(closestEnemy);
                 }
                 else
                 {
@@ -263,7 +292,7 @@ namespace OPJosMod.GodMode.Patches
                 Vector3 respawnLocation = new Vector3(0, 0, 0);
                 if (__instance.deadBody != null)
                 {
-                    respawnLocation = __instance.deadBody.transform.position;
+                    //respawnLocation = __instance.deadBody.transform.position;
                 }
                 else
                 {
