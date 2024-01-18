@@ -51,7 +51,7 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
-        private static NetworkObject aliveController = new NetworkObject();
+        //private static NetworkObject aliveController = new NetworkObject();
 
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
@@ -109,19 +109,14 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
-        //slightly modified version of ReviveDeadPlayers from the StartOfRound object
         private static void ReviveDeadPlayer(PlayerControllerB __instance)
         {
             try
             {
-                NetworkObject netObject = __instance.GetComponent<NetworkObject>();
-                mls.LogMessage("remove ownership");
-                netObject.RemoveOwnership();
+                //reAddPlayerClient(__instance, 1f);             
 
-                mls.LogMessage("changing ownership");
-                netObject.ChangeOwnership(1L);
-                
-                reAddPlayerClient(__instance, 1f, netObject);
+                mls.LogMessage("call PlayerHasRevivedServerRpc()");
+                StartOfRound.Instance.PlayerHasRevivedServerRpc();
             }
             catch (Exception e)
             {
@@ -129,7 +124,7 @@ namespace OPJosMod.GodMode.Patches
             }    
         }
 
-        private static void reAddPlayerClient(PlayerControllerB __instance, float time, NetworkObject netObject)
+        private static void reAddPlayerClient(PlayerControllerB __instance, float time)
         {
             //yield return new WaitForSeconds(time);
 
