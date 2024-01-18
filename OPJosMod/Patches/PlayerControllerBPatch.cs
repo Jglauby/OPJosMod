@@ -20,7 +20,6 @@ namespace OPJosMod.HealthRegen.Patches
             mls = logSource;
         }
 
-        private static int healAmount = 5;
         private static bool isHealing = false;
 
         [HarmonyPatch("Update")]
@@ -36,30 +35,32 @@ namespace OPJosMod.HealthRegen.Patches
         private static IEnumerator HealPlayer(PlayerControllerB player, float frequency)
         {
             isHealing = true;
-
             yield return new WaitForSeconds(frequency);
 
-            int healthToAddCritical = 1;
-            int healthToAdd = 4;
+            if (player.health < 100 && !player.isPlayerDead)
+            {
+                int healthToAddCritical = 1;
+                int healthToAdd = 4;
 
-            if (player.criticallyInjured || player.health <= 10)
-            {
-                player.health += healthToAddCritical;
-            }
-            else
-            {
-                if (player.health + healthToAdd >= 100)
+                if (player.criticallyInjured || player.health <= 10)
                 {
-                    player.health = 100;
+                    player.health += healthToAddCritical;
                 }
                 else
                 {
-                    player.health += healthToAdd;
+                    if (player.health + healthToAdd >= 100)
+                    {
+                        player.health = 100;
+                    }
+                    else
+                    {
+                        player.health += healthToAdd;
+                    }
+                    HUDManager.Instance.UpdateHealthUI(player.health, false);
                 }
-                HUDManager.Instance.UpdateHealthUI(player.health, false);
-            }
 
-            mls.LogMessage($"updated health to:{player.health} at: {Time.time}");
+                mls.LogMessage($"updated health to:{player.health} at: {Time.time}");
+            }
 
             isHealing = false;
         }
