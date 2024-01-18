@@ -51,21 +51,112 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
+        private static IEnumerator fakeKillPlayer(PlayerControllerB __instance, float time, int deathAnimation, bool spawnBody,
+            Vector3 bodyVelocity, CauseOfDeath causeOfDeath, Vector3 deathLocation, FieldInfo wasUnderWaterLastFrameField)
+        {
+            mls.LogMessage("Before delay - Time: " + Time.time);
+            yield return new WaitForSeconds(time);
+            mls.LogMessage("After delay - Time: " + Time.time);
+
+            __instance.isPlayerDead = true;
+            __instance.isPlayerControlled = false;
+            __instance.thisPlayerModelArms.enabled = false;
+            __instance.localVisor.position = StartOfRound.Instance.notSpawnedPosition.position;
+            __instance.DisablePlayerModel(__instance.gameObject);
+            __instance.isInsideFactory = false;
+            __instance.IsInspectingItem = false;
+            __instance.inTerminalMenu = false;
+            __instance.twoHanded = false;
+            __instance.carryWeight = 1f;
+            __instance.fallValue = 0f;
+            __instance.fallValueUncapped = 0f;
+            __instance.takingFallDamage = false;
+            __instance.isSinking = false;
+            __instance.isUnderwater = false;
+            StartOfRound.Instance.drowningTimer = 1f;
+            HUDManager.Instance.setUnderwaterFilter = false;
+            wasUnderWaterLastFrameField.SetValue(__instance, false);
+            __instance.sourcesCausingSinking = 0;
+            __instance.sinkingValue = 0f;
+            __instance.hinderedMultiplier = 1f;
+            __instance.isMovementHindered = 0;
+            __instance.inAnimationWithEnemy = null;
+            UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse = false;
+            ChangeAudioListenerToObject(__instance, StartOfRound.Instance.spectateCamera.gameObject);
+            SoundManager.Instance.SetDiageticMixerSnapshot();
+            HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
+            HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
+            HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+            HUDManager.Instance.HideHUD(hide: true);
+            StopHoldInteractionOnTrigger(__instance);
+
+            if (spawnBody)
+            {
+                //__instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
+
+                //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
+                spawnFakeDeadBody(__instance, bodyVelocity, spawnBody, causeOfDeath, deathAnimation, deathLocation);
+            }
+
+            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+            __instance.isInGameOverAnimation = 1.5f;
+            __instance.cursorTip.text = "";
+            __instance.cursorIcon.enabled = false;
+            //__instance.DropAllHeldItems(true);
+            __instance.DisableJetpackControlsLocally();
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
         {
-            StartOfRound.Instance.allPlayerScripts[3].TeleportPlayer(__instance.transform.position);
-            StartOfRound.Instance.allPlayerScripts[3].KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
+            mls.LogMessage("died kinda");
+            FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
 
+            if (wasUnderWaterLastFrameField != null)
+            {
+                Vector3 deathLocation = __instance.transform.position;
 
-            //__instance.DropAllHeldItemsAndSync();
+                if (__instance.IsOwner && !__instance.isPlayerDead && __instance.AllowPlayerDeath())
+                {
+                    __instance.DropAllHeldItemsAndSync();
+                    __instance.transform.localPosition = new Vector3(0, -75, 0);
+                    __instance.StartCoroutine(fakeKillPlayer(__instance, 0.25f, deathAnimation, spawnBody, bodyVelocity, causeOfDeath, deathLocation, wasUnderWaterLastFrameField));
+                }
+            }
+            else
+            {
+                mls.LogError("private field was not found in patch kill player");
+            }
 
-            //spawn and kill new clone player of me
-
-            //throw new Exception("dont kill player");
+            throw new Exception("actually don't kill");
         }
 
+        private static void spawnFakeDeadBody(PlayerControllerB __instance, Vector3 bodyVelocity, bool spawnBody, CauseOfDeath causeOfDeath, int deathAnimation, Vector3 deathLocation)
+        {
+            mls.LogMessage("loading fake dead body");
+            try
+            {
+                PlayerControllerB dumbyScript = StartOfRound.Instance.allPlayerScripts[3];
+                dumbyScript.playerClientId = 3;
+                dumbyScript.transform.position = new Vector3(deathLocation.x, deathLocation.y + 5f, deathLocation.z);
+
+                //dumbyScript.playersManager.shipDoorsEnabled = false;
+                dumbyScript.isPlayerDead = false;
+                dumbyScript.isPlayerControlled = true;
+                dumbyScript.thisPlayerModelArms.enabled = true;
+                dumbyScript.localVisor.position = dumbyScript.transform.position;
+                dumbyScript.DisablePlayerModel(dumbyScript.gameObject, true);
+
+                //can't call kill player cause it hits this patch again... try makign it only hit patch on my player controller.
+                //like save my client id at the begginging and only match that cleint id otherwise do function like normal
+                //dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
+            }
+            catch (Exception e)
+            {
+                mls.LogError(e);
+            }
+        }
 
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPostfix]
@@ -87,21 +178,14 @@ namespace OPJosMod.GodMode.Patches
         [HarmonyPrefix]
         static void patchCrouch(PlayerControllerB __instance)
         {
-           //mls.LogMessage("clicked crouch, try to teleport my location");
-           //__instance.transform.localPosition = new Vector3(0, -100, 0);
-        }
-
-        [HarmonyPatch("Start")]
-        [HarmonyPrefix]
-        static void patchStart(PlayerControllerB __instance)
-        {
-            mls.LogMessage("player controller start function hit");
+            //mls.LogMessage("clicked crouch, try to teleport my location");
+            //__instance.transform.localPosition = new Vector3(0, -100, 0);
         }
 
         [HarmonyPatch("ActivateItem_performed")]
         [HarmonyPostfix]
         static void patchActivateItem_performed(PlayerControllerB __instance)
-        {            
+        {
             if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
             {
                 mls.LogMessage("attempting to revive");
@@ -109,37 +193,12 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
+        //slightly modified version of ReviveDeadPlayers from the StartOfRound object
         private static void ReviveDeadPlayer(PlayerControllerB __instance)
         {
             try
             {
-                reAddPlayerClient(__instance, 1f);             
-                //mls.LogMessage($"allPlayerScripts size : {StartOfRound.Instance.allPlayerObjects.Length}");
-                //var blankPlayer = StartOfRound.Instance.allPlayerScripts[3];
-
-                //mls.LogMessage($"calling ConnectClientToPlayerObject()");
-                //blankPlayer.ConnectClientToPlayerObject();
-
-                //mls.LogMessage($"calling blank player transform positon to 0,0,0");
-                //blankPlayer.transform.position = new Vector3 (0, 0, 0);
-
-                //mls.LogMessage($"calling NetworkManager.Destroy __instance.gameObject");
-                //NetworkManager.Destroy(__instance.gameObject);
-            }
-            catch (Exception e)
-            {
-                mls.LogError(e);
-            }    
-        }
-
-        private static void reAddPlayerClient(PlayerControllerB __instance, float time)
-        {
-            //yield return new WaitForSeconds(time);
-
-            mls.LogMessage("add player back server");
-
-            try
-            {
+                //need to make this location of fake dead body, if possible
                 Vector3 respawnLocation = new Vector3(0, 0, 0);
                 if (__instance.deadBody != null)
                 {
@@ -147,13 +206,19 @@ namespace OPJosMod.GodMode.Patches
                 }
                 else
                 {
-                    respawnLocation = __instance.transform.position;
+                    //respawnLocation = __instance.transform.position;
                 }
-                
+
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = (int)__instance.playerClientId;
                 //
                 StartOfRound.Instance.allPlayersDead = false;
+
+                if (playerIndex < 0 || playerIndex >= allPlayerScripts.Length)
+                {
+                    mls.LogError("Invalid player index for revival.");
+                    return;
+                }
 
                 mls.LogMessage($"Reviving player {playerIndex}");
 
@@ -279,14 +344,12 @@ namespace OPJosMod.GodMode.Patches
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
                 //__instance.playersManager.shipAnimator.ResetTrigger("ShipLeave")
-                HUDManager.Instance.HideHUD(hide: false);                
+                HUDManager.Instance.HideHUD(hide: false);
             }
             catch (Exception e)
             {
                 mls.LogError(e);
             }
-
-            mls.LogMessage("Player respawned on server: " + (int)__instance.playerClientId);
         }
     }
 }
