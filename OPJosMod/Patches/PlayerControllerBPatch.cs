@@ -51,19 +51,19 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
-        //private static NetworkObject aliveController = new NetworkObject();
-
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
         {
-            //aliveController = __instance.GetComponent<NetworkObject>();
-            //
-            //var property = typeof(NetworkObject).GetProperty("IsSpawned");
-            //if (property != null)
-            //{
-            //    property.SetValue(aliveController, false);
-            //}
+            StartOfRound.Instance.allPlayerScripts[3].TeleportPlayer(__instance.transform.position);
+            StartOfRound.Instance.allPlayerScripts[3].KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
+
+
+            //__instance.DropAllHeldItemsAndSync();
+
+            //spawn and kill new clone player of me
+
+            //throw new Exception("dont kill player");
         }
 
 
@@ -113,10 +113,18 @@ namespace OPJosMod.GodMode.Patches
         {
             try
             {
-                //reAddPlayerClient(__instance, 1f);             
+                reAddPlayerClient(__instance, 1f);             
+                //mls.LogMessage($"allPlayerScripts size : {StartOfRound.Instance.allPlayerObjects.Length}");
+                //var blankPlayer = StartOfRound.Instance.allPlayerScripts[3];
 
-                mls.LogMessage("call PlayerHasRevivedServerRpc()");
-                StartOfRound.Instance.PlayerHasRevivedServerRpc();
+                //mls.LogMessage($"calling ConnectClientToPlayerObject()");
+                //blankPlayer.ConnectClientToPlayerObject();
+
+                //mls.LogMessage($"calling blank player transform positon to 0,0,0");
+                //blankPlayer.transform.position = new Vector3 (0, 0, 0);
+
+                //mls.LogMessage($"calling NetworkManager.Destroy __instance.gameObject");
+                //NetworkManager.Destroy(__instance.gameObject);
             }
             catch (Exception e)
             {
