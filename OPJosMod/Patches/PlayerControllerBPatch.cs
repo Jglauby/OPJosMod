@@ -55,10 +55,6 @@ namespace OPJosMod.GodMode.Patches
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
         {
-            StartOfRound.Instance.allPlayerScripts[3].TeleportPlayer(__instance.transform.position);
-            StartOfRound.Instance.allPlayerScripts[3].KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
-
-
             //__instance.DropAllHeldItemsAndSync();
 
             //spawn and kill new clone player of me
@@ -113,18 +109,10 @@ namespace OPJosMod.GodMode.Patches
         {
             try
             {
-                reAddPlayerClient(__instance, 1f);             
-                //mls.LogMessage($"allPlayerScripts size : {StartOfRound.Instance.allPlayerObjects.Length}");
-                //var blankPlayer = StartOfRound.Instance.allPlayerScripts[3];
+                //reAddPlayerClient(__instance, 1f);
 
-                //mls.LogMessage($"calling ConnectClientToPlayerObject()");
-                //blankPlayer.ConnectClientToPlayerObject();
 
-                //mls.LogMessage($"calling blank player transform positon to 0,0,0");
-                //blankPlayer.transform.position = new Vector3 (0, 0, 0);
-
-                //mls.LogMessage($"calling NetworkManager.Destroy __instance.gameObject");
-                //NetworkManager.Destroy(__instance.gameObject);
+                StartOfRound.Instance.EndPlayersFiredSequenceClientRpc();
             }
             catch (Exception e)
             {
