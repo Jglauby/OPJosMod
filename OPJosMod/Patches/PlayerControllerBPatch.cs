@@ -51,15 +51,6 @@ namespace OPJosMod.GodMode.Patches
             }
         }
 
-        private static IEnumerator killSpawnedEnemy(PlayerControllerB __instance, float time, MaskedPlayerEnemy spawnedEnemy)
-        {
-            mls.LogMessage("Before delay - Time: " + Time.time);
-            yield return new WaitForSeconds(time);
-            mls.LogMessage("After delay - Time: " + Time.time);
-
-            spawnedEnemy.HitEnemy(1, __instance);
-        }
-
         private static IEnumerator fakeKillPlayer(PlayerControllerB __instance, float time, int deathAnimation, bool spawnBody, 
             Vector3 bodyVelocity, CauseOfDeath causeOfDeath, Vector3 deathLocation, FieldInfo wasUnderWaterLastFrameField)
         {
@@ -104,7 +95,7 @@ namespace OPJosMod.GodMode.Patches
                 //__instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
 
                 //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
-                spawnFakeDeadBody(__instance, deathAnimation, deathLocation);
+                spawnFakeDeadBody(__instance, bodyVelocity, spawnBody, causeOfDeath, deathAnimation, deathLocation);
             }
 
             StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
@@ -141,77 +132,25 @@ namespace OPJosMod.GodMode.Patches
             throw new Exception("actually don't kill");
         }
 
-        private static void spawnFakeDeadBody(PlayerControllerB __instance, int deathAnimation, Vector3 deathLocation)
+        private static void spawnFakeDeadBody(PlayerControllerB __instance, Vector3 bodyVelocity, bool spawnBody, CauseOfDeath causeOfDeath, int deathAnimation, Vector3 deathLocation)
         {
-            mls.LogMessage("loading fake dead body");//maybe there is a test body you can spawn? like dumby player?
+            mls.LogMessage("loading fake dead body");
             try
             {
-                Vector3 spawnPosition = deathLocation;
-                float yRot = __instance.transform.rotation.eulerAngles.y;
-                EnemyType enemyType = StartOfRound.Instance.levels[5].Enemies[10].enemyType; //5 level rend, 10 maskedPlayerEnemy    , this part fails when not host, its null?
+                PlayerControllerB dumbyScript = StartOfRound.Instance.allPlayerScripts[3];
+                dumbyScript.playerClientId = 3;
+                dumbyScript.transform.position = new Vector3(deathLocation.x, deathLocation.y + 5f, deathLocation.z);
 
-                //debuggin info sent to spawn function
-                //mls.LogMessage($"spawnPosition: {spawnPosition}");
-                //mls.LogMessage($"yRot: {yRot}");
-                //mls.LogMessage($"enemyType name: {enemyType.name}");
-                //mls.LogMessage($"enemyType prefab: {enemyType.enemyPrefab}");
-                //int enemyCount = StartOfRound.Instance.currentLevel.Enemies.Count;
-                //mls.LogMessage("enemy array size: " + enemyCount);
-                //for (int i = 0; i < enemyCount; i++)
-                //{
-                //    mls.LogMessage($"enemy {i}: {StartOfRound.Instance.currentLevel.Enemies[i].enemyType.name}");
-                //}
-                var spawnedBody = RoundManager.Instance.SpawnEnemyGameObject(spawnPosition, yRot, -1, enemyType);
+                //dumbyScript.playersManager.shipDoorsEnabled = false;
+                dumbyScript.isPlayerDead = false;
+                dumbyScript.isPlayerControlled = true;
+                dumbyScript.thisPlayerModelArms.enabled = true;
+                dumbyScript.localVisor.position = dumbyScript.transform.position;
+                dumbyScript.DisablePlayerModel(dumbyScript.gameObject, true);
 
-                mls.LogMessage("kill spawned enemy");
-                List<EnemyAI> array = RoundManager.Instance.SpawnedEnemies;
-                mls.LogMessage($"enemies found in round {array.Count()}");
-                
-                if (array.Count > 0) 
-                {
-                    EnemyAI closestEnemy = array[0];
-                    float minDistance = Vector3.Distance(array[0].transform.position, spawnPosition);
-                
-                    for (int i = 1; i < array.Count; i++)
-                    {
-                        float distance = Vector3.Distance(array[i].transform.position, spawnPosition);
-                        if (distance < minDistance)
-                        {
-                            minDistance = distance;
-                            closestEnemy = array[i];
-                        }
-                    }
-                    mls.LogMessage($"kill closest enemy {closestEnemy}");
-                    closestEnemy.Start();
-                    closestEnemy.enemyHP = 0;
-
-                    MaskedPlayerEnemy spawnedMaskedPlayer = closestEnemy as MaskedPlayerEnemy;
-                    spawnedMaskedPlayer.creatureAnimator = closestEnemy.gameObject.GetComponentInChildren<Animator>();
-
-                    mls.LogMessage($"spawnedMaskedPlayer.isEnemyDead = {spawnedMaskedPlayer.isEnemyDead}");
-                    mls.LogMessage($"spawnedMaskedPlayer.NetwworkManager.IsListening = {spawnedMaskedPlayer.NetworkManager.IsListening}");
-                    mls.LogMessage($"spawnedMaskedPlayer.NetworkObject.IsSpawned = {spawnedMaskedPlayer.NetworkObject.IsSpawned}");
-                    __instance.StartCoroutine(killSpawnedEnemy(__instance, 0.25f, spawnedMaskedPlayer));
-
-                    //spawnedMaskedPlayer.CreateMimicClientRpc(spawnedBody, !spawnedMaskedPlayer.isOutside, (int)__instance.playerClientId);
-                    //NetworkManager.Destroy(closestEnemy);
-                }
-                else
-                {
-                    mls.LogError("couldn't find the spawned enemy");
-                }
-
-                //debuggin level enemies, shows all enemies that can spawn on each level
-                //var allLevels = StartOfRound.Instance.levels;
-                //mls.LogMessage("all levels");
-                //for (int i = 0; i < allLevels.Count(); i++)
-                //{
-                //    mls.LogMessage($"level {i}: {allLevels[i].name}");
-                //    foreach(var enemy in allLevels[i].Enemies)
-                //    {
-                //        mls.LogMessage($"enemy: {enemy.enemyType.name}");
-                //    }
-                //}
+                //can't call kill player cause it hits this patch again... try makign it only hit patch on my player controller.
+                //like save my client id at the begginging and only match that cleint id otherwise do function like normal
+                //dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
             }
             catch (Exception e)
             {
