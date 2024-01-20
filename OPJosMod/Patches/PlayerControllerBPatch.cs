@@ -50,11 +50,14 @@ namespace OPJosMod.HealthRegen.Patches
                 {
                     if (player.health + healthToAdd >= 100)
                     {
+                        int healthHealed = 100 - player.health;
                         player.health = 100;
+                        player.DamagePlayerServerRpc(-healthHealed, player.health);
                     }
                     else
                     {
                         player.health += healthToAdd;
+                        player.DamagePlayerServerRpc(-healthToAdd, player.health);
                     }
                     HUDManager.Instance.UpdateHealthUI(player.health, false);
                 }
