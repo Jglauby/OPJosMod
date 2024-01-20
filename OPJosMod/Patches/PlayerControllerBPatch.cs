@@ -150,6 +150,7 @@ namespace OPJosMod.GodMode.Patches
 
                 //can't call kill player cause it hits this patch again... try makign it only hit patch on my player controller.
                 //like save my client id at the begginging and only match that cleint id otherwise do function like normal
+                //try making a new property fr PLayerControllerB for if u should run th rgular kill function or not
                 //dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
             }
             catch (Exception e)
