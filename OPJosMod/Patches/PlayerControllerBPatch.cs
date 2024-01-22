@@ -26,7 +26,7 @@ namespace OPJosMod.GodMode.Patches
         public static void SetLogSource(ManualLogSource logSource)
         {
             mls = logSource;
-        }
+        }    
 
         //one for one private functions that existin player controller b
         private static void ChangeAudioListenerToObject(PlayerControllerB __instance, GameObject addToObject)
@@ -49,6 +49,47 @@ namespace OPJosMod.GodMode.Patches
             {
                 __instance.hoveringOverTrigger.StopInteraction();
             }
+        }
+
+        private static bool allowKill = false;
+
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPrefix]
+        static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
+        {
+            if (allowKill)
+            {
+                mls.LogMessage("allowed regualr kill process. as allowKill was true");
+            }
+            else
+            {
+                mls.LogMessage("do patch kill as custom property (allowKill) is set to false");
+                doPatchKill(__instance, deathAnimation, spawnBody, bodyVelocity, causeOfDeath);
+            }
+        }
+
+        private static void doPatchKill(PlayerControllerB __instance, int deathAnimation, bool spawnBody, Vector3 bodyVelocity, CauseOfDeath causeOfDeath)
+        {
+            mls.LogMessage("died kinda");
+            FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (wasUnderWaterLastFrameField != null)
+            {
+                Vector3 deathLocation = __instance.transform.position;
+
+                if (__instance.IsOwner && !__instance.isPlayerDead && __instance.AllowPlayerDeath())
+                {
+                    __instance.DropAllHeldItemsAndSync();
+                    __instance.transform.localPosition = new Vector3(0, -75, 0);
+                    __instance.StartCoroutine(fakeKillPlayer(__instance, 0.25f, deathAnimation, spawnBody, bodyVelocity, causeOfDeath, deathLocation, wasUnderWaterLastFrameField));
+                }
+            }
+            else
+            {
+                mls.LogError("private field was not found in patch kill player");
+            }
+
+            throw new Exception("actually don't kill");
         }
 
         private static IEnumerator fakeKillPlayer(PlayerControllerB __instance, float time, int deathAnimation, bool spawnBody,
@@ -92,54 +133,12 @@ namespace OPJosMod.GodMode.Patches
 
             if (spawnBody)
             {
-                //__instance.SpawnDeadBody((int)__instance.playerClientId, __instance.velocityLastFrame, (int)__instance.causeOfDeath, __instance, deathAnimation);
-
                 //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
-                spawnFakeDeadBody(__instance, bodyVelocity, spawnBody, causeOfDeath, deathAnimation, deathLocation);
-            }
-
-            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
-            __instance.isInGameOverAnimation = 1.5f;
-            __instance.cursorTip.text = "";
-            __instance.cursorIcon.enabled = false;
-            //__instance.DropAllHeldItems(true);
-            __instance.DisableJetpackControlsLocally();
-        }
-
-        [HarmonyPatch("KillPlayer")]
-        [HarmonyPrefix]
-        static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
-        {
-            mls.LogMessage("died kinda");
-            FieldInfo wasUnderWaterLastFrameField = typeof(PlayerControllerB).GetField("wasUnderwaterLastFrame", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (wasUnderWaterLastFrameField != null)
-            {
-                Vector3 deathLocation = __instance.transform.position;
-
-                if (__instance.IsOwner && !__instance.isPlayerDead && __instance.AllowPlayerDeath())
-                {
-                    __instance.DropAllHeldItemsAndSync();
-                    __instance.transform.localPosition = new Vector3(0, -75, 0);
-                    __instance.StartCoroutine(fakeKillPlayer(__instance, 0.25f, deathAnimation, spawnBody, bodyVelocity, causeOfDeath, deathLocation, wasUnderWaterLastFrameField));
-                }
-            }
-            else
-            {
-                mls.LogError("private field was not found in patch kill player");
-            }
-
-            throw new Exception("actually don't kill");
-        }
-
-        private static void spawnFakeDeadBody(PlayerControllerB __instance, Vector3 bodyVelocity, bool spawnBody, CauseOfDeath causeOfDeath, int deathAnimation, Vector3 deathLocation)
-        {
-            mls.LogMessage("loading fake dead body");
-            try
-            {
+                mls.LogMessage("loading fake dead body");
                 PlayerControllerB dumbyScript = StartOfRound.Instance.allPlayerScripts[3];
                 dumbyScript.playerClientId = 3;
-                dumbyScript.transform.position = new Vector3(deathLocation.x, deathLocation.y + 5f, deathLocation.z);
+                deathLocation.y = deathLocation.y + 1f;
+                dumbyScript.TeleportPlayer(deathLocation);
 
                 //dumbyScript.playersManager.shipDoorsEnabled = false;
                 dumbyScript.isPlayerDead = false;
@@ -148,16 +147,21 @@ namespace OPJosMod.GodMode.Patches
                 dumbyScript.localVisor.position = dumbyScript.transform.position;
                 dumbyScript.DisablePlayerModel(dumbyScript.gameObject, true);
 
-                //can't call kill player cause it hits this patch again... try makign it only hit patch on my player controller.
-                //like save my client id at the begginging and only match that cleint id otherwise do function like normal
-                //try making a new property fr PLayerControllerB for if u should run th rgular kill function or not
-                //dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
+                //kill spawned player
+                yield return new WaitForSeconds(time);
+                mls.LogMessage($"kill spawned player, time:{Time.time}");
+                allowKill = true;
+                dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
+                allowKill = false;
             }
-            catch (Exception e)
-            {
-                mls.LogError(e);
-            }
-        }
+
+            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+            __instance.isInGameOverAnimation = 1.5f;
+            __instance.cursorTip.text = "";
+            __instance.cursorIcon.enabled = false;
+            //__instance.DropAllHeldItems(true);
+            __instance.DisableJetpackControlsLocally();
+        }     
 
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPostfix]
@@ -201,14 +205,6 @@ namespace OPJosMod.GodMode.Patches
             {
                 //need to make this location of fake dead body, if possible
                 Vector3 respawnLocation = new Vector3(0, 0, 0);
-                if (__instance.deadBody != null)
-                {
-                    respawnLocation = __instance.deadBody.transform.position;
-                }
-                else
-                {
-                    //respawnLocation = __instance.transform.position;
-                }
 
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = (int)__instance.playerClientId;
