@@ -134,12 +134,11 @@ namespace OPJosMod.GodMode.Patches
             if (spawnBody)
             {
                 //instead of spawning dead body, spawn and instant kill mimic body of my name via server sends. 
-                mls.LogMessage("loading fake dead body");
-                PlayerControllerB dumbyScript = StartOfRound.Instance.allPlayerScripts[3];
-                dumbyScript.playerClientId = 3;
-                deathLocation.y = deathLocation.y + 1f;
-                dumbyScript.TeleportPlayer(deathLocation);
+                PlayerControllerB dumbyScript = StartOfRound.Instance.allPlayerScripts[2];
+                mls.LogMessage($"try to connect dumby player to server, dumbyScriptPLayerClientID:{dumbyScript.playerClientId} at: {Time.time}");
+                StartOfRound.Instance.OnClientConnect(dumbyScript.playerClientId);//might not need if the update location ends up working               
 
+                //enable the dumby player locally
                 //dumbyScript.playersManager.shipDoorsEnabled = false;
                 dumbyScript.isPlayerDead = false;
                 dumbyScript.isPlayerControlled = true;
@@ -147,11 +146,35 @@ namespace OPJosMod.GodMode.Patches
                 dumbyScript.localVisor.position = dumbyScript.transform.position;
                 dumbyScript.DisablePlayerModel(dumbyScript.gameObject, true);
 
+                //teleport player, should sync locaiton since its active
+                yield return new WaitForSeconds(time);
+                mls.LogMessage($"teleport connected player at: {Time.time}");
+                deathLocation.y = deathLocation.y + 1f;
+                dumbyScript.transform.position = deathLocation;
+
+                //call funciton to update its locaiton on server
+                //
+                //this doesn't work as "[Error  : Unity Log] Only the owner can invoke a ServerRpc that requires ownership!"
+                MethodInfo methodInfo = typeof(PlayerControllerB).GetMethod("UpdatePlayerPositionServerRpc", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (methodInfo != null)
+                {
+                    //Vector3 newPos, bool inElevator, bool inShipRoom, bool exhausted, bool isPlayerGrounded
+                    object[] parameters = new object[] {
+                        deathLocation,
+                        __instance.isInElevator,
+                        __instance.isInHangarShipRoom,
+                        __instance.isExhausted,
+                        __instance.isGroundedOnServer
+                    };
+
+                    methodInfo.Invoke(dumbyScript, parameters);
+                }
+
                 //kill spawned player
                 yield return new WaitForSeconds(time);
                 mls.LogMessage($"kill spawned player, time:{Time.time}");
                 allowKill = true;
-                dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
+                //dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
                 allowKill = false;
             }
 
@@ -159,7 +182,6 @@ namespace OPJosMod.GodMode.Patches
             __instance.isInGameOverAnimation = 1.5f;
             __instance.cursorTip.text = "";
             __instance.cursorIcon.enabled = false;
-            //__instance.DropAllHeldItems(true);
             __instance.DisableJetpackControlsLocally();
         }     
 
@@ -169,6 +191,13 @@ namespace OPJosMod.GodMode.Patches
         {
             //__instance.health = 100;
             //HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+        }
+
+        [HarmonyPatch("UpdatePlayerPositionServerRpc")]
+        [HarmonyPostfix]
+        static void patchUpdatePlayerPositionServerRpc(PlayerControllerB __instance)
+        {
+            //mls.LogMessage("hit UpdatePlayerPositionServerRpc() function");
         }
 
         [HarmonyPatch("DamagePlayer")]
@@ -342,6 +371,10 @@ namespace OPJosMod.GodMode.Patches
 
                 //__instance.playersManager.shipAnimator.ResetTrigger("ShipLeave")
                 HUDManager.Instance.HideHUD(hide: false);
+
+                //decrease dead player amount across all clients
+                //StartOfRound.Instance.PlayerHasRevivedServerRpc();
+                //StartOfRound.Instance.OnClientDisconnect(3);
             }
             catch (Exception e)
             {
