@@ -115,7 +115,7 @@ namespace OPJosMod.GhostMode.Patches
         private static IEnumerator PlayerJump(PlayerControllerB __instance, FieldInfo isJumpingField, FieldInfo isFallingFromJumpField)
         {
             __instance.playerBodyAnimator.SetBool("Jumping", true);
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(0.4f);
             __instance.fallValue = __instance.jumpForce;
             __instance.fallValueUncapped = __instance.jumpForce;
             yield return new WaitForSeconds(0.1f);
@@ -123,7 +123,6 @@ namespace OPJosMod.GhostMode.Patches
             isFallingFromJumpField.SetValue(__instance, true);
             yield return new WaitForSeconds(0.1f);
             isFallingFromJumpField.SetValue (__instance, false);
-            //__instance.PlayerHitGroundEffects();
             jumpCoroutine = null;
         }
 
