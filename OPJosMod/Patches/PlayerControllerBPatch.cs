@@ -28,6 +28,7 @@ namespace OPJosMod.GhostMode.Patches
         }
 
         private static bool allowKill = true;
+        private static Coroutine jumpCoroutine;
 
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
@@ -84,29 +85,47 @@ namespace OPJosMod.GhostMode.Patches
             if (!allowKill)
             {
                 FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (isJumpingField != null)
+                if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
                 {
-                    //isJumpingField.SetValue(__instance, false);
+                    if (!__instance.quickMenuManager.isMenuOpen && ((__instance.IsOwner && __instance.isPlayerControlled && (!__instance.IsServer || __instance.isHostPlayerObject)) || __instance.isTestingPlayer) && !__instance.inSpecialInteractAnimation && !__instance.isTypingChat && (__instance.isMovementHindered <= 0 || __instance.isUnderwater) && !__instance.isExhausted && (!__instance.isPlayerSliding || (float)playerSlidingTimerField.GetValue(__instance) > 2.5f) && !__instance.isCrouching)
+                    {
+                        playerSlidingTimerField.SetValue(__instance, 0f);
+                        isJumpingField.SetValue(__instance, true);
+                        __instance.sprintMeter = Mathf.Clamp(__instance.sprintMeter - 0.08f, 0f, 1f);
+                        __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerJumpSFX);
+                        if (jumpCoroutine != null)
+                        {
+                            __instance.StopCoroutine(jumpCoroutine);
+                        }
+
+                        jumpCoroutine = __instance.StartCoroutine(PlayerJump(__instance, isJumpingField, isFallingFromJumpField));
+                    }
                 }
                 else
                 {
                     mls.LogError("private field not found");
                 }
+                throw new Exception("dont call regular jump method.");
             }
         }
 
-        //[HarmonyPatch("IsPlayerNearGround")]
-        //[HarmonyPrefix]
-        //static bool isPlayerNearGroundPatch(ref bool __result)
-        //{
-        //    if (!allowKill)
-        //    {
-        //        __result = true;
-        //        return false;
-        //    }
-        //    return true;
-        //}
+        private static IEnumerator PlayerJump(PlayerControllerB __instance, FieldInfo isJumpingField, FieldInfo isFallingFromJumpField)
+        {
+            __instance.playerBodyAnimator.SetBool("Jumping", true);
+            yield return new WaitForSeconds(0.15f);
+            __instance.fallValue = __instance.jumpForce;
+            __instance.fallValueUncapped = __instance.jumpForce;
+            yield return new WaitForSeconds(0.1f);
+            isJumpingField.SetValue(__instance, false);
+            isFallingFromJumpField.SetValue(__instance, true);
+            yield return new WaitForSeconds(0.1f);
+            isFallingFromJumpField.SetValue (__instance, false);
+            //__instance.PlayerHitGroundEffects();
+            jumpCoroutine = null;
+        }
 
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPostfix]
@@ -115,6 +134,7 @@ namespace OPJosMod.GhostMode.Patches
             if (!allowKill)
             {
                 __instance.health = 100;
+                __instance.criticallyInjured = false;
                 HUDManager.Instance.UpdateHealthUI(__instance.health, false);
             }
         }
