@@ -145,7 +145,7 @@ namespace OPJosMod.GhostMode.Patches
                     allPlayerScripts[playerIndex].DisableJetpackControlsLocally();
                     allPlayerScripts[playerIndex].health = 100;
 
-                    allPlayerScripts[playerIndex].mapRadarDotAnimator.SetBool("dead", value: false);
+                    //allPlayerScripts[playerIndex].mapRadarDotAnimator.SetBool("dead", value: false);
 
                     if (allPlayerScripts[playerIndex].IsOwner)
                     {
@@ -191,8 +191,14 @@ namespace OPJosMod.GhostMode.Patches
 
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
-                //__instance.playersManager.shipAnimator.ResetTrigger("ShipLeave")
-                HUDManager.Instance.HideHUD(hide: false);
+                //update the game to have no darkness
+                __instance.nightVision.type = (LightType)2;
+                __instance.nightVision.intensity = 44444f;
+                __instance.nightVision.range = 99999f;
+                __instance.nightVision.shadowStrength = 0f;
+                __instance.nightVision.bounceIntensity = 5555f;
+                __instance.nightVision.innerSpotAngle = 999f;
+                __instance.nightVision.spotAngle = 9999f;
             }
             catch (Exception e)
             {
