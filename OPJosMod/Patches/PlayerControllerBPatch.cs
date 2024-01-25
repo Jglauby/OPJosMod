@@ -31,7 +31,7 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
-        static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
+        static void patchKillPlayer(PlayerControllerB __instance)
         {
             if (allowKill)
             {
@@ -42,6 +42,16 @@ namespace OPJosMod.GhostMode.Patches
             {
                 mls.LogMessage("didn't allow kill, aka player should be dead on server already");
                 throw new Exception("dont kill player again");
+            }
+        }
+
+        [HarmonyPatch("Update")]
+        [HarmonyPostfix]
+        static void updatePatch(PlayerControllerB __instance)
+        {
+            if (!allowKill)
+            {
+                __instance.sprintMeter = 1f;
             }
         }
 
@@ -177,34 +187,7 @@ namespace OPJosMod.GhostMode.Patches
                 playerControllerB.spectatedPlayerScript = null;
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
 
-                StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);
-                RagdollGrabbableObject[] array = UnityEngine.Object.FindObjectsOfType<RagdollGrabbableObject>();
-                for (int j = 0; j < array.Length; j++)
-                {
-                    if (!array[j].isHeld)
-                    {
-                        if (StartOfRound.Instance.IsServer)
-                        {
-                            if (array[j].NetworkObject.IsSpawned)
-                            {
-                                array[j].NetworkObject.Despawn();
-                            }
-                            else
-                            {
-                                UnityEngine.Object.Destroy(array[j].gameObject);
-                            }
-                        }
-                    }
-                    else if (array[j].isHeld && array[j].playerHeldBy != null)
-                    {
-                        array[j].playerHeldBy.DropAllHeldItems();
-                    }
-                }
-                DeadBodyInfo[] array2 = UnityEngine.Object.FindObjectsOfType<DeadBodyInfo>();
-                for (int k = 0; k < array2.Length; k++)
-                {
-                    UnityEngine.Object.Destroy(array2[k].gameObject);
-                }
+                StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);               
 
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
