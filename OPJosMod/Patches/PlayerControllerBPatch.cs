@@ -1,7 +1,6 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.GodMode.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,70 +27,33 @@ namespace OPJosMod.GhostMode.Patches
             mls = logSource;
         }
 
-        //one for one private functions that existin player controller b
-        private static void ChangeAudioListenerToObject(PlayerControllerB __instance, GameObject addToObject)
-        {
-            __instance.activeAudioListener.transform.SetParent(addToObject.transform);
-            __instance.activeAudioListener.transform.localEulerAngles = Vector3.zero;
-            __instance.activeAudioListener.transform.localPosition = Vector3.zero;
-            StartOfRound.Instance.audioListener = __instance.activeAudioListener;
-        }
-
-        //one for one private functions that exist in player controller b
-        private static void StopHoldInteractionOnTrigger(PlayerControllerB __instance)
-        {
-            HUDManager.Instance.holdFillAmount = 0f;
-            if (__instance.previousHoveringOverTrigger != null)
-            {
-                __instance.previousHoveringOverTrigger.StopInteraction();
-            }
-            if (__instance.hoveringOverTrigger != null)
-            {
-                __instance.hoveringOverTrigger.StopInteraction();
-            }
-        }
+        private static bool allowKill = true;
 
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance, ref int deathAnimation, ref bool spawnBody, ref Vector3 bodyVelocity, ref CauseOfDeath causeOfDeath)
         {
-            //__instance.DropAllHeldItemsAndSync();
-
-            //spawn and kill new clone player of me
-
-            //throw new Exception("dont kill player");
+            if (allowKill)
+            {
+                allowKill = false;
+                mls.LogMessage("called kill player");
+            }
+            else
+            {
+                mls.LogMessage("didn't allow kill, aka player should be dead on server already");
+                throw new Exception("dont kill player again");
+            }
         }
-
 
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPostfix]
-        static void patchDamagePlayer(PlayerControllerB __instance)
+        static void damagePlayerPatch(PlayerControllerB __instance)
         {
-            //__instance.health = 100;
-            //HUDManager.Instance.UpdateHealthUI(__instance.health, false);
-        }
-
-        [HarmonyPatch("DamagePlayer")]
-        [HarmonyPrefix]
-        static void tempPatch(PlayerControllerB __instance)
-        {
-            __instance.health = 0;
-            HUDManager.Instance.UpdateHealthUI(__instance.health, false);
-        }
-
-        [HarmonyPatch("Crouch")]
-        [HarmonyPrefix]
-        static void patchCrouch(PlayerControllerB __instance)
-        {
-           //mls.LogMessage("clicked crouch, try to teleport my location");
-           //__instance.transform.localPosition = new Vector3(0, -100, 0);
-        }
-
-        [HarmonyPatch("Start")]
-        [HarmonyPrefix]
-        static void patchStart(PlayerControllerB __instance)
-        {
-            mls.LogMessage("player controller start function hit");
+            if (!allowKill)
+            {
+                __instance.health = 100;
+                HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+            }
         }
 
         [HarmonyPatch("ActivateItem_performed")]
@@ -107,23 +69,6 @@ namespace OPJosMod.GhostMode.Patches
 
         private static void ReviveDeadPlayer(PlayerControllerB __instance)
         {
-            try
-            {
-                //reAddPlayerClient(__instance, 1f);
-
-
-                StartOfRound.Instance.EndPlayersFiredSequenceClientRpc();
-            }
-            catch (Exception e)
-            {
-                mls.LogError(e);
-            }    
-        }
-
-        private static void reAddPlayerClient(PlayerControllerB __instance, float time)
-        {
-            //yield return new WaitForSeconds(time);
-
             mls.LogMessage("add player back server");
 
             try
@@ -137,11 +82,9 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     respawnLocation = __instance.transform.position;
                 }
-                
+
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = (int)__instance.playerClientId;
-                //
-                StartOfRound.Instance.allPlayersDead = false;
 
                 mls.LogMessage($"Reviving player {playerIndex}");
 
@@ -262,19 +205,18 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     UnityEngine.Object.Destroy(array2[k].gameObject);
                 }
-                StartOfRound.Instance.livingPlayers = StartOfRound.Instance.connectedPlayersAmount + 1;
-                StartOfRound.Instance.allPlayersDead = false;
+
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
                 //__instance.playersManager.shipAnimator.ResetTrigger("ShipLeave")
-                HUDManager.Instance.HideHUD(hide: false);                
+                HUDManager.Instance.HideHUD(hide: false);
             }
             catch (Exception e)
             {
                 mls.LogError(e);
             }
 
-            mls.LogMessage("Player respawned on server: " + (int)__instance.playerClientId);
+            mls.LogMessage("Player respawned on server: " + (int)__instance.playerClientId);            
         }
     }
 }
