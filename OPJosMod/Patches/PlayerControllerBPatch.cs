@@ -52,8 +52,61 @@ namespace OPJosMod.GhostMode.Patches
             if (!allowKill)
             {
                 __instance.sprintMeter = 1f;
+
+                if (__instance.isSprinting)
+                {
+                    FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (sprintMultiplierField != null)
+                    {
+                        var currentValue = sprintMultiplierField.GetValue(__instance);
+                        if (currentValue is float)
+                        {
+                            var newForce = (float)currentValue * 1.01f;
+                            sprintMultiplierField.SetValue(__instance, newForce);
+                        }
+                        else
+                        {
+                            mls.LogError("current spritnMultiplier isn't a float?");
+                        }
+                    }
+                    else
+                    {
+                        mls.LogError("private field not found");
+                    }
+                }
             }
         }
+
+        [HarmonyPatch("Jump_performed")]
+        [HarmonyPostfix]
+        static void jump_performedPatch(PlayerControllerB __instance)
+        {
+            if (!allowKill)
+            {
+                FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (isJumpingField != null)
+                {
+                    //isJumpingField.SetValue(__instance, false);
+                }
+                else
+                {
+                    mls.LogError("private field not found");
+                }
+            }
+        }
+
+        //[HarmonyPatch("IsPlayerNearGround")]
+        //[HarmonyPrefix]
+        //static bool isPlayerNearGroundPatch(ref bool __result)
+        //{
+        //    if (!allowKill)
+        //    {
+        //        __result = true;
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPostfix]
@@ -186,10 +239,9 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
                 playerControllerB.spectatedPlayerScript = null;
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
-
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);               
-
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
+                HUDManager.Instance.HideHUD(true);
 
                 //update the game to have no darkness
                 __instance.nightVision.type = (LightType)2;
@@ -199,6 +251,10 @@ namespace OPJosMod.GhostMode.Patches
                 __instance.nightVision.bounceIntensity = 5555f;
                 __instance.nightVision.innerSpotAngle = 999f;
                 __instance.nightVision.spotAngle = 9999f;
+                __instance.nightVision.gameObject.SetActive(true);
+
+                //increase jump
+                __instance.jumpForce = 25f;
             }
             catch (Exception e)
             {
