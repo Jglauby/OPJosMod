@@ -153,26 +153,24 @@ namespace OPJosMod.GodMode.Patches
                 dumbyScript.transform.position = deathLocation;
 
                 //call funciton to update its locaiton on server
+                //MethodInfo methodInfo = typeof(PlayerControllerB).GetMethod("UpdatePlayerPositionServerRpc", BindingFlags.NonPublic | BindingFlags.Instance);
+                //if (methodInfo != null)
+                //{
+                //    //Vector3 newPos, bool inElevator, bool inShipRoom, bool exhausted, bool isPlayerGrounded
+                //    object[] parameters = new object[] {
+                //        deathLocation,
+                //        __instance.isInElevator,
+                //        __instance.isInHangarShipRoom,
+                //        __instance.isExhausted,
+                //        __instance.isGroundedOnServer
+                //    };
                 //
-                //this doesn't work as "[Error  : Unity Log] Only the owner can invoke a ServerRpc that requires ownership!"
-                MethodInfo methodInfo = typeof(PlayerControllerB).GetMethod("UpdatePlayerPositionServerRpc", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (methodInfo != null)
-                {
-                    //Vector3 newPos, bool inElevator, bool inShipRoom, bool exhausted, bool isPlayerGrounded
-                    object[] parameters = new object[] {
-                        deathLocation,
-                        __instance.isInElevator,
-                        __instance.isInHangarShipRoom,
-                        __instance.isExhausted,
-                        __instance.isGroundedOnServer
-                    };
-
-                    methodInfo.Invoke(dumbyScript, parameters);
-                }
+                //    methodInfo.Invoke(dumbyScript, parameters);
+                //}
 
                 //kill spawned player
                 yield return new WaitForSeconds(time);
-                mls.LogMessage($"kill spawned player, time:{Time.time}");
+                //mls.LogMessage($"kill spawned player, time:{Time.time}");
                 allowKill = true;
                 //dumbyScript.KillPlayer(bodyVelocity, spawnBody, causeOfDeath, deathAnimation);
                 allowKill = false;
