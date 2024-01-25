@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
 using System;
@@ -14,6 +15,8 @@ using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
 
 namespace OPJosMod.GhostMode.Patches
@@ -28,6 +31,7 @@ namespace OPJosMod.GhostMode.Patches
         }
 
         private static bool allowKill = true;
+        private static bool isGhostMode = false;
         private static Coroutine jumpCoroutine;
 
         [HarmonyPatch("KillPlayer")]
@@ -75,6 +79,18 @@ namespace OPJosMod.GhostMode.Patches
                         mls.LogError("private field not found");
                     }
                 }
+
+                if (!isGhostMode)
+                {
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame)//F was pressed
+                    {
+                        if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
+                        {
+                            mls.LogMessage("attempting to revive");
+                            ReviveDeadPlayer(__instance);
+                        }
+                    }
+                }
             }
         }
 
@@ -115,7 +131,7 @@ namespace OPJosMod.GhostMode.Patches
         private static IEnumerator PlayerJump(PlayerControllerB __instance, FieldInfo isJumpingField, FieldInfo isFallingFromJumpField)
         {
             __instance.playerBodyAnimator.SetBool("Jumping", true);
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(0.3f);
             __instance.fallValue = __instance.jumpForce;
             __instance.fallValueUncapped = __instance.jumpForce;
             yield return new WaitForSeconds(0.1f);
@@ -135,17 +151,6 @@ namespace OPJosMod.GhostMode.Patches
                 __instance.health = 100;
                 __instance.criticallyInjured = false;
                 HUDManager.Instance.UpdateHealthUI(__instance.health, false);
-            }
-        }
-
-        [HarmonyPatch("ActivateItem_performed")]
-        [HarmonyPostfix]
-        static void patchActivateItem_performed(PlayerControllerB __instance)
-        {            
-            if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
-            {
-                mls.LogMessage("attempting to revive");
-                ReviveDeadPlayer(__instance);
             }
         }
 
@@ -170,6 +175,7 @@ namespace OPJosMod.GhostMode.Patches
 
                 mls.LogMessage($"Reviving player {playerIndex}");
 
+                allPlayerScripts[playerIndex].isSprinting = false;
                 allPlayerScripts[playerIndex].ResetPlayerBloodObjects(allPlayerScripts[playerIndex].isPlayerDead);
 
                 allPlayerScripts[playerIndex].isClimbingLadder = false;
@@ -274,6 +280,8 @@ namespace OPJosMod.GhostMode.Patches
 
                 //increase jump
                 __instance.jumpForce = 25f;
+
+                isGhostMode = true;
             }
             catch (Exception e)
             {
