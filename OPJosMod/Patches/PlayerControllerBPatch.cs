@@ -17,7 +17,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace OPJosMod.GodMode.Patches
+namespace OPJosMod.GhostMode.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
