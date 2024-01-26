@@ -143,7 +143,7 @@ namespace OPJosMod.GhostMode.Patches
                     //reset my variables
                     allowKill = true;
                     isGhostMode = false;
-                    __instance.jumpForce = 5f;
+                    __instance.jumpForce = 13f;
                     __instance.StopAllCoroutines();
                     __instance.nightVision.gameObject.SetActive(false);
 
@@ -155,6 +155,9 @@ namespace OPJosMod.GhostMode.Patches
                         playerSlidingTimerField.SetValue(__instance, 0f);
                         isJumpingField.SetValue(__instance, false);
                         isFallingFromJumpField.SetValue(__instance, false);
+                        __instance.fallValue = 0f;
+                        __instance.fallValueUncapped = 0f;
+                        jumpCoroutine = null;
                     }
                     else
                     {
