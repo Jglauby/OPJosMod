@@ -55,19 +55,6 @@ namespace OPJosMod.GhostMode.Patches
             return result;
         }
 
-        [HarmonyPatch("Start")]
-        [HarmonyPostfix]
-        private static void startPatch(ref Light ___nightVision)
-        {
-            ___nightVision.type = (LightType)2;
-            ___nightVision.intensity = 44444f;
-            ___nightVision.range = 99999f;
-            ___nightVision.shadowStrength = 0f;
-            ___nightVision.bounceIntensity = 5555f;
-            ___nightVision.innerSpotAngle = 999f;
-            ___nightVision.spotAngle = 9999f;
-        }
-
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance)
@@ -411,6 +398,15 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);               
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
+
+                //setup brightness variables
+                __instance.nightVision.type = (LightType)2;
+                __instance.nightVision.intensity = 44444f;
+                __instance.nightVision.range = 99999f;
+                __instance.nightVision.shadowStrength = 0f;
+                __instance.nightVision.bounceIntensity = 5555f;
+                __instance.nightVision.innerSpotAngle = 999f;
+                __instance.nightVision.spotAngle = 9999f;
 
                 //increase jump
                 __instance.jumpForce = 25f;
