@@ -34,6 +34,19 @@ namespace OPJosMod.GhostMode.Patches
         private static bool isGhostMode = false;
         private static Coroutine jumpCoroutine;
 
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        private static void startPatch(ref Light ___nightVision)
+        {
+            ___nightVision.type = (LightType)2;
+            ___nightVision.intensity = 44444f;
+            ___nightVision.range = 99999f;
+            ___nightVision.shadowStrength = 0f;
+            ___nightVision.bounceIntensity = 5555f;
+            ___nightVision.innerSpotAngle = 999f;
+            ___nightVision.spotAngle = 9999f;
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance)
@@ -52,7 +65,7 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
-        static void updatePatch(PlayerControllerB __instance)
+        static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
         {
             if (!allowKill)
             {
@@ -105,7 +118,6 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.criticallyInjured = false;
                     __instance.bleedingHeavily = false;
                     HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
-                    HUDManager.Instance.HideHUD(true);
                 }
 
                 if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
@@ -164,7 +176,29 @@ namespace OPJosMod.GhostMode.Patches
                         mls.LogError("private fields not found");
                     }
                 }
-            }         
+
+                bool flag = ((Component)___nightVision).gameObject.activeSelf;
+                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame)
+                {
+                    mls.LogMessage("clicked B, trying to toggle night vision");
+                    if (((Component)___nightVision).gameObject.activeSelf)
+                    {
+                        flag = false;
+                    }
+                    if (!((Component)___nightVision).gameObject.activeSelf)
+                    {
+                        flag = true;
+                    }
+                }
+                if (!flag)
+                {
+                    ((Component)___nightVision).gameObject.SetActive(false);
+                }
+                if (flag)
+                {
+                    ((Component)___nightVision).gameObject.SetActive(true);
+                }
+            }
         }
 
         [HarmonyPatch("Jump_performed")]
@@ -226,7 +260,6 @@ namespace OPJosMod.GhostMode.Patches
                 __instance.criticallyInjured = false;
                 __instance.bleedingHeavily = false;
                 HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
-                HUDManager.Instance.HideHUD(true);
             }
         }
 
@@ -342,17 +375,6 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);               
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
-                HUDManager.Instance.HideHUD(true);
-
-                //update the game to have no darkness
-                __instance.nightVision.type = (LightType)2;
-                __instance.nightVision.intensity = 44444f;
-                __instance.nightVision.range = 99999f;
-                __instance.nightVision.shadowStrength = 0f;
-                __instance.nightVision.bounceIntensity = 5555f;
-                __instance.nightVision.innerSpotAngle = 999f;
-                __instance.nightVision.spotAngle = 9999f;
-                __instance.nightVision.gameObject.SetActive(true);
 
                 //increase jump
                 __instance.jumpForce = 25f;
