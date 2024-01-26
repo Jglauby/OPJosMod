@@ -34,6 +34,27 @@ namespace OPJosMod.GhostMode.Patches
         private static bool isGhostMode = false;
         private static Coroutine jumpCoroutine;
 
+        private static Vector3 deathLocation;
+        private static int consecutiveDeathExceptions = 0;
+        private static int maxConsecutiveDeathExceptions = 3;
+        private static float exceptionCooldownTime = 2f; 
+        private static float lastExceptionTime = 0f;
+
+        private static Vector3 getTeleportLocation(PlayerControllerB __instance)
+        {
+            var result = new Vector3(0, 0, 0);
+            if (__instance.deadBody != null)
+            {
+                result = __instance.deadBody.transform.position;
+            }
+            else
+            {
+                result = deathLocation;
+            }
+
+            return result;
+        }
+
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
         private static void startPatch(ref Light ___nightVision)
@@ -51,15 +72,36 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance)
         {
+            float currentTime = Time.time;
+
             if (allowKill)
             {
                 allowKill = false;
+                deathLocation = __instance.transform.position;
+                consecutiveDeathExceptions = 0;
+
                 mls.LogMessage("called kill player");
             }
             else
             {
-                mls.LogMessage("didn't allow kill, aka player should be dead on server already");
-                throw new Exception("dont kill player again");
+                if (currentTime - lastExceptionTime > exceptionCooldownTime)//reset consecutive deaths when its been too long
+                {
+                    consecutiveDeathExceptions = 0;
+                }
+
+                consecutiveDeathExceptions++;
+                lastExceptionTime = currentTime;
+
+                if (consecutiveDeathExceptions >= maxConsecutiveDeathExceptions)
+                {
+                    mls.LogMessage("Too many consecutive death exceptions. Stuck in death loop.");
+
+                    var tpLocaiton = new Vector3 (0, 10f, 0);
+                    __instance.transform.position = tpLocaiton;
+                }
+
+                mls.LogMessage("Didn't allow kill, player should be dead on server already");
+                throw new Exception("Don't kill player again");
             }
         }
 
@@ -158,6 +200,7 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.jumpForce = 13f;
                     __instance.StopAllCoroutines();
                     __instance.nightVision.gameObject.SetActive(false);
+                    consecutiveDeathExceptions = 0;
 
                     FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
                     FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -177,6 +220,7 @@ namespace OPJosMod.GhostMode.Patches
                     }
                 }
 
+                //toggle night vision
                 bool nightVisionFlag = ((Component)___nightVision).gameObject.activeSelf;
                 if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame)
                 {
@@ -269,15 +313,7 @@ namespace OPJosMod.GhostMode.Patches
 
             try
             {
-                Vector3 respawnLocation = new Vector3(0, 0, 0);
-                if (__instance.deadBody != null)
-                {
-                    respawnLocation = __instance.deadBody.transform.position;
-                }
-                else
-                {
-                    respawnLocation = __instance.transform.position;
-                }
+                var respawnLocation = getTeleportLocation(__instance);
 
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = (int)__instance.playerClientId;
