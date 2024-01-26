@@ -91,12 +91,20 @@ namespace OPJosMod.GhostMode.Patches
                         }
                     }
                 }
+                else
+                {
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame)//F was pressed
+                    {
+                        mls.LogMessage("attempt to tp to dead body");
+                        __instance.transform.position = __instance.deadBody.transform.position;
+                    }
+                }
 
                 if (__instance.criticallyInjured == true)
                 {
                     __instance.criticallyInjured = false;
                     __instance.bleedingHeavily = false;
-                    HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+                    HUDManager.Instance.HideHUD(true);
                 }
 
                 if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
@@ -126,7 +134,6 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.hinderedMultiplier = 1f;
                     __instance.isMovementHindered = 0;
                     __instance.inAnimationWithEnemy = null;
-                    SoundManager.Instance.SetDiageticMixerSnapshot();
                     HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
                     HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
                     HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
@@ -136,6 +143,7 @@ namespace OPJosMod.GhostMode.Patches
                     allowKill = true;
                     isGhostMode = false;
                     __instance.jumpForce = 5f;
+                    __instance.StopAllCoroutines();
                     __instance.nightVision.gameObject.SetActive(false);
                 }
             }         
@@ -145,6 +153,7 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void jump_performedPatch(PlayerControllerB __instance)
         {
+            mls.LogMessage($"jump patch hit, allowKill:{allowKill}");
             if (!allowKill)
             {
                 FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -197,7 +206,8 @@ namespace OPJosMod.GhostMode.Patches
             {
                 __instance.health = 100;
                 __instance.criticallyInjured = false;
-                HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+                __instance.bleedingHeavily = false;
+                HUDManager.Instance.HideHUD(true);
             }
         }
 
@@ -327,15 +337,12 @@ namespace OPJosMod.GhostMode.Patches
 
                 //increase jump
                 __instance.jumpForce = 25f;
-
                 isGhostMode = true;
             }
             catch (Exception e)
             {
                 mls.LogError(e);
-            }
-
-            mls.LogMessage("Player respawned on server: " + (int)__instance.playerClientId);            
+            }          
         }
     }
 }
