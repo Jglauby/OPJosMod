@@ -241,10 +241,57 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
+        //a playercontrollerb private function manually written out
         private static bool IsPlayerNearGround(PlayerControllerB __instance)
         {
             interactRay = new Ray(__instance.transform.position, Vector3.down);
             return Physics.Raycast(interactRay, 0.15f, StartOfRound.Instance.allPlayersCollideWithMask, QueryTriggerInteraction.Ignore);
+        }
+
+        //a playercontrollerb private function manualy written out
+        private static void PlayerHitGroundEffects(PlayerControllerB __instance)
+        {
+            __instance.GetCurrentMaterialStandingOn();
+            if (__instance.fallValue < -9f)
+            {
+                if (__instance.fallValue < -16f)
+                {
+                    __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerHitGroundHard, 1f);
+                    WalkieTalkie.TransmitOneShotAudio(__instance.movementAudio, StartOfRound.Instance.playerHitGroundHard);
+                }
+                else if (__instance.fallValue < -2f)
+                {
+                    __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerHitGroundSoft, 1f);
+                }
+
+                __instance.LandFromJumpServerRpc(__instance.fallValue < -16f);
+            }
+
+            if (__instance.takingFallDamage && !__instance.jetpackControls && !__instance.disablingJetpackControls && !__instance.isSpeedCheating && allowKill)
+            {
+                Debug.Log($"Fall damage: {__instance.fallValueUncapped}");
+                if (__instance.fallValueUncapped < -48.5f)
+                {
+                    __instance.DamagePlayer(100, hasDamageSFX: true, callRPC: true, CauseOfDeath.Gravity);
+                }
+                else if (__instance.fallValueUncapped < -45f)
+                {
+                    __instance.DamagePlayer(80, hasDamageSFX: true, callRPC: true, CauseOfDeath.Gravity);
+                }
+                else if (__instance.fallValueUncapped < -40f)
+                {
+                    __instance.DamagePlayer(50, hasDamageSFX: true, callRPC: true, CauseOfDeath.Gravity);
+                }
+                else
+                {
+                    __instance.DamagePlayer(30, hasDamageSFX: true, callRPC: true, CauseOfDeath.Gravity);
+                }
+            }
+
+            if (__instance.fallValue < -16f)
+            {
+                RoundManager.Instance.PlayAudibleNoise(__instance.transform.position, 7f);
+            }
         }
 
         [HarmonyPatch("Jump_performed")]
@@ -305,6 +352,7 @@ namespace OPJosMod.GhostMode.Patches
 
             __instance.playerBodyAnimator.SetBool("Jumping", value: false);
             isFallingFromJumpField.SetValue(__instance, false);
+            PlayerHitGroundEffects(__instance);
             jumpCoroutine = null;
         }
 
@@ -324,7 +372,7 @@ namespace OPJosMod.GhostMode.Patches
         }
 
         [HarmonyPatch("DamagePlayer")]
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         static void damagePlayerPostPatch(PlayerControllerB __instance, ref int damageNumber)
         {
             if (!allowKill)
