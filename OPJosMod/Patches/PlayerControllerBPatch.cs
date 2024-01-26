@@ -35,6 +35,7 @@ namespace OPJosMod.GhostMode.Patches
         private static Coroutine jumpCoroutine;
 
         private static Vector3 deathLocation;
+        private static Vector3 lastSafeLocation = Vector3.zero;
         private static int consecutiveDeathExceptions = 0;
         private static int maxConsecutiveDeathExceptions = 3;
         private static float exceptionCooldownTime = 2f; 
@@ -74,6 +75,7 @@ namespace OPJosMod.GhostMode.Patches
                 if (currentTime - lastExceptionTime > exceptionCooldownTime)//reset consecutive deaths when its been too long
                 {
                     consecutiveDeathExceptions = 0;
+                    lastSafeLocation = __instance.transform.position;
                 }
 
                 consecutiveDeathExceptions++;
@@ -83,8 +85,7 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     mls.LogMessage("Too many consecutive death exceptions. Stuck in death loop.");
 
-                    var tpLocaiton = new Vector3 (0, 10f, 0);
-                    __instance.transform.position = tpLocaiton;
+                    __instance.transform.position = lastSafeLocation;
                 }
 
                 mls.LogMessage("Didn't allow kill, player should be dead on server already");
@@ -140,6 +141,12 @@ namespace OPJosMod.GhostMode.Patches
                         mls.LogMessage("attempt to tp to dead body");
                         __instance.transform.position = __instance.deadBody.transform.position;
                     }
+
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
+                    {
+                        mls.LogMessage("attempt to tp to front door");
+                        __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
+                    }
                 }
 
                 if (__instance.criticallyInjured == true)
@@ -184,10 +191,11 @@ namespace OPJosMod.GhostMode.Patches
                     //reset my variables
                     allowKill = true;
                     isGhostMode = false;
-                    __instance.jumpForce = 13f;
+                    __instance.jumpForce = 5f; //was 13
                     __instance.StopAllCoroutines();
                     __instance.nightVision.gameObject.SetActive(false);
                     consecutiveDeathExceptions = 0;
+                    lastSafeLocation = Vector3.zero;
 
                     FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
                     FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -236,7 +244,7 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void jump_performedPatch(PlayerControllerB __instance)
         {
-            mls.LogMessage($"jump patch hit, allowKill:{allowKill}");
+            mls.LogMessage($"jump performed, jumpForce:{__instance.jumpForce}, allowKill:{allowKill}");
             if (!allowKill)
             {
                 FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
