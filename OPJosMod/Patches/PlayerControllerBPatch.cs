@@ -104,6 +104,7 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     __instance.criticallyInjured = false;
                     __instance.bleedingHeavily = false;
+                    HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
                     HUDManager.Instance.HideHUD(true);
                 }
 
@@ -145,6 +146,20 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.jumpForce = 5f;
                     __instance.StopAllCoroutines();
                     __instance.nightVision.gameObject.SetActive(false);
+
+                    FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
+                    FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+                    FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+                    {
+                        playerSlidingTimerField.SetValue(__instance, 0f);
+                        isJumpingField.SetValue(__instance, false);
+                        isFallingFromJumpField.SetValue(__instance, false);
+                    }
+                    else
+                    {
+                        mls.LogError("private fields not found");
+                    }
                 }
             }         
         }
@@ -194,7 +209,7 @@ namespace OPJosMod.GhostMode.Patches
             isJumpingField.SetValue(__instance, false);
             isFallingFromJumpField.SetValue(__instance, true);
             yield return new WaitForSeconds(0.1f);
-            isFallingFromJumpField.SetValue (__instance, false);
+            isFallingFromJumpField.SetValue(__instance, false);
             jumpCoroutine = null;
         }
 
@@ -207,6 +222,7 @@ namespace OPJosMod.GhostMode.Patches
                 __instance.health = 100;
                 __instance.criticallyInjured = false;
                 __instance.bleedingHeavily = false;
+                HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
                 HUDManager.Instance.HideHUD(true);
             }
         }
