@@ -41,6 +41,8 @@ namespace OPJosMod.GhostMode.Patches
         private static float exceptionCooldownTime = 2f; 
         private static float lastExceptionTime = 0f;
 
+        private static Ray interactRay;
+
         private static Vector3 getTeleportLocation(PlayerControllerB __instance)
         {
             var result = new Vector3(0, 0, 0);
@@ -191,7 +193,6 @@ namespace OPJosMod.GhostMode.Patches
                     //reset my variables
                     allowKill = true;
                     isGhostMode = false;
-                    __instance.jumpForce = 5f; //was 13
                     __instance.StopAllCoroutines();
                     __instance.nightVision.gameObject.SetActive(false);
                     consecutiveDeathExceptions = 0;
@@ -240,20 +241,28 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
+        private static bool IsPlayerNearGround(PlayerControllerB __instance)
+        {
+            interactRay = new Ray(__instance.transform.position, Vector3.down);
+            return Physics.Raycast(interactRay, 0.15f, StartOfRound.Instance.allPlayersCollideWithMask, QueryTriggerInteraction.Ignore);
+        }
+
         [HarmonyPatch("Jump_performed")]
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         static void jump_performedPatch(PlayerControllerB __instance)
         {
             mls.LogMessage($"jump performed, jumpForce:{__instance.jumpForce}, allowKill:{allowKill}");
-            if (!allowKill)
-            {
-                FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+            FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+            {
+                if (!__instance.quickMenuManager.isMenuOpen && ((__instance.IsOwner && __instance.isPlayerControlled && (!__instance.IsServer || __instance.isHostPlayerObject)) || __instance.isTestingPlayer) && !__instance.inSpecialInteractAnimation && !__instance.isTypingChat && (__instance.isMovementHindered <= 0 || __instance.isUnderwater) && !__instance.isExhausted && (!__instance.isPlayerSliding || (float)playerSlidingTimerField.GetValue(__instance) > 2.5f) && !__instance.isCrouching)
                 {
-                    if (!__instance.quickMenuManager.isMenuOpen && ((__instance.IsOwner && __instance.isPlayerControlled && (!__instance.IsServer || __instance.isHostPlayerObject)) || __instance.isTestingPlayer) && !__instance.inSpecialInteractAnimation && !__instance.isTypingChat && (__instance.isMovementHindered <= 0 || __instance.isUnderwater) && !__instance.isExhausted && (!__instance.isPlayerSliding || (float)playerSlidingTimerField.GetValue(__instance) > 2.5f) && !__instance.isCrouching)
+                    //if not dead/ghost then you need to check if youre in the air to allow jump
+                    if (!allowKill || ((__instance.thisController.isGrounded || (!(bool)isJumpingField.GetValue(__instance) && IsPlayerNearGround(__instance))) && !(bool)isJumpingField.GetValue(__instance)))
                     {
                         playerSlidingTimerField.SetValue(__instance, 0f);
                         isJumpingField.SetValue(__instance, true);
@@ -267,24 +276,34 @@ namespace OPJosMod.GhostMode.Patches
                         jumpCoroutine = __instance.StartCoroutine(PlayerJump(__instance, isJumpingField, isFallingFromJumpField));
                     }
                 }
-                else
-                {
-                    mls.LogError("private field not found");
-                }
-                throw new Exception("dont call regular jump method.");
             }
+            else
+            {
+                mls.LogError("private field not found");
+            }          
         }
 
         private static IEnumerator PlayerJump(PlayerControllerB __instance, FieldInfo isJumpingField, FieldInfo isFallingFromJumpField)
         {
+            if (allowKill)
+                __instance.jumpForce = 13f;
+            else
+                __instance.jumpForce = 25f;
+
             __instance.playerBodyAnimator.SetBool("Jumping", true);
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.15f);
             __instance.fallValue = __instance.jumpForce;
             __instance.fallValueUncapped = __instance.jumpForce;
             yield return new WaitForSeconds(0.1f);
             isJumpingField.SetValue(__instance, false);
             isFallingFromJumpField.SetValue(__instance, true);
-            yield return new WaitForSeconds(0.1f);
+
+            if (!allowKill)
+                yield return new WaitForSeconds(0.1f);
+            else
+                yield return new WaitUntil(() => __instance.thisController.isGrounded);
+
+            __instance.playerBodyAnimator.SetBool("Jumping", value: false);
             isFallingFromJumpField.SetValue(__instance, false);
             jumpCoroutine = null;
         }
@@ -416,8 +435,7 @@ namespace OPJosMod.GhostMode.Patches
                 __instance.nightVision.innerSpotAngle = 999f;
                 __instance.nightVision.spotAngle = 9999f;
 
-                //increase jump
-                __instance.jumpForce = 25f;
+                
                 isGhostMode = true;
             }
             catch (Exception e)
