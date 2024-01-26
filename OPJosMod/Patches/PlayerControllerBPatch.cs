@@ -309,14 +309,26 @@ namespace OPJosMod.GhostMode.Patches
         }
 
         [HarmonyPatch("DamagePlayer")]
-        [HarmonyPostfix]
-        static void damagePlayerPatch(PlayerControllerB __instance)
+        [HarmonyPrefix]
+        static void damagePlayerPatch(PlayerControllerB __instance, ref int damageNumber)
         {
             if (!allowKill)
             {
                 __instance.health = 100;
                 __instance.criticallyInjured = false;
                 __instance.bleedingHeavily = false;
+
+                var healthToAdd = 100 - damageNumber;
+                __instance.DamagePlayerServerRpc(-healthToAdd, __instance.health);
+            }
+        }
+
+        [HarmonyPatch("DamagePlayer")]
+        [HarmonyPrefix]
+        static void damagePlayerPostPatch(PlayerControllerB __instance, ref int damageNumber)
+        {
+            if (!allowKill)
+            {
                 HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
             }
         }
