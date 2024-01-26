@@ -91,7 +91,54 @@ namespace OPJosMod.GhostMode.Patches
                         }
                     }
                 }
-            }
+
+                if (__instance.criticallyInjured == true)
+                {
+                    __instance.criticallyInjured = false;
+                    __instance.bleedingHeavily = false;
+                    HUDManager.Instance.UpdateHealthUI(__instance.health, false);
+                }
+
+                if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
+                {
+                    //rekill player
+                    __instance.DropAllHeldItemsServerRpc();
+                    __instance.DisableJetpackControlsLocally();
+                    __instance.isPlayerDead = true;
+                    __instance.isPlayerControlled = false;
+                    __instance.thisPlayerModelArms.enabled = false;
+                    __instance.localVisor.position = __instance.playersManager.notSpawnedPosition.position;
+                    __instance.DisablePlayerModel(__instance.gameObject);
+                    __instance.isInsideFactory = false;
+                    __instance.IsInspectingItem = false;
+                    __instance.inTerminalMenu = false;
+                    __instance.twoHanded = false;
+                    __instance.carryWeight = 1f;
+                    __instance.fallValue = 0f;
+                    __instance.fallValueUncapped = 0f;
+                    __instance.takingFallDamage = false;
+                    __instance.isSinking = false;
+                    __instance.isUnderwater = false;
+                    StartOfRound.Instance.drowningTimer = 1f;
+                    HUDManager.Instance.setUnderwaterFilter = false;
+                    __instance.sourcesCausingSinking = 0;
+                    __instance.sinkingValue = 0f;
+                    __instance.hinderedMultiplier = 1f;
+                    __instance.isMovementHindered = 0;
+                    __instance.inAnimationWithEnemy = null;
+                    SoundManager.Instance.SetDiageticMixerSnapshot();
+                    HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
+                    HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
+                    HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+                    StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+
+                    //reset my variables
+                    allowKill = true;
+                    isGhostMode = false;
+                    __instance.jumpForce = 5f;
+                    __instance.nightVision.gameObject.SetActive(false);
+                }
+            }         
         }
 
         [HarmonyPatch("Jump_performed")]
