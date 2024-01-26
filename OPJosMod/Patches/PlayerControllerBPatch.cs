@@ -177,24 +177,24 @@ namespace OPJosMod.GhostMode.Patches
                     }
                 }
 
-                bool flag = ((Component)___nightVision).gameObject.activeSelf;
+                bool nightVisionFlag = ((Component)___nightVision).gameObject.activeSelf;
                 if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame)
                 {
                     mls.LogMessage("clicked B, trying to toggle night vision");
                     if (((Component)___nightVision).gameObject.activeSelf)
                     {
-                        flag = false;
+                        nightVisionFlag = false;
                     }
                     if (!((Component)___nightVision).gameObject.activeSelf)
                     {
-                        flag = true;
+                        nightVisionFlag = true;
                     }
                 }
-                if (!flag)
+                if (!nightVisionFlag)
                 {
                     ((Component)___nightVision).gameObject.SetActive(false);
                 }
-                if (flag)
+                if (nightVisionFlag)
                 {
                     ((Component)___nightVision).gameObject.SetActive(true);
                 }
