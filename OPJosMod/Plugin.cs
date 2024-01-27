@@ -33,10 +33,11 @@ namespace OPJosMod.GhostMode
 
             mls.LogInfo("mod has started");
 
-            harmony.PatchAll(typeof(OpJosMod));
-
             Patches.PlayerControllerBPatch.SetLogSource(mls);
+            Patches.StartOfRoundPatch.SetLogSource(mls);
+
             harmony.PatchAll(typeof(PlayerControllerBPatch));
+            harmony.PatchAll(typeof(StartOfRoundPatch));
         }
     }
 }

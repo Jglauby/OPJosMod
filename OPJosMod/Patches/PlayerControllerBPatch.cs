@@ -42,6 +42,41 @@ namespace OPJosMod.GhostMode.Patches
         private static float lastExceptionTime = 0f;
 
         private static Ray interactRay;
+        private static bool nightVisionFlag = false;
+
+        public static PlayerControllerB currentPlayer = null;
+
+        public static void resetGhostModeVars(PlayerControllerB __instance)
+        {
+            mls.LogMessage("hit reset ghost vars function");
+            allowKill = true;
+            isGhostMode = false;
+            __instance.StopAllCoroutines();
+            __instance.nightVision.gameObject.SetActive(false);
+            nightVisionFlag = false;
+            consecutiveDeathExceptions = 0;
+            lastSafeLocation = Vector3.zero;
+
+            FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+            {
+                playerSlidingTimerField.SetValue(__instance, 0f);
+                isJumpingField.SetValue(__instance, false);
+                isFallingFromJumpField.SetValue(__instance, false);
+                __instance.fallValue = 0f;
+                __instance.fallValueUncapped = 0f;
+                jumpCoroutine = null;
+            }
+            else
+            {
+                mls.LogError("private fields not found");
+            }
+
+            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.activeCamera);
+            HUDManager.Instance.HideHUD(hide: false);
+        }
 
         private static Vector3 getTeleportLocation(PlayerControllerB __instance)
         {
@@ -99,6 +134,9 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
         {
+            if (currentPlayer == null)
+                currentPlayer = __instance;
+
             if (!allowKill)
             {
                 __instance.sprintMeter = 1f;
@@ -136,7 +174,7 @@ namespace OPJosMod.GhostMode.Patches
                         }
                     }
                 }
-                else
+                else //is a ghost
                 {
                     if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame)//F was pressed
                     {
@@ -148,7 +186,46 @@ namespace OPJosMod.GhostMode.Patches
                     {
                         mls.LogMessage("attempt to tp to front door");
                         __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
-                    }
+                    }                   
+                }
+
+                //round over reset player vars, and kill ghost
+                if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
+                {
+                    resetGhostModeVars(__instance);
+
+                    //rekill player
+                    if (isGhostMode)
+                    {
+                        __instance.DropAllHeldItemsServerRpc();
+                        __instance.DisableJetpackControlsLocally();
+                        __instance.isPlayerDead = true;
+                        __instance.isPlayerControlled = false;
+                        __instance.thisPlayerModelArms.enabled = false;
+                        __instance.localVisor.position = __instance.playersManager.notSpawnedPosition.position;
+                        __instance.DisablePlayerModel(__instance.gameObject);
+                        __instance.isInsideFactory = false;
+                        __instance.IsInspectingItem = false;
+                        __instance.inTerminalMenu = false;
+                        __instance.twoHanded = false;
+                        __instance.carryWeight = 1f;
+                        __instance.fallValue = 0f;
+                        __instance.fallValueUncapped = 0f;
+                        __instance.takingFallDamage = false;
+                        __instance.isSinking = false;
+                        __instance.isUnderwater = false;
+                        StartOfRound.Instance.drowningTimer = 1f;
+                        HUDManager.Instance.setUnderwaterFilter = false;
+                        __instance.sourcesCausingSinking = 0;
+                        __instance.sinkingValue = 0f;
+                        __instance.hinderedMultiplier = 1f;
+                        __instance.isMovementHindered = 0;
+                        __instance.inAnimationWithEnemy = null;
+                        HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
+                        HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
+                        //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+                        StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+                    }                 
                 }
 
                 if (__instance.criticallyInjured == true)
@@ -156,68 +233,9 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.criticallyInjured = false;
                     __instance.bleedingHeavily = false;
                     HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
-                }
-
-                if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
-                {
-                    //rekill player
-                    __instance.DropAllHeldItemsServerRpc();
-                    __instance.DisableJetpackControlsLocally();
-                    __instance.isPlayerDead = true;
-                    __instance.isPlayerControlled = false;
-                    __instance.thisPlayerModelArms.enabled = false;
-                    __instance.localVisor.position = __instance.playersManager.notSpawnedPosition.position;
-                    __instance.DisablePlayerModel(__instance.gameObject);
-                    __instance.isInsideFactory = false;
-                    __instance.IsInspectingItem = false;
-                    __instance.inTerminalMenu = false;
-                    __instance.twoHanded = false;
-                    __instance.carryWeight = 1f;
-                    __instance.fallValue = 0f;
-                    __instance.fallValueUncapped = 0f;
-                    __instance.takingFallDamage = false;
-                    __instance.isSinking = false;
-                    __instance.isUnderwater = false;
-                    StartOfRound.Instance.drowningTimer = 1f;
-                    HUDManager.Instance.setUnderwaterFilter = false;
-                    __instance.sourcesCausingSinking = 0;
-                    __instance.sinkingValue = 0f;
-                    __instance.hinderedMultiplier = 1f;
-                    __instance.isMovementHindered = 0;
-                    __instance.inAnimationWithEnemy = null;
-                    HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
-                    HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
-                    HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
-                    StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
-
-                    //reset my variables
-                    allowKill = true;
-                    isGhostMode = false;
-                    __instance.StopAllCoroutines();
-                    __instance.nightVision.gameObject.SetActive(false);
-                    consecutiveDeathExceptions = 0;
-                    lastSafeLocation = Vector3.zero;
-
-                    FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
-                    FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-                    FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
-                    if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
-                    {
-                        playerSlidingTimerField.SetValue(__instance, 0f);
-                        isJumpingField.SetValue(__instance, false);
-                        isFallingFromJumpField.SetValue(__instance, false);
-                        __instance.fallValue = 0f;
-                        __instance.fallValueUncapped = 0f;
-                        jumpCoroutine = null;
-                    }
-                    else
-                    {
-                        mls.LogError("private fields not found");
-                    }
-                }
+                }                
 
                 //toggle night vision
-                bool nightVisionFlag = ((Component)___nightVision).gameObject.activeSelf;
                 if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame)
                 {
                     mls.LogMessage("clicked B, trying to toggle night vision");
