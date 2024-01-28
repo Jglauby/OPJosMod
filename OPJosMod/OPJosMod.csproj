@@ -92,6 +92,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches\EnemyAIPatch.cs" />
     <Compile Include="Patches\StartOfRoundPatch.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Plugin.cs" />

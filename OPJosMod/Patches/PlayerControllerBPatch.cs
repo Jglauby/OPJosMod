@@ -31,7 +31,7 @@ namespace OPJosMod.GhostMode.Patches
         }
 
         private static bool allowKill = true;
-        private static bool isGhostMode = false;
+        public static bool isGhostMode = false;
         private static Coroutine jumpCoroutine;
 
         private static Vector3 deathLocation;
