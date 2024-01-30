@@ -223,13 +223,13 @@ namespace OPJosMod.GhostMode.Patches
                 }
                 else //is a ghost
                 {
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame)//F was pressed
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame && !__instance.inTerminalMenu)//F was pressed
                     {
                         mls.LogMessage("attempt to tp to dead body");
                         __instance.transform.position = __instance.deadBody.transform.position;
                     }
 
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame && !__instance.inTerminalMenu)//R was pressed
                     {
                         mls.LogMessage("attempt to tp to front door");
                         __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
@@ -283,7 +283,7 @@ namespace OPJosMod.GhostMode.Patches
                 }                
 
                 //toggle night vision
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame)
+                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame && !__instance.inTerminalMenu)
                 {
                     mls.LogMessage("clicked B, trying to toggle night vision");
                     if (((Component)___nightVision).gameObject.activeSelf)
