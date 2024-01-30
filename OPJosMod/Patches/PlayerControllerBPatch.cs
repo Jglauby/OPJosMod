@@ -35,11 +35,14 @@ namespace OPJosMod.GhostMode.Patches
         private static Coroutine jumpCoroutine;
 
         private static Vector3 deathLocation;
-        private static Vector3 lastSafeLocation = Vector3.zero;
         private static int consecutiveDeathExceptions = 0;
         private static int maxConsecutiveDeathExceptions = 3;
         private static float exceptionCooldownTime = 2f; 
         private static float lastExceptionTime = 0f;
+
+        private static Vector3[] lastSafeLocations = new Vector3[10];
+        private static int safeLocationsIndex = 0;
+        private static float timeWhenSafe = Time.time;
 
         private static Ray interactRay;
         private static bool nightVisionFlag = false;
@@ -63,7 +66,8 @@ namespace OPJosMod.GhostMode.Patches
             ((Component)__instance.nightVision).gameObject.SetActive(true);
             nightVisionFlag = false;
             consecutiveDeathExceptions = 0;
-            lastSafeLocation = Vector3.zero;
+            lastSafeLocations = new Vector3[10];
+            timeWhenSafe = Time.time;
 
             FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
             FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -148,7 +152,6 @@ namespace OPJosMod.GhostMode.Patches
                 if (currentTime - lastExceptionTime > exceptionCooldownTime)//reset consecutive deaths when its been too long
                 {
                     consecutiveDeathExceptions = 0;
-                    lastSafeLocation = __instance.transform.position;
                 }
 
                 consecutiveDeathExceptions++;
@@ -158,6 +161,7 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     mls.LogMessage("Too many consecutive death exceptions. Stuck in death loop.");
 
+                    Vector3 lastSafeLocation = lastSafeLocations[(safeLocationsIndex - 9 + lastSafeLocations.Length) % lastSafeLocations.Length];
                     __instance.transform.position = lastSafeLocation;
                 }
 
@@ -172,6 +176,13 @@ namespace OPJosMod.GhostMode.Patches
         {
             if (currentPlayer == null)
                 currentPlayer = __instance;
+            
+            if ((Time.time - timeWhenSafe) >= 1.0f)
+            {
+                lastSafeLocations[safeLocationsIndex] = __instance.transform.position;
+                safeLocationsIndex = (safeLocationsIndex + 1) % lastSafeLocations.Length;
+                timeWhenSafe = Time.time;
+            }
 
             if (!allowKill)
             {
