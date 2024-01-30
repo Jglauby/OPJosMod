@@ -24,6 +24,12 @@ namespace OPJosMod.Patches
         [HarmonyPrefix]
         static void Update(JetpackItem __instance)
         {
+            //dont continue if its not being held
+            if (__instance.playerHeldBy == null || !__instance.IsOwner || __instance.playerHeldBy != GameNetworkManager.Instance.localPlayerController)
+            {
+                return;
+            }
+
             //whole goal is to recreate the update funciton but without the killing part
             if (__instance != null)
             {
