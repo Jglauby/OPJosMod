@@ -212,7 +212,7 @@ namespace OPJosMod.GhostMode.Patches
 
                 if (!isGhostMode)
                 {
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame)//F was pressed
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)30]).wasPressedThisFrame)//P was pressed
                     {
                         if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
                         {
@@ -223,7 +223,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
                 else //is a ghost
                 {
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)20]).wasPressedThisFrame && !__instance.inTerminalMenu)//F was pressed
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)30]).wasPressedThisFrame && !__instance.inTerminalMenu)//P was pressed
                     {
                         mls.LogMessage("attempt to tp to dead body");
                         __instance.transform.position = __instance.deadBody.transform.position;
