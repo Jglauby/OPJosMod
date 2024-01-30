@@ -46,13 +46,21 @@ namespace OPJosMod.GhostMode.Patches
 
         public static PlayerControllerB currentPlayer = null;
 
+        private static LightType OGnightVisionType;
+        private static float OGnightVisionIntensity;
+        private static float OGnightVisionRange;
+        private static float OGnightVisionShadowStrength;
+        private static float OGnightVisionBounceIntensity;
+        private static float OGnightVisionInnerSpotAngle;
+        private static float OGnightVisionSpotAngle;
+
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
             mls.LogMessage("hit reset ghost vars function");
             allowKill = true;
             isGhostMode = false;
             __instance.StopAllCoroutines();
-            __instance.nightVision.gameObject.SetActive(false);
+            ((Component)__instance.nightVision).gameObject.SetActive(true);
             nightVisionFlag = false;
             consecutiveDeathExceptions = 0;
             lastSafeLocation = Vector3.zero;
@@ -76,6 +84,34 @@ namespace OPJosMod.GhostMode.Patches
 
             StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.activeCamera);
             HUDManager.Instance.HideHUD(hide: false);
+
+            setNightVisionMode(__instance, 0);
+        }
+
+        //mode: 0 => regular, 1 => super bright
+        private static void setNightVisionMode(PlayerControllerB __instance, int mode)
+        {
+            if (mode == 0 && OGnightVisionIntensity != 0.0f)
+            {
+                mls.LogMessage("setting default night vision values");
+                __instance.nightVision.type = OGnightVisionType;
+                __instance.nightVision.intensity = OGnightVisionIntensity;
+                __instance.nightVision.range = OGnightVisionRange;
+                __instance.nightVision.shadowStrength = OGnightVisionShadowStrength;
+                __instance.nightVision.bounceIntensity = OGnightVisionBounceIntensity;
+                __instance.nightVision.innerSpotAngle = OGnightVisionInnerSpotAngle;
+                __instance.nightVision.spotAngle = OGnightVisionSpotAngle;
+            }
+            else if (mode == 1)
+            {
+                __instance.nightVision.type = (LightType)2;
+                __instance.nightVision.intensity = 44444f;
+                __instance.nightVision.range = 99999f;
+                __instance.nightVision.shadowStrength = 0f;
+                __instance.nightVision.bounceIntensity = 5555f;
+                __instance.nightVision.innerSpotAngle = 999f;
+                __instance.nightVision.spotAngle = 9999f;
+            }
         }
 
         private static Vector3 getTeleportLocation(PlayerControllerB __instance)
@@ -186,7 +222,7 @@ namespace OPJosMod.GhostMode.Patches
                     {
                         mls.LogMessage("attempt to tp to front door");
                         __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
-                    }                   
+                    }
                 }
 
                 //round over reset player vars, and kill ghost
@@ -241,10 +277,14 @@ namespace OPJosMod.GhostMode.Patches
                     mls.LogMessage("clicked B, trying to toggle night vision");
                     if (((Component)___nightVision).gameObject.activeSelf)
                     {
+                        setNightVisionMode(__instance, 0);
+                        __instance.isInsideFactory = false;
                         nightVisionFlag = false;
                     }
                     if (!((Component)___nightVision).gameObject.activeSelf)
                     {
+                        setNightVisionMode(__instance, 1);
+                        __instance.isInsideFactory = true;
                         nightVisionFlag = true;
                     }
                 }
@@ -505,15 +545,18 @@ namespace OPJosMod.GhostMode.Patches
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
                 //setup brightness variables
-                __instance.nightVision.type = (LightType)2;
-                __instance.nightVision.intensity = 44444f;
-                __instance.nightVision.range = 99999f;
-                __instance.nightVision.shadowStrength = 0f;
-                __instance.nightVision.bounceIntensity = 5555f;
-                __instance.nightVision.innerSpotAngle = 999f;
-                __instance.nightVision.spotAngle = 9999f;
+                if (OGnightVisionIntensity == 0.0f)
+                {
+                    mls.LogMessage("setting default night vision values");
+                    OGnightVisionType = __instance.nightVision.type;
+                    OGnightVisionIntensity = __instance.nightVision.intensity;
+                    OGnightVisionRange = __instance.nightVision.range;
+                    OGnightVisionShadowStrength = __instance.nightVision.shadowStrength;
+                    OGnightVisionBounceIntensity = __instance.nightVision.bounceIntensity;
+                    OGnightVisionInnerSpotAngle = __instance.nightVision.innerSpotAngle;
+                    OGnightVisionSpotAngle = __instance.nightVision.spotAngle;
+                }
 
-                
                 isGhostMode = true;
             }
             catch (Exception e)
