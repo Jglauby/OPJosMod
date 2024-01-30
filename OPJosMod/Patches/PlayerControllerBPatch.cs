@@ -228,8 +228,6 @@ namespace OPJosMod.GhostMode.Patches
                 //round over reset player vars, and kill ghost
                 if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
                 {
-                    resetGhostModeVars(__instance);
-
                     //rekill player
                     if (isGhostMode)
                     {
@@ -261,7 +259,9 @@ namespace OPJosMod.GhostMode.Patches
                         HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
                         //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
                         StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
-                    }                 
+                    }
+
+                    resetGhostModeVars(__instance);
                 }
 
                 if (__instance.criticallyInjured == true)
