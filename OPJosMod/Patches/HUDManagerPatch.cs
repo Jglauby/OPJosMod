@@ -40,41 +40,43 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         static void updatePatch(HUDManager __instance)
         {
-            if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null ||
-                GameNetworkManager.Instance.localPlayerController == null)
+            if (PlayerControllerBPatch.isGhostMode)
             {
-                return;
-            }
+                if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null ||
+               GameNetworkManager.Instance.localPlayerController == null)
+                {
+                    return;
+                }
 
-            mls.LogMessage($"livingPlayersCount = {livingPlayersCount} playersManger.LivingPlayers = {RoundManager.Instance.playersManager.livingPlayers}");
-            if (livingPlayersCount != RoundManager.Instance.playersManager.livingPlayers)
-            {
-                mls.LogMessage("Adding boxes");
+                if (livingPlayersCount != RoundManager.Instance.playersManager.livingPlayers)
+                {
+                    mls.LogMessage("Adding boxes");
 
-                __instance.gameOverAnimator.SetTrigger("gameOver");
-                __instance.spectatingPlayerText.text = "";
-                __instance.holdButtonToEndGameEarlyText.text = "";
-                __instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
-                __instance.holdButtonToEndGameEarlyVotesText.text = "";
+                    __instance.gameOverAnimator.SetTrigger("gameOver");
+                    __instance.spectatingPlayerText.text = "";
+                    __instance.holdButtonToEndGameEarlyText.text = "";
+                    __instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
+                    __instance.holdButtonToEndGameEarlyVotesText.text = "";
 
-                updateBoxesSpectateUI(__instance);
-            }
+                    updateBoxesSpectateUI(__instance);
+                }
 
-            FieldInfo updateSpectateBoxesIntervalField = typeof(HUDManager).GetField("updateSpectateBoxesInterval", BindingFlags.NonPublic | BindingFlags.Instance);
-            float updateSpectateBoxesIntervalValue = (float)updateSpectateBoxesIntervalField.GetValue(__instance);
-            MethodInfo updateSpectateBoxSpeakerIconsMethod = typeof(HUDManager).GetMethod("UpdateSpectateBoxSpeakerIcons", BindingFlags.NonPublic | BindingFlags.Instance);       
-            if (updateSpectateBoxesIntervalValue >= 0.35f)
-            {
-                updateSpectateBoxesIntervalField.SetValue(__instance, 0f);
-                updateSpectateBoxSpeakerIconsMethod.Invoke(__instance, null);
-            }
-            else
-            {
-                updateSpectateBoxesIntervalValue += Time.deltaTime;
-                updateSpectateBoxesIntervalField.SetValue(__instance, updateSpectateBoxesIntervalValue);
-            }
+                FieldInfo updateSpectateBoxesIntervalField = typeof(HUDManager).GetField("updateSpectateBoxesInterval", BindingFlags.NonPublic | BindingFlags.Instance);
+                float updateSpectateBoxesIntervalValue = (float)updateSpectateBoxesIntervalField.GetValue(__instance);
+                MethodInfo updateSpectateBoxSpeakerIconsMethod = typeof(HUDManager).GetMethod("UpdateSpectateBoxSpeakerIcons", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (updateSpectateBoxesIntervalValue >= 0.35f)
+                {
+                    updateSpectateBoxesIntervalField.SetValue(__instance, 0f);
+                    updateSpectateBoxSpeakerIconsMethod.Invoke(__instance, null);
+                }
+                else
+                {
+                    updateSpectateBoxesIntervalValue += Time.deltaTime;
+                    updateSpectateBoxesIntervalField.SetValue(__instance, updateSpectateBoxesIntervalValue);
+                }
 
-            livingPlayersCount = RoundManager.Instance.playersManager.livingPlayers;
+                livingPlayersCount = RoundManager.Instance.playersManager.livingPlayers;
+            }          
         }
 
         private static void updateBoxesSpectateUI(HUDManager __instance)
