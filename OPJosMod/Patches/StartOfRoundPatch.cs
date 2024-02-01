@@ -81,9 +81,18 @@ namespace OPJosMod.GhostMode.Patches
                 // Adjust audio properties for all players
                 mls.LogMessage($"adjusting volume for player{i}");
                 AudioSource currentVoiceChatAudioSource = StartOfRound.Instance.allPlayerScripts[i].currentVoiceChatAudioSource;
-                currentVoiceChatAudioSource.spatialBlend = 0f;
-                playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
-                currentVoiceChatAudioSource.volume = 1f;
+                if (StartOfRound.Instance.allPlayerScripts[i].isPlayerDead)
+                {
+                    currentVoiceChatAudioSource.spatialBlend = 0f;
+                    playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
+                    currentVoiceChatAudioSource.volume = 1f;
+                }
+                else
+                {
+                    currentVoiceChatAudioSource.spatialBlend = 1f;
+                    playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
+                    currentVoiceChatAudioSource.volume = 1f;
+                }
 
                 throw new Exception("dont call the regular UpdatePlayerVoiceEffects function");
             }
