@@ -36,7 +36,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             mls.LogMessage("revive dead players patch hit in start of round class");
 
-            PlayerControllerBPatch.resetGhostModeVars(PlayerControllerBPatch.currentPlayer);
+            PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
         }
 
         [HarmonyPatch("OnPlayerConnectedClientRpc")]
@@ -45,7 +45,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             mls.LogMessage("player connected patch hit in start of round class");
 
-            PlayerControllerBPatch.resetGhostModeVars(PlayerControllerBPatch.currentPlayer);
+            PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
         }
     }
 }

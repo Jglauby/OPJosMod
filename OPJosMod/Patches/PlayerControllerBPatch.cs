@@ -47,8 +47,6 @@ namespace OPJosMod.GhostMode.Patches
         private static Ray interactRay;
         private static bool nightVisionFlag = false;
 
-        public static PlayerControllerB currentPlayer = null;
-
         private static LightType OGnightVisionType;
         private static float OGnightVisionIntensity;
         private static float OGnightVisionRange;
@@ -173,10 +171,7 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
-        {
-            if (currentPlayer == null)
-                currentPlayer = __instance;
-            
+        {            
             if ((Time.time - timeWhenSafe) >= 1.0f)
             {
                 lastSafeLocations[safeLocationsIndex] = __instance.transform.position;
