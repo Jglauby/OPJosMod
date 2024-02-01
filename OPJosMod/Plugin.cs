@@ -36,10 +36,12 @@ namespace OPJosMod.GhostMode
             Patches.PlayerControllerBPatch.SetLogSource(mls);
             Patches.StartOfRoundPatch.SetLogSource(mls);
             Patches.EnemyAIPatch.SetLogSource(mls);
+            Patches.HUDManagerPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
             harmony.PatchAll(typeof(EnemyAIPatch));
+            harmony.PatchAll(typeof(HUDManagerPatch));
         }
     }
 }
