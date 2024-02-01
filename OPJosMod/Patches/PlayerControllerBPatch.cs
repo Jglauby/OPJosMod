@@ -378,7 +378,7 @@ namespace OPJosMod.GhostMode.Patches
                         playerSlidingTimerField.SetValue(__instance, 0f);
                         isJumpingField.SetValue(__instance, true);
                         __instance.sprintMeter = Mathf.Clamp(__instance.sprintMeter - 0.08f, 0f, 1f);
-                        __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerJumpSFX);
+                        //__instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerJumpSFX);
                         if (jumpCoroutine != null)
                         {
                             __instance.StopCoroutine(jumpCoroutine);
