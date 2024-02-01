@@ -137,7 +137,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             float currentTime = Time.time;
 
-            if (allowKill)
+            if (allowKill && __instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 allowKill = false;
                 deathLocation = __instance.transform.position;
