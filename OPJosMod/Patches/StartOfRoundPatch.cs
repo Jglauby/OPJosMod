@@ -51,20 +51,19 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("UpdatePlayerVoiceEffects")]
         [HarmonyPrefix]
-        static void updatePlayerVoiceEffectsPatch(PlayerControllerB __instance)
+        public static void updatePlayerVoiceEffectsPatch(StartOfRound __instance)
         {
             if (PlayerControllerBPatch.isGhostMode)
             {
                 mls.LogMessage("UpdatePlayerVoiceEffects post hit");
 
-                for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
+                for (int i = 0; i < __instance.allPlayerScripts.Length; i++)
                 {
-                    PlayerControllerB playerControllerB2 = StartOfRound.Instance.allPlayerScripts[i];
+                    PlayerControllerB playerControllerB2 = __instance.allPlayerScripts[i];
 
-                    // Check if the player is the local player or controlled by the local player
+                    // Skip the local player
                     if (playerControllerB2 == GameNetworkManager.Instance.localPlayerController)
                     {
-                        // Skip the local player
                         continue;
                     }
 
@@ -72,7 +71,7 @@ namespace OPJosMod.GhostMode.Patches
                     if (playerControllerB2.voicePlayerState == null || playerControllerB2.currentVoiceChatIngameSettings._playerState == null || playerControllerB2.currentVoiceChatAudioSource == null)
                     {
                         // Attempt to refresh voice chat objects
-                        StartOfRound.Instance.RefreshPlayerVoicePlaybackObjects();
+                        __instance.RefreshPlayerVoicePlaybackObjects();
                         if (playerControllerB2.voicePlayerState == null || playerControllerB2.currentVoiceChatAudioSource == null)
                         {
                             mls.LogMessage($"Was not able to access voice chat object for player #{i}; {playerControllerB2.voicePlayerState == null}; {playerControllerB2.currentVoiceChatAudioSource == null}");
@@ -83,15 +82,17 @@ namespace OPJosMod.GhostMode.Patches
                     // Adjust audio properties for all players
                     mls.LogMessage($"adjusting volume for player{i}");
                     AudioSource currentVoiceChatAudioSource = StartOfRound.Instance.allPlayerScripts[i].currentVoiceChatAudioSource;
-                    if (StartOfRound.Instance.allPlayerScripts[i].isPlayerDead)
+                    if (__instance.allPlayerScripts[i].isPlayerDead)
                     {
-                        currentVoiceChatAudioSource.spatialBlend = 0f;
+                        mls.LogMessage($"Player {i} is dead. Adjusting audio settings accordingly.");
+                        //currentVoiceChatAudioSource.spatialBlend = 0f;
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
                         currentVoiceChatAudioSource.volume = 1f;
                     }
                     else
                     {
-                        currentVoiceChatAudioSource.spatialBlend = 1f;
+                        mls.LogMessage($"Player {i} is alive. Adjusting audio settings accordingly.");
+                        //currentVoiceChatAudioSource.spatialBlend = 1f;
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
                         currentVoiceChatAudioSource.volume = 1f;
                     }

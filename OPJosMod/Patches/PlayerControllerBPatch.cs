@@ -86,6 +86,7 @@ namespace OPJosMod.GhostMode.Patches
 
             StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.activeCamera);
             HUDManager.Instance.HideHUD(hide: false);
+            HUDManager.Instance.spectatingPlayerText.text = "";
 
             setNightVisionMode(__instance, 0);
         }
