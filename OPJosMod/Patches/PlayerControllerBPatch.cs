@@ -137,35 +137,38 @@ namespace OPJosMod.GhostMode.Patches
         {
             float currentTime = Time.time;
 
-            if (allowKill && __instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
-                allowKill = false;
-                deathLocation = __instance.transform.position;
-                consecutiveDeathExceptions = 0;
-
-                mls.LogMessage("called kill player");
-            }
-            else
-            {
-                if (currentTime - lastExceptionTime > exceptionCooldownTime)//reset consecutive deaths when its been too long
+                if (allowKill)
                 {
+                    allowKill = false;
+                    deathLocation = __instance.transform.position;
                     consecutiveDeathExceptions = 0;
+
+                    mls.LogMessage("called kill player");
                 }
-
-                consecutiveDeathExceptions++;
-                lastExceptionTime = currentTime;
-
-                if (consecutiveDeathExceptions >= maxConsecutiveDeathExceptions)
+                else
                 {
-                    mls.LogMessage("Too many consecutive death exceptions. Stuck in death loop.");
+                    if (currentTime - lastExceptionTime > exceptionCooldownTime)//reset consecutive deaths when its been too long
+                    {
+                        consecutiveDeathExceptions = 0;
+                    }
 
-                    Vector3 lastSafeLocation = lastSafeLocations[(safeLocationsIndex - 9 + lastSafeLocations.Length) % lastSafeLocations.Length];
-                    __instance.transform.position = lastSafeLocation;
+                    consecutiveDeathExceptions++;
+                    lastExceptionTime = currentTime;
+
+                    if (consecutiveDeathExceptions >= maxConsecutiveDeathExceptions)
+                    {
+                        mls.LogMessage("Too many consecutive death exceptions. Stuck in death loop.");
+
+                        Vector3 lastSafeLocation = lastSafeLocations[(safeLocationsIndex - 9 + lastSafeLocations.Length) % lastSafeLocations.Length];
+                        __instance.transform.position = lastSafeLocation;
+                    }
+
+                    mls.LogMessage("Didn't allow kill, player should be dead on server already");
+                    throw new Exception("Don't kill player again");
                 }
-
-                mls.LogMessage("Didn't allow kill, player should be dead on server already");
-                throw new Exception("Don't kill player again");
-            }
+            }            
         }
 
         [HarmonyPatch("Update")]
