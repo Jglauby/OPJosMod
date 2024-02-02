@@ -36,7 +36,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             mls.LogMessage("enemy collide with player patch hit");
 
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 throw new Exception("player is a ghost don't try to kill again");
             }

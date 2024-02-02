@@ -84,9 +84,10 @@ namespace OPJosMod.GhostMode.Patches
                 mls.LogError("private fields not found");
             }
 
-            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.activeCamera);
+            StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
             HUDManager.Instance.HideHUD(hide: false);
             HUDManager.Instance.spectatingPlayerText.text = "";
+            HUDManager.Instance.RemoveSpectateUI();
 
             setNightVisionMode(__instance, 0);
         }
@@ -481,7 +482,8 @@ namespace OPJosMod.GhostMode.Patches
                     allPlayerScripts[playerIndex].isInsideFactory = false;
                     allPlayerScripts[playerIndex].wasInElevatorLastFrame = false;
                     StartOfRound.Instance.SetPlayerObjectExtrapolate(enable: false);
-                    allPlayerScripts[playerIndex].TeleportPlayer(respawnLocation);
+                    //allPlayerScripts[playerIndex].TeleportPlayer(respawnLocation);
+                    allPlayerScripts[playerIndex].transform.position = respawnLocation;
                     allPlayerScripts[playerIndex].setPositionOfDeadPlayer = false;
                     allPlayerScripts[playerIndex].DisablePlayerModel(StartOfRound.Instance.allPlayerObjects[playerIndex], enable: true, disableLocalArms: true);
                     allPlayerScripts[playerIndex].helmetLight.enabled = false;
