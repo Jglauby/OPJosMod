@@ -463,6 +463,8 @@ namespace OPJosMod.GhostMode.Patches
 
                 mls.LogMessage($"Reviving player {playerIndex}");
 
+                allPlayerScripts[playerIndex].velocityLastFrame = new Vector3 (0, 0, 0);
+
                 allPlayerScripts[playerIndex].isSprinting = false;
                 allPlayerScripts[playerIndex].ResetPlayerBloodObjects(allPlayerScripts[playerIndex].isPlayerDead);
 
