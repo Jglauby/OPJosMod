@@ -573,6 +573,10 @@ namespace OPJosMod.GhostMode.Patches
                 }
 
                 isGhostMode = true;
+                HUDManager.Instance.spectatingPlayerText.text = "";
+                HUDManager.Instance.holdButtonToEndGameEarlyText.text = "";
+                HUDManager.Instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
+                HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
             }
             catch (Exception e)
             {
@@ -617,6 +621,8 @@ namespace OPJosMod.GhostMode.Patches
             rekillPlayerLocally(__instance);
 
             isGhostMode = false;
+            HUDManager.Instance.HideHUD(true);
+            HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
         }
     }
 }
