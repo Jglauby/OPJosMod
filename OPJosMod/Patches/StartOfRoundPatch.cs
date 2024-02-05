@@ -107,7 +107,7 @@ namespace OPJosMod.GhostMode.Patches
         public static void shipLeaveAutomaticallyPatch(StartOfRound __instance)
         {
             mls.LogMessage("rekill player locally called from start of round, because ship is taking off");
-            PlayerControllerBPatch.rekillPlayerLocally(__instance.localPlayerController);
+            PlayerControllerBPatch.rekillPlayerLocally(__instance.localPlayerController, true);
         }
     }
 }

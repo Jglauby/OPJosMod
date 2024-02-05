@@ -267,10 +267,12 @@ namespace OPJosMod.GhostMode.Patches
                 //round over reset player vars, and kill ghost
                 if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
                 {
+                    HUDManager.Instance.DisplayTip("Ship is leaving", "just wait");
+
                     //rekill player
                     if (isGhostMode)
                     {
-                        rekillPlayerLocally(__instance);
+                        rekillPlayerLocally(__instance, true);
                     }
 
                     resetGhostModeVars(__instance);
@@ -584,7 +586,7 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
-        public static void rekillPlayerLocally(PlayerControllerB __instance)
+        public static void rekillPlayerLocally(PlayerControllerB __instance, bool gameOver)
         {
             __instance.DropAllHeldItemsServerRpc();
             __instance.DisableJetpackControlsLocally();
@@ -613,12 +615,16 @@ namespace OPJosMod.GhostMode.Patches
             HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
             HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
             //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+            
             StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+
+            if (gameOver)
+                HUDManager.Instance.DisplayTip("Ship is leaving", "just wait");
         }
 
         private static void setToSpectatemode(PlayerControllerB __instance)
         {
-            rekillPlayerLocally(__instance);
+            rekillPlayerLocally(__instance, false);
 
             isGhostMode = false;
             HUDManager.Instance.HideHUD(true);
