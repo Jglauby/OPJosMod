@@ -37,7 +37,7 @@ namespace OPJosMod.GhostMode.Patches
         private static Vector3 deathLocation;
         private static int consecutiveDeathExceptions = 0;
         private static int maxConsecutiveDeathExceptions = 3;
-        private static float exceptionCooldownTime = 2f; 
+        private static float exceptionCooldownTime = 2f;
         private static float lastExceptionTime = 0f;
 
         private static Vector3[] lastSafeLocations = new Vector3[10];
@@ -133,6 +133,28 @@ namespace OPJosMod.GhostMode.Patches
             return result;
         }
 
+        private static void ChangeAudioListenerToObject(PlayerControllerB __instance, GameObject addToObject)
+        {
+            __instance.activeAudioListener.transform.SetParent(addToObject.transform);
+            __instance.activeAudioListener.transform.localEulerAngles = Vector3.zero;
+            __instance.activeAudioListener.transform.localPosition = Vector3.zero;
+            StartOfRound.Instance.audioListener = __instance.activeAudioListener;
+        }
+
+        private static void StopHoldInteractionOnTrigger(PlayerControllerB __instance)
+        {
+            HUDManager.Instance.holdFillAmount = 0f;
+            if (__instance.previousHoveringOverTrigger != null)
+            {
+                __instance.previousHoveringOverTrigger.StopInteraction();
+            }
+
+            if (__instance.hoveringOverTrigger != null)
+            {
+                __instance.hoveringOverTrigger.StopInteraction();
+            }
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         static void patchKillPlayer(PlayerControllerB __instance)
@@ -170,13 +192,13 @@ namespace OPJosMod.GhostMode.Patches
                     mls.LogMessage("Didn't allow kill, player should be dead on server already");
                     throw new Exception("Don't kill player again");
                 }
-            }            
+            }
         }
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
-        {            
+        {
             if ((Time.time - timeWhenSafe) >= 1.0f)
             {
                 lastSafeLocations[safeLocationsIndex] = __instance.transform.position;
@@ -217,13 +239,13 @@ namespace OPJosMod.GhostMode.Patches
                         if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
                         {
                             mls.LogMessage("attempting to revive");
-                            ReviveDeadPlayer(__instance);
+                            reviveDeadPlayer(__instance);
                         }
                     }
                 }
                 else //is a ghost
                 {
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)30]).wasPressedThisFrame && !__instance.inTerminalMenu)//P was pressed
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame && !__instance.inTerminalMenu)//C was pressed
                     {
                         mls.LogMessage("attempt to tp to dead body");
                         __instance.transform.position = __instance.deadBody.transform.position;
@@ -234,6 +256,12 @@ namespace OPJosMod.GhostMode.Patches
                         mls.LogMessage("attempt to tp to front door");
                         __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
                     }
+
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
+                    {
+                        mls.LogMessage("attempt to switch back to spectate mode");
+                        setToSpectatemode(__instance);
+                    }
                 }
 
                 //round over reset player vars, and kill ghost
@@ -242,34 +270,7 @@ namespace OPJosMod.GhostMode.Patches
                     //rekill player
                     if (isGhostMode)
                     {
-                        __instance.DropAllHeldItemsServerRpc();
-                        __instance.DisableJetpackControlsLocally();
-                        __instance.isPlayerDead = true;
-                        __instance.isPlayerControlled = false;
-                        __instance.thisPlayerModelArms.enabled = false;
-                        __instance.localVisor.position = __instance.playersManager.notSpawnedPosition.position;
-                        __instance.DisablePlayerModel(__instance.gameObject);
-                        __instance.isInsideFactory = false;
-                        __instance.IsInspectingItem = false;
-                        __instance.inTerminalMenu = false;
-                        __instance.twoHanded = false;
-                        __instance.carryWeight = 1f;
-                        __instance.fallValue = 0f;
-                        __instance.fallValueUncapped = 0f;
-                        __instance.takingFallDamage = false;
-                        __instance.isSinking = false;
-                        __instance.isUnderwater = false;
-                        StartOfRound.Instance.drowningTimer = 1f;
-                        HUDManager.Instance.setUnderwaterFilter = false;
-                        __instance.sourcesCausingSinking = 0;
-                        __instance.sinkingValue = 0f;
-                        __instance.hinderedMultiplier = 1f;
-                        __instance.isMovementHindered = 0;
-                        __instance.inAnimationWithEnemy = null;
-                        HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
-                        HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
-                        //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
-                        StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+                        rekillPlayerLocally(__instance);
                     }
 
                     resetGhostModeVars(__instance);
@@ -280,7 +281,7 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.criticallyInjured = false;
                     __instance.bleedingHeavily = false;
                     HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
-                }                
+                }
 
                 //toggle night vision
                 if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame && !__instance.inTerminalMenu)
@@ -396,7 +397,7 @@ namespace OPJosMod.GhostMode.Patches
             else
             {
                 mls.LogError("private field not found");
-            }          
+            }
         }
 
         private static IEnumerator PlayerJump(PlayerControllerB __instance, FieldInfo isJumpingField, FieldInfo isFallingFromJumpField)
@@ -450,7 +451,7 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
-        private static void ReviveDeadPlayer(PlayerControllerB __instance)
+        private static void reviveDeadPlayer(PlayerControllerB __instance)
         {
             mls.LogMessage("add player back server");
 
@@ -463,7 +464,7 @@ namespace OPJosMod.GhostMode.Patches
 
                 mls.LogMessage($"Reviving player {playerIndex}");
 
-                allPlayerScripts[playerIndex].velocityLastFrame = new Vector3 (0, 0, 0);
+                allPlayerScripts[playerIndex].velocityLastFrame = new Vector3(0, 0, 0);
 
                 allPlayerScripts[playerIndex].isSprinting = false;
                 allPlayerScripts[playerIndex].ResetPlayerBloodObjects(allPlayerScripts[playerIndex].isPlayerDead);
@@ -555,7 +556,7 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
                 playerControllerB.spectatedPlayerScript = null;
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
-                StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);               
+                StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);
                 StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
                 //setup brightness variables
@@ -576,7 +577,46 @@ namespace OPJosMod.GhostMode.Patches
             catch (Exception e)
             {
                 mls.LogError(e);
-            }          
+            }
+        }
+
+        public static void rekillPlayerLocally(PlayerControllerB __instance)
+        {
+            __instance.DropAllHeldItemsServerRpc();
+            __instance.DisableJetpackControlsLocally();
+            __instance.isPlayerDead = true;
+            __instance.isPlayerControlled = false;
+            __instance.thisPlayerModelArms.enabled = false;
+            __instance.localVisor.position = __instance.playersManager.notSpawnedPosition.position;
+            __instance.DisablePlayerModel(__instance.gameObject);
+            __instance.isInsideFactory = false;
+            __instance.IsInspectingItem = false;
+            __instance.inTerminalMenu = false;
+            __instance.twoHanded = false;
+            __instance.carryWeight = 1f;
+            __instance.fallValue = 0f;
+            __instance.fallValueUncapped = 0f;
+            __instance.takingFallDamage = false;
+            __instance.isSinking = false;
+            __instance.isUnderwater = false;
+            StartOfRound.Instance.drowningTimer = 1f;
+            HUDManager.Instance.setUnderwaterFilter = false;
+            __instance.sourcesCausingSinking = 0;
+            __instance.sinkingValue = 0f;
+            __instance.hinderedMultiplier = 1f;
+            __instance.isMovementHindered = 0;
+            __instance.inAnimationWithEnemy = null;
+            HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
+            HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
+            //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+        }
+
+        private static void setToSpectatemode(PlayerControllerB __instance)
+        {
+            rekillPlayerLocally(__instance);
+
+            isGhostMode = false;
         }
     }
 }
