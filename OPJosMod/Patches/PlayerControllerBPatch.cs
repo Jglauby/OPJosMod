@@ -84,6 +84,7 @@ namespace OPJosMod.GhostMode.Patches
                     }
 
                     setNightVisionMode(__instance, 0);
+                    __instance.hasBegunSpectating = false;
                 }
                 
                 mls.LogMessage("hit reset ghost vars function");
@@ -643,6 +644,7 @@ namespace OPJosMod.GhostMode.Patches
 
             rekillPlayerLocally(__instance, false);
 
+            __instance.hasBegunSpectating = true;
             HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
             isGhostMode = false;
