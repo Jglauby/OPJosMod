@@ -40,23 +40,16 @@ namespace OPJosMod.GhostMode.Patches
             PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
         }
 
-        //[HarmonyPatch("OnPlayerConnectedClientRpc")]
-        //[HarmonyPostfix]
-        //static void onPlayerConnectedClientRpcPatch(StartOfRound __instance)
-        //{
-        //    mls.LogMessage("player connected patch hit in start of round class");
-        //
-        //    PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
-        //}
-
-        //[HarmonyPatch("OnPlayerDC")]
-        //[HarmonyPrefix]
-        //static void onPlayerDCPatch(StartOfRound __instance)
-        //{
-        //    mls.LogMessage("OnPlayerDC patch hit in start of round class");
-        //
-        //    PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
-        //}
+        [HarmonyPatch("OnPlayerConnectedClientRpc")]
+        [HarmonyPrefix]
+        static void onPlayerConnectedClientRpcPatch(StartOfRound __instance, ref ulong clientId)
+        {
+            mls.LogMessage($"player connected patch hit in start of round class, clientId: {clientId}");
+        
+            //means you connected
+            if (__instance.localPlayerController == null)
+                PlayerControllerBPatch.resetGhostModeVars(null);
+        }
 
         [HarmonyPatch("UpdatePlayerVoiceEffects")]
         [HarmonyPrefix]

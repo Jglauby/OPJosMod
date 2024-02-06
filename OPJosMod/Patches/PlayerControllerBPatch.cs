@@ -60,17 +60,9 @@ namespace OPJosMod.GhostMode.Patches
         {
             try
             {
-                if (__instance != null)
+                if (__instance != null) 
                 {
-                    mls.LogMessage("hit reset ghost vars function");
-                    allowKill = true;
-                    isGhostMode = false;
                     __instance.StopAllCoroutines();
-                    nightVisionFlag = false;
-                    consecutiveDeathExceptions = 0;
-                    lastSafeLocations = new Vector3[10];
-                    timeWhenSafe = Time.time;
-
                     if (__instance.nightVision != null)
                         ((Component)__instance.nightVision).gameObject.SetActive(true);
 
@@ -84,20 +76,30 @@ namespace OPJosMod.GhostMode.Patches
                         isFallingFromJumpField.SetValue(__instance, false);
                         __instance.fallValue = 0f;
                         __instance.fallValueUncapped = 0f;
-                        jumpCoroutine = null;
+
                     }
                     else
                     {
                         mls.LogError("private fields not found");
                     }
 
-                    StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
-                    HUDManager.Instance.HideHUD(hide: false);
-                    HUDManager.Instance.spectatingPlayerText.text = "";
-                    HUDManager.Instance.RemoveSpectateUI();
-
                     setNightVisionMode(__instance, 0);
-                }              
+                }
+                
+                mls.LogMessage("hit reset ghost vars function");
+                allowKill = true;
+                isGhostMode = false;                
+                nightVisionFlag = false;
+                consecutiveDeathExceptions = 0;
+                lastSafeLocations = new Vector3[10];
+                timeWhenSafe = Time.time;
+
+                jumpCoroutine = null;
+
+                StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
+                HUDManager.Instance.HideHUD(hide: false);
+                HUDManager.Instance.spectatingPlayerText.text = "";
+                HUDManager.Instance.RemoveSpectateUI();            
             }
             catch (Exception e)
             {
@@ -221,7 +223,7 @@ namespace OPJosMod.GhostMode.Patches
                 timeWhenSafe = Time.time;
             }
 
-            mls.LogMessage($"update running, allowKill: {allowKill}, isGhostMode: {isGhostMode}");
+            //mls.LogMessage($"update running, allowKill: {allowKill}, isGhostMode: {isGhostMode}");
             if (!allowKill)
             {
                 __instance.sprintMeter = 1f;
