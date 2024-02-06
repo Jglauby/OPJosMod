@@ -221,7 +221,7 @@ namespace OPJosMod.GhostMode.Patches
                 timeWhenSafe = Time.time;
             }
 
-            //mls.LogMessage($"update running, allowKill: {allowKill}, isGhostMode: {isGhostMode}");
+            mls.LogMessage($"update running, allowKill: {allowKill}, isGhostMode: {isGhostMode}");
             if (!allowKill)
             {
                 __instance.sprintMeter = 1f;
@@ -473,7 +473,7 @@ namespace OPJosMod.GhostMode.Patches
             try
             {
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
-                var playerIndex = (int)__instance.playerClientId;
+                var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;
 
                 var respawnLocation = getTeleportLocation(allPlayerScripts[playerIndex]);
 
@@ -550,7 +550,7 @@ namespace OPJosMod.GhostMode.Patches
                 SoundManager.Instance.earsRingingTimer = 0f;
                 allPlayerScripts[playerIndex].voiceMuffledByEnemy = false;
                 SoundManager.Instance.playerVoicePitchTargets[playerIndex] = 1f;
-                SoundManager.Instance.SetPlayerPitch(1f, playerIndex);
+                SoundManager.Instance.SetPlayerPitch(1f, (int)playerIndex);
 
                 if (allPlayerScripts[playerIndex].currentVoiceChatIngameSettings == null)
                 {
