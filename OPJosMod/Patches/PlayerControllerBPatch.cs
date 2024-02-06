@@ -642,17 +642,70 @@ namespace OPJosMod.GhostMode.Patches
             rekillPlayerLocally(__instance, false);
             isGhostMode = false;
 
+            activateItem_performedPatch(__instance);
+            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+
             HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
         }
 
-        //[HarmonyPatch("ActivateItem_performed")]
-        //[HarmonyPrefix]
-        //private static bool activateItem_performedPatch(PlayerControllerB __instance)
-        //{
-        //    mls.LogMessage($"");
-        //
-        //    
-        //}
+        [HarmonyPatch("ActivateItem_performed")]
+        [HarmonyPrefix]
+        private static bool activateItem_performedPatch(PlayerControllerB __instance)
+        {
+            mls.LogMessage($"ActivateItem_performed patch hit");
+
+            if (__instance.isPlayerDead 
+                && !StartOfRound.Instance.shipIsLeaving && (!((NetworkBehaviour)__instance).IsServer || __instance.isHostPlayerObject))
+            {
+                mls.LogMessage("we should call to spectate next person");
+
+                ReflectionUtils.InvokeMethod(__instance, "SpectateNextPlayer", null);
+                StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPatch(typeof(PlayerControllerB), "SpectateNextPlayer")]
+        [HarmonyPrefix]
+        public static bool spectateNextPlayerPatch(PlayerControllerB __instance)
+        {
+            int num = 0;
+            if ((object)__instance.spectatedPlayerScript != null)
+            {
+                num = (int)__instance.spectatedPlayerScript.playerClientId;
+            }
+
+            for (int i = 0; i < __instance.playersManager.allPlayerScripts.Length; i++)
+            {
+                num = (num + 1) % __instance.playersManager.allPlayerScripts.Length;
+
+                if (!__instance.playersManager.allPlayerScripts[num].isPlayerDead &&
+                    __instance.playersManager.allPlayerScripts[num].isPlayerControlled &&
+                    (object)__instance.playersManager.allPlayerScripts[num] != (object)__instance)
+                {
+                    mls.LogMessage($"Found live player to spectate at index: {num}");
+
+                    __instance.spectatedPlayerScript = __instance.playersManager.allPlayerScripts[num];
+                    __instance.SetSpectatedPlayerEffects(false);
+                    return false;
+                }
+            }
+
+            if ((object)__instance.deadBody != null && ((Component)__instance.deadBody).gameObject.activeSelf)
+            {
+                mls.LogMessage("No live player to spectate, spectating dead body.");
+
+                __instance.spectateCameraPivot.position = __instance.deadBody.bodyParts[0].position;
+                ReflectionUtils.InvokeMethod(__instance, "RaycastSpectateCameraAroundPivot", null);
+            }
+
+            StartOfRound.Instance.SetPlayerSafeInShip();
+
+            mls.LogMessage("SpectateNextPlayer Patch: End");
+            return false;
+        }
     }
 }
