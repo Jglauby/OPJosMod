@@ -214,8 +214,6 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
         {
-            __instance = StartOfRound.Instance.localPlayerController;
-
             if ((Time.time - timeWhenSafe) >= 1.0f)
             {
                 lastSafeLocations[safeLocationsIndex] = __instance.transform.position;
@@ -223,6 +221,7 @@ namespace OPJosMod.GhostMode.Patches
                 timeWhenSafe = Time.time;
             }
 
+            //mls.LogMessage($"update running, allowKill: {allowKill}, isGhostMode: {isGhostMode}");
             if (!allowKill)
             {
                 __instance.sprintMeter = 1f;
@@ -253,11 +252,8 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)30]).wasPressedThisFrame)//P was pressed
                     {
-                        if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
-                        {
-                            mls.LogMessage("attempting to revive");
-                            reviveDeadPlayer(__instance);
-                        }
+                        mls.LogMessage("attempting to revive");
+                        reviveDeadPlayer(__instance);                        
                     }
                 }
                 else //is a ghost
@@ -476,10 +472,10 @@ namespace OPJosMod.GhostMode.Patches
 
             try
             {
-                var respawnLocation = getTeleportLocation(__instance);
-
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = (int)__instance.playerClientId;
+
+                var respawnLocation = getTeleportLocation(allPlayerScripts[playerIndex]);
 
                 mls.LogMessage($"Reviving player {playerIndex}");
 
@@ -641,89 +637,13 @@ namespace OPJosMod.GhostMode.Patches
 
         private static void setToSpectatemode(PlayerControllerB __instance)
         {
+            __instance = StartOfRound.Instance.localPlayerController;
+
             rekillPlayerLocally(__instance, false);
 
             HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
-
-            activateItem_performedPatch(__instance);
             isGhostMode = false;
-        }
-
-        [HarmonyPatch("ActivateItem_performed")]
-        [HarmonyPrefix]
-        private static bool activateItem_performedPatch(PlayerControllerB __instance)
-        {
-            mls.LogMessage($"ActivateItem_performed patch hit");
-
-            if (__instance.isPlayerDead && !StartOfRound.Instance.shipIsLeaving && !isGhostMode)
-            {
-                mls.LogMessage("we should call to spectate next person");
-
-                ReflectionUtils.InvokeMethod(__instance, "SpectateNextPlayer", null);
-                StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
-                return false;
-            }
-
-            return true;
-        }
-
-        [HarmonyPatch(typeof(PlayerControllerB), "SpectateNextPlayer")]
-        [HarmonyPrefix]
-        public static bool spectateNextPlayerPatch(PlayerControllerB __instance)
-        {
-            int num = 0;
-            if ((object)__instance.spectatedPlayerScript != null)
-            {
-                num = (int)__instance.spectatedPlayerScript.playerClientId;
-            }
-
-            for (int i = 0; i < __instance.playersManager.allPlayerScripts.Length; i++)
-            {
-                num = (num + 1) % __instance.playersManager.allPlayerScripts.Length;
-
-                if (!__instance.playersManager.allPlayerScripts[num].isPlayerDead &&
-                    __instance.playersManager.allPlayerScripts[num].isPlayerControlled &&
-                    (object)__instance.playersManager.allPlayerScripts[num].playerClientId != (object)__instance.playerClientId)
-                {
-                    mls.LogMessage($"---------------------");
-                    mls.LogMessage($"Found live player to spectate at index: {num}");
-                    mls.LogMessage($"__instanceId:{__instance.playerClientId}, allPlayersScripts[{num}].playerClientId = {__instance.playersManager.allPlayerScripts[num].playerClientId}");
-                    //mls.LogMessage($"---------------------");
-
-                    //put some debugging here on the vaules its saving, maybe need to set something to active?
-                    //check values when it works with two players vs when it doesnt with lots of players
-                    //might be able to update said value, and allow it to call the regualr function
-
-                    //maybe the revive isn't being fully undown by the kill? because when it fails i can walk around kinda which is weird
-
-                    //maybe the __instance getting passed around is making one that doesnt go away, instead use the network manager Instance.localPlayer?
-                        //maye that would make the character show up tho to other players? would be good for my revive mod, but not for this
-                    
-                    __instance.spectatedPlayerScript = __instance.playersManager.allPlayerScripts[num];
-                    mls.LogMessage($"instance.spectatedPlayerScript == null: {__instance.spectatedPlayerScript == null}");
-                    mls.LogMessage($"spectatedPlayerScript locatin: {__instance.spectatedPlayerScript.transform.position}");
-                    mls.LogMessage($"instance.IsOwner?: {__instance.IsOwner}");
-                    mls.LogMessage($"instance.spectatedPlayerScript.IsOwner?: {__instance.spectatedPlayerScript.IsOwner}");
-                    mls.LogMessage($"---------------------");
-
-                    __instance.SetSpectatedPlayerEffects(false);
-                    return false;
-                }
-            }
-
-            if ((object)__instance.deadBody != null && ((Component)__instance.deadBody).gameObject.activeSelf)
-            {
-                mls.LogMessage("No live player to spectate, spectating dead body.");
-
-                __instance.spectateCameraPivot.position = __instance.deadBody.bodyParts[0].position;
-                ReflectionUtils.InvokeMethod(__instance, "RaycastSpectateCameraAroundPivot", null);
-            }
-
-            StartOfRound.Instance.SetPlayerSafeInShip();
-
-            mls.LogMessage("SpectateNextPlayer Patch: End");
-            return false;
-        }
+        }       
     }
 }
