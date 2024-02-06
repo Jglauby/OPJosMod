@@ -272,7 +272,7 @@ namespace OPJosMod.GhostMode.Patches
                         __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
                     }
 
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame && !__instance.inTerminalMenu)//O was pressed
                     {
                         mls.LogMessage("attempt to switch back to spectate mode");
                         setToSpectatemode(__instance);
@@ -642,11 +642,13 @@ namespace OPJosMod.GhostMode.Patches
             rekillPlayerLocally(__instance, false);
             isGhostMode = false;
 
-            activateItem_performedPatch(__instance);
-            StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
-
             HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
+
+            StartOfRound.Instance.SetPlayerSafeInShip();
+            StartOfRound.Instance.UpdatePlayerVoiceEffects();
+
+            activateItem_performedPatch(__instance);
         }
 
         [HarmonyPatch("ActivateItem_performed")]
