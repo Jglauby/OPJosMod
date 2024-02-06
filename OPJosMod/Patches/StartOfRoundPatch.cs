@@ -51,7 +51,7 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("UpdatePlayerVoiceEffects")]
         [HarmonyPrefix]
-        public static void updatePlayerVoiceEffectsPatch(StartOfRound __instance)
+        public static bool updatePlayerVoiceEffectsPatch(StartOfRound __instance)
         {
             if (PlayerControllerBPatch.isGhostMode)
             {
@@ -85,20 +85,27 @@ namespace OPJosMod.GhostMode.Patches
                     if (__instance.allPlayerScripts[i].isPlayerDead)
                     {
                         mls.LogMessage($"Player {i} is dead. Adjusting audio settings accordingly.");
-                        //currentVoiceChatAudioSource.spatialBlend = 0f;
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
                         currentVoiceChatAudioSource.volume = 1f;
+                        currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().enabled = false;
+                        currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = false;
+                        currentVoiceChatAudioSource.panStereo = 0f;
                     }
                     else
                     {
                         mls.LogMessage($"Player {i} is alive. Adjusting audio settings accordingly.");
-                        //currentVoiceChatAudioSource.spatialBlend = 1f;
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
                         currentVoiceChatAudioSource.volume = 1f;
+                        //currentVoiceChatAudioSource.pitch = 1f;
+                        //currentVoiceChatAudioSource.spatialBlend = 1f;
                     }
-
-                    throw new Exception("dont call the regular UpdatePlayerVoiceEffects function");
                 }
+
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
 

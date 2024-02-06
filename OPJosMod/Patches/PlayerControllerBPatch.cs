@@ -2,6 +2,7 @@
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,39 +58,51 @@ namespace OPJosMod.GhostMode.Patches
 
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
-            mls.LogMessage("hit reset ghost vars function");
-            allowKill = true;
-            isGhostMode = false;
-            __instance.StopAllCoroutines();
-            ((Component)__instance.nightVision).gameObject.SetActive(true);
-            nightVisionFlag = false;
-            consecutiveDeathExceptions = 0;
-            lastSafeLocations = new Vector3[10];
-            timeWhenSafe = Time.time;
-
-            FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+            try
             {
-                playerSlidingTimerField.SetValue(__instance, 0f);
-                isJumpingField.SetValue(__instance, false);
-                isFallingFromJumpField.SetValue(__instance, false);
-                __instance.fallValue = 0f;
-                __instance.fallValueUncapped = 0f;
-                jumpCoroutine = null;
+                if (__instance != null)
+                {
+                    mls.LogMessage("hit reset ghost vars function");
+                    allowKill = true;
+                    isGhostMode = false;
+                    __instance.StopAllCoroutines();
+                    nightVisionFlag = false;
+                    consecutiveDeathExceptions = 0;
+                    lastSafeLocations = new Vector3[10];
+                    timeWhenSafe = Time.time;
+
+                    if (__instance.nightVision != null)
+                        ((Component)__instance.nightVision).gameObject.SetActive(true);
+
+                    FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
+                    FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+                    FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+                    {
+                        playerSlidingTimerField.SetValue(__instance, 0f);
+                        isJumpingField.SetValue(__instance, false);
+                        isFallingFromJumpField.SetValue(__instance, false);
+                        __instance.fallValue = 0f;
+                        __instance.fallValueUncapped = 0f;
+                        jumpCoroutine = null;
+                    }
+                    else
+                    {
+                        mls.LogError("private fields not found");
+                    }
+
+                    StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
+                    HUDManager.Instance.HideHUD(hide: false);
+                    HUDManager.Instance.spectatingPlayerText.text = "";
+                    HUDManager.Instance.RemoveSpectateUI();
+
+                    setNightVisionMode(__instance, 0);
+                }              
             }
-            else
+            catch (Exception e)
             {
-                mls.LogError("private fields not found");
+                mls.LogMessage(e);
             }
-
-            StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
-            HUDManager.Instance.HideHUD(hide: false);
-            HUDManager.Instance.spectatingPlayerText.text = "";
-            HUDManager.Instance.RemoveSpectateUI();
-
-            setNightVisionMode(__instance, 0);
         }
 
         //mode: 0 => regular, 1 => super bright
@@ -157,7 +170,7 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
-        static void patchKillPlayer(PlayerControllerB __instance)
+        static bool patchKillPlayer(PlayerControllerB __instance)
         {
             float currentTime = Time.time;
 
@@ -190,9 +203,11 @@ namespace OPJosMod.GhostMode.Patches
                     }
 
                     mls.LogMessage("Didn't allow kill, player should be dead on server already");
-                    throw new Exception("Don't kill player again");
+                    return false;
                 }
             }
+
+            return true;
         }
 
         [HarmonyPatch("Update")]
@@ -370,7 +385,7 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         static void jump_performedPatch(PlayerControllerB __instance)
         {
-            mls.LogMessage($"jump performed, jumpForce:{__instance.jumpForce}, allowKill:{allowKill}");
+            //mls.LogMessage($"jump performed, jumpForce:{__instance.jumpForce}, allowKill:{allowKill}");
 
             FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
             FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -588,6 +603,7 @@ namespace OPJosMod.GhostMode.Patches
 
         public static void rekillPlayerLocally(PlayerControllerB __instance, bool gameOver)
         {
+            mls.LogMessage("try to rekill player locally");
             __instance.DropAllHeldItemsServerRpc();
             __instance.DisableJetpackControlsLocally();
             __instance.isPlayerDead = true;
@@ -614,8 +630,7 @@ namespace OPJosMod.GhostMode.Patches
             __instance.inAnimationWithEnemy = null;
             HUDManager.Instance.SetNearDepthOfFieldEnabled(enabled: true);
             HUDManager.Instance.HUDAnimator.SetBool("biohazardDamage", value: false);
-            //HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
-            
+
             StartOfRound.Instance.SwitchCamera(StartOfRound.Instance.spectateCamera);
 
             if (gameOver)
@@ -625,10 +640,19 @@ namespace OPJosMod.GhostMode.Patches
         private static void setToSpectatemode(PlayerControllerB __instance)
         {
             rekillPlayerLocally(__instance, false);
-
             isGhostMode = false;
+
             HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
         }
+
+        //[HarmonyPatch("ActivateItem_performed")]
+        //[HarmonyPrefix]
+        //private static bool activateItem_performedPatch(PlayerControllerB __instance)
+        //{
+        //    mls.LogMessage($"");
+        //
+        //    
+        //}
     }
 }

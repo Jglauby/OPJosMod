@@ -32,14 +32,15 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("OnCollideWithPlayer")]
         [HarmonyPrefix]
-        static void onCollideWithPlayerPatch(EnemyAI __instance)
+        static bool onCollideWithPlayerPatch(EnemyAI __instance)
         {
-            mls.LogMessage("enemy collide with player patch hit");
-
             if (PlayerControllerBPatch.isGhostMode && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
-                throw new Exception("player is a ghost don't try to kill again");
+                mls.LogMessage("enemy collide with player patch hit");
+                return false;
             }
+
+            return true;
         }
     }
 }
