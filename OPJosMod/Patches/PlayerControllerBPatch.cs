@@ -90,6 +90,8 @@ namespace OPJosMod.GhostMode.Patches
                     HUDManager.Instance.HideHUD(hide: false);
                     HUDManager.Instance.spectatingPlayerText.text = "";
                     HUDManager.Instance.RemoveSpectateUI();
+
+                    showAliveUI(__instance, true);
                 }
                 
                 mls.LogMessage("hit reset ghost vars function");
@@ -135,6 +137,22 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
+        private static void showAliveUI(PlayerControllerB __instance, bool show)
+        {
+            HUDManager.Instance.Clock.canvasGroup.gameObject.SetActive(show);            
+            HUDManager.Instance.selfRedCanvasGroup.gameObject.SetActive(show);
+            __instance.sprintMeterUI.gameObject.SetActive(show);
+            HUDManager.Instance.weightCounter.gameObject.SetActive(show);
+
+            if (!show)
+            {
+                foreach (var temp in HUDManager.Instance.controlTipLines)
+                {
+                    temp.text = "";
+                }
+            }
+        }
+
         private static Vector3 getTeleportLocation(PlayerControllerB __instance)
         {
             var result = new Vector3(0, 0, 0);
@@ -156,20 +174,6 @@ namespace OPJosMod.GhostMode.Patches
             __instance.activeAudioListener.transform.localEulerAngles = Vector3.zero;
             __instance.activeAudioListener.transform.localPosition = Vector3.zero;
             StartOfRound.Instance.audioListener = __instance.activeAudioListener;
-        }
-
-        private static void StopHoldInteractionOnTrigger(PlayerControllerB __instance)
-        {
-            HUDManager.Instance.holdFillAmount = 0f;
-            if (__instance.previousHoveringOverTrigger != null)
-            {
-                __instance.previousHoveringOverTrigger.StopInteraction();
-            }
-
-            if (__instance.hoveringOverTrigger != null)
-            {
-                __instance.hoveringOverTrigger.StopInteraction();
-            }
         }
 
         [HarmonyPatch("KillPlayer")]
@@ -596,6 +600,8 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.holdButtonToEndGameEarlyText.text = "";
                 HUDManager.Instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
                 HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
+
+                showAliveUI(playerControllerB, false);
             }
             catch (Exception e)
             {
@@ -643,9 +649,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             __instance = StartOfRound.Instance.localPlayerController;
 
-            //remove gameplay ui
-            //clock, health, stamina, controls
-
+            showAliveUI(__instance, false);
             rekillPlayerLocally(__instance, false);
             __instance.hasBegunSpectating = true;
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
