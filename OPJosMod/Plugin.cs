@@ -1,20 +1,20 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.Patches;
+using OPJosMod.TheFlash.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod
+namespace OPJosMod.TheFlash
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "OpJosMod.BetterStamina";
-        private const string modName = "OpJosMod";
+        private const string modGUID = "OpJosMod.TheFlash";
+        private const string modName = "TheFlash";
         private const string modVersion = "1.0.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);

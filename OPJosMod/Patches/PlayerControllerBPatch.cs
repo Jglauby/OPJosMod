@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod.Patches
+namespace OPJosMod.TheFlash.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
@@ -23,7 +23,6 @@ namespace OPJosMod.Patches
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-
             if (__instance.isSprinting)
             {
                 FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
