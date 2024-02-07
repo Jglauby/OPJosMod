@@ -8,14 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod
+namespace OPJosMod//.ModNameHere
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "OpJosMod.BetterStamina";
-        private const string modName = "OpJosMod";
-        private const string modVersion = "1.0.0.0";
+        private const string modGUID = "OpJosMod.ModNameHere";
+        private const string modName = "ModNameHere";
+        private const string modVersion = "1.0.0.0"; //dont forget to update this lol
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
