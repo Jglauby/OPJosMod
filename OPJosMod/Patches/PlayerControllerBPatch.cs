@@ -1,12 +1,14 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.TheFlash.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OPJosMod.TheFlash.Patches
 {
@@ -19,29 +21,35 @@ namespace OPJosMod.TheFlash.Patches
             mls = logSource;
         }
 
+        private static float sprintMultiplier = 1.05f;
+        private static float maxSprintSpeed = 20f;
+
+        private static float walkMultiplier = 1.05f;
+        private static float maxWalkSpeed = 7.5f;
+
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            if (__instance.isSprinting)
+            FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
+            var isWalking = ReflectionUtils.GetFieldValue<bool>(__instance, "isWalking");
+
+            if (isWalking)
             {
-                FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (sprintMultiplierField != null)
+                var currentValue = sprintMultiplierField.GetValue(__instance);
+                if (__instance.isSprinting)
                 {
-                    var currentValue = sprintMultiplierField.GetValue(__instance);
-                    if (currentValue is float)
-                    {
-                        var newForce = (float)currentValue * 1.05f;
+                    var newForce = (float)currentValue * sprintMultiplier;
+
+                    if(newForce < maxSprintSpeed)
                         sprintMultiplierField.SetValue(__instance, newForce);
-                    }
-                    else
-                    {
-                        mls.LogError("current spritnMultiplier isn't a float?");
-                    }
                 }
                 else
                 {
-                    mls.LogError("private field not found");
+                    var newForce = (float)currentValue * walkMultiplier;
+
+                    if(newForce < maxWalkSpeed)
+                        sprintMultiplierField.SetValue(__instance, newForce);
                 }
             }
         }
