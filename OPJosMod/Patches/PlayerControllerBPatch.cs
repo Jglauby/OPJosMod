@@ -218,6 +218,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
             }
 
+            mls.LogMessage("called kill player as __instance.playerClientId != StartOfRoundLocalPlayerClientID");
             return true;
         }
 
