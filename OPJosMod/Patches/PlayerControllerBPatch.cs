@@ -85,6 +85,11 @@ namespace OPJosMod.GhostMode.Patches
 
                     setNightVisionMode(__instance, 0);
                     __instance.hasBegunSpectating = false;
+
+                    StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
+                    HUDManager.Instance.HideHUD(hide: false);
+                    HUDManager.Instance.spectatingPlayerText.text = "";
+                    HUDManager.Instance.RemoveSpectateUI();
                 }
                 
                 mls.LogMessage("hit reset ghost vars function");
@@ -96,11 +101,7 @@ namespace OPJosMod.GhostMode.Patches
                 timeWhenSafe = Time.time;
 
                 jumpCoroutine = null;
-
-                StartOfRound.Instance.SwitchCamera(GameNetworkManager.Instance.localPlayerController.gameplayCamera);
-                HUDManager.Instance.HideHUD(hide: false);
-                HUDManager.Instance.spectatingPlayerText.text = "";
-                HUDManager.Instance.RemoveSpectateUI();            
+          
             }
             catch (Exception e)
             {
@@ -648,6 +649,6 @@ namespace OPJosMod.GhostMode.Patches
             HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
             isGhostMode = false;
-        }       
+        }         
     }
 }
