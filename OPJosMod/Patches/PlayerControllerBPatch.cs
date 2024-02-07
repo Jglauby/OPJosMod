@@ -56,6 +56,8 @@ namespace OPJosMod.GhostMode.Patches
         private static float OGnightVisionInnerSpotAngle;
         private static float OGnightVisionSpotAngle;
 
+        private static float maxSpeed = 10f;
+
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
             try
@@ -69,14 +71,15 @@ namespace OPJosMod.GhostMode.Patches
                     FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
                     FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
                     FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
-                    if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
+                    FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null && sprintMultiplierField != null)
                     {
                         playerSlidingTimerField.SetValue(__instance, 0f);
                         isJumpingField.SetValue(__instance, false);
                         isFallingFromJumpField.SetValue(__instance, false);
                         __instance.fallValue = 0f;
                         __instance.fallValueUncapped = 0f;
-
+                        sprintMultiplierField.SetValue(__instance, 1f);
                     }
                     else
                     {
@@ -242,8 +245,15 @@ namespace OPJosMod.GhostMode.Patches
                         var currentValue = sprintMultiplierField.GetValue(__instance);
                         if (currentValue is float)
                         {
-                            var newForce = (float)currentValue * 1.01f;
-                            sprintMultiplierField.SetValue(__instance, newForce);
+                            if ((float)currentValue < maxSpeed)
+                            {
+                                var newForce = (float)currentValue * 1.015f;
+                                sprintMultiplierField.SetValue(__instance, newForce);
+                            }
+                            else
+                            {
+                                //mls.LogMessage("max speed hit");
+                            }
                         }
                         else
                         {
@@ -602,6 +612,13 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
 
                 showAliveUI(playerControllerB, false);
+
+                //reset move speed
+                FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (sprintMultiplierField != null )
+                {
+                    sprintMultiplierField.SetValue(playerControllerB, 1f);
+                }
             }
             catch (Exception e)
             {
