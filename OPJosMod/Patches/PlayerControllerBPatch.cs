@@ -643,12 +643,15 @@ namespace OPJosMod.GhostMode.Patches
         {
             __instance = StartOfRound.Instance.localPlayerController;
 
-            rekillPlayerLocally(__instance, false);
+            //remove gameplay ui
+            //clock, health, stamina, controls
 
+            rekillPlayerLocally(__instance, false);
             __instance.hasBegunSpectating = true;
-            HUDManager.Instance.HideHUD(true);
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
             isGhostMode = false;
+
+            ChangeAudioListenerToObject(__instance, StartOfRound.Instance.spectateCamera.gameObject);
         }         
     }
 }
