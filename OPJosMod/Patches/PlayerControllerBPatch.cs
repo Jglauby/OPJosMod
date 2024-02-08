@@ -185,7 +185,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             float currentTime = Time.time;
 
-            if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            if (__instance.IsOwner)
             {
                 if (allowKill)
                 {
