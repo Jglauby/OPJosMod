@@ -3,6 +3,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.TheFlash.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,19 +16,29 @@ using UnityEngine.InputSystem.Controls;
 namespace OPJosMod.TheFlash.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
-    internal class PlayerControllerBPatch
+    internal class PlayerControllerBPatch : MonoBehaviour
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
         {
             mls = logSource;
+
+            sprintMultiplier = defaultSprintMultiplier;
+            maxSprintSpeed = defaultMaxSprintSpeed;
         }
 
-        private static float sprintMultiplier = 1.05f;
-        private static float maxSprintSpeed = 20f;
+        private static float defaultSprintMultiplier = 1.05f;
+        private static float defaultMaxSprintSpeed = 20f;
+        private static float increasedSprintMultiplier = 4f;
+        private static float increasedMaxSprintSpeed = 60f;
+        private static float sprintMultiplier;
+        private static float maxSprintSpeed;
 
         private static float walkMultiplier = 1.05f;
         private static float maxWalkSpeed = 7.5f;
+
+        private static bool adjustingSpeed = false;
+        private static int speedMode = 0; //0 -> default, 1 -> super fast
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
@@ -57,8 +68,30 @@ namespace OPJosMod.TheFlash.Patches
 
             if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame && !__instance.inTerminalMenu)//R was pressed
             {
-                sprintMultiplier = 3f;
-                maxSprintSpeed = 100f;
+                if(adjustingSpeed == false)
+                {
+                    adjustingSpeed = true;
+                    __instance.StartCoroutine(toggleSpeed(__instance));
+                    adjustingSpeed = false;
+                }
+            }
+        }
+
+        private static IEnumerator toggleSpeed(PlayerControllerB __instance)
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (speedMode == 0)
+            {
+                speedMode = 1;
+                sprintMultiplier = increasedSprintMultiplier;
+                maxSprintSpeed = increasedMaxSprintSpeed;
+            }
+            else if (speedMode == 1)
+            {
+                speedMode = 0;
+                sprintMultiplier = defaultSprintMultiplier;
+                maxSprintSpeed = defaultMaxSprintSpeed;
             }
         }
     }
