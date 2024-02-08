@@ -611,6 +611,9 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.holdButtonToEndGameEarlyText.text = "";
                 HUDManager.Instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
                 HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
+                setNightVisionMode(playerControllerB, 0);
+                playerControllerB.isInsideFactory = false;
+                nightVisionFlag = false;
 
                 showAliveUI(playerControllerB, false);
 
