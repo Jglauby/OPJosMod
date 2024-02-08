@@ -29,7 +29,7 @@ namespace OPJosMod.TheFlash.Patches
 
         private static float defaultSprintMultiplier = 1.05f;
         private static float defaultMaxSprintSpeed = 20f;
-        private static float increasedSprintMultiplier = 4f;
+        private static float increasedSprintMultiplier = 5f;
         private static float increasedMaxSprintSpeed = 60f;
         private static float sprintMultiplier;
         private static float maxSprintSpeed;
@@ -72,7 +72,6 @@ namespace OPJosMod.TheFlash.Patches
                 {
                     adjustingSpeed = true;
                     __instance.StartCoroutine(toggleSpeed(__instance));
-                    adjustingSpeed = false;
                 }
             }
         }
@@ -83,16 +82,22 @@ namespace OPJosMod.TheFlash.Patches
 
             if (speedMode == 0)
             {
+                mls.LogMessage("speed mode set to 1");
+                HUDManager.Instance.DisplayTip("Flash Time", "On");
                 speedMode = 1;
                 sprintMultiplier = increasedSprintMultiplier;
                 maxSprintSpeed = increasedMaxSprintSpeed;
             }
             else if (speedMode == 1)
             {
+                mls.LogMessage("speed mode set to 0");
+                HUDManager.Instance.DisplayTip("Flash Time", "Off");
                 speedMode = 0;
                 sprintMultiplier = defaultSprintMultiplier;
                 maxSprintSpeed = defaultMaxSprintSpeed;
             }
+
+            adjustingSpeed = false;
         }
     }
 }
