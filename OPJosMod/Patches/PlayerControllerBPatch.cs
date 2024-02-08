@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 namespace OPJosMod.TheFlash.Patches
 {
@@ -51,6 +53,12 @@ namespace OPJosMod.TheFlash.Patches
                     if(newForce < maxWalkSpeed)
                         sprintMultiplierField.SetValue(__instance, newForce);
                 }
+            }
+
+            if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame && !__instance.inTerminalMenu)//R was pressed
+            {
+                sprintMultiplier = 3f;
+                maxSprintSpeed = 100f;
             }
         }
     }
