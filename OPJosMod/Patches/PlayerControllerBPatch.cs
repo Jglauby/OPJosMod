@@ -27,15 +27,15 @@ namespace OPJosMod.TheFlash.Patches
             maxSprintSpeed = defaultMaxSprintSpeed;
         }
 
-        private static float defaultSprintMultiplier = 1.05f;
-        private static float defaultMaxSprintSpeed = 20f;
+        private static float defaultSprintMultiplier = 1.04f;
+        private static float defaultMaxSprintSpeed = 15f;
         private static float increasedSprintMultiplier = 10f;
-        private static float increasedMaxSprintSpeed = 100f;
+        private static float increasedMaxSprintSpeed = 1500f;
         private static float sprintMultiplier;
         private static float maxSprintSpeed;
 
         private static float walkMultiplier = 1.05f;
-        private static float maxWalkSpeed = 7.5f;
+        private static float maxWalkSpeed = 8f;
 
         private static bool adjustingSpeed = false;
         private static int speedMode = 0; //0 -> default, 1 -> super fast
