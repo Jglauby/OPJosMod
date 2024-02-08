@@ -487,8 +487,6 @@ namespace OPJosMod.GhostMode.Patches
 
         private static void reviveDeadPlayer(PlayerControllerB __instance)
         {
-            mls.LogMessage("add player back server");
-
             try
             {
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
@@ -571,17 +569,6 @@ namespace OPJosMod.GhostMode.Patches
                 SoundManager.Instance.playerVoicePitchTargets[playerIndex] = 1f;
                 SoundManager.Instance.SetPlayerPitch(1f, (int)playerIndex);
 
-                if (allPlayerScripts[playerIndex].currentVoiceChatIngameSettings == null)
-                {
-                    StartOfRound.Instance.RefreshPlayerVoicePlaybackObjects();
-                }
-
-                if (allPlayerScripts[playerIndex].currentVoiceChatIngameSettings != null &&
-                    allPlayerScripts[playerIndex].currentVoiceChatIngameSettings.voiceAudio != null)
-                {
-                    allPlayerScripts[playerIndex].currentVoiceChatIngameSettings.voiceAudio.GetComponent<OccludeAudio>().overridingLowPass = false;
-                }
-
                 PlayerControllerB playerControllerB = GameNetworkManager.Instance.localPlayerController;
                 playerControllerB.bleedingHeavily = false;
                 playerControllerB.criticallyInjured = false;
@@ -591,7 +578,6 @@ namespace OPJosMod.GhostMode.Patches
                 playerControllerB.spectatedPlayerScript = null;
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);
-                StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
                 //setup brightness variables
                 if (OGnightVisionIntensity == 0.0f)
