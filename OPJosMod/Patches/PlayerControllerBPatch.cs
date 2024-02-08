@@ -59,6 +59,9 @@ namespace OPJosMod.TheFlash.Patches
                 }
                 else
                 {
+                    if ((float)currentValue > maxWalkSpeed)
+                        sprintMultiplierField.SetValue(__instance, maxWalkSpeed);
+
                     var newForce = (float)currentValue * walkMultiplier;
 
                     if(newForce < maxWalkSpeed)
@@ -84,6 +87,7 @@ namespace OPJosMod.TheFlash.Patches
             {
                 mls.LogMessage("speed mode set to 1");
                 HUDManager.Instance.DisplayTip("Flash Time", "On");
+
                 speedMode = 1;
                 sprintMultiplier = increasedSprintMultiplier;
                 maxSprintSpeed = increasedMaxSprintSpeed;
@@ -92,6 +96,7 @@ namespace OPJosMod.TheFlash.Patches
             {
                 mls.LogMessage("speed mode set to 0");
                 HUDManager.Instance.DisplayTip("Flash Time", "Off");
+
                 speedMode = 0;
                 sprintMultiplier = defaultSprintMultiplier;
                 maxSprintSpeed = defaultMaxSprintSpeed;
