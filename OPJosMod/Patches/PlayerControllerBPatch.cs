@@ -1,7 +1,7 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.GodMode.Enums;
+using OPJosMod.ReviveTeam.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace OPJosMod.GodMode.Patches
+namespace OPJosMod.ReviveTeam.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
