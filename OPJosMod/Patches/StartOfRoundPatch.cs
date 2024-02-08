@@ -56,6 +56,7 @@ namespace OPJosMod.GhostMode.Patches
         public static void shipLeavePatch(StartOfRound __instance)
         {
             mls.LogMessage("rekill player locally called from start of round, because ship is taking off");
+            PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
             PlayerControllerBPatch.rekillPlayerLocally(__instance.localPlayerController, true);
         }
 
@@ -90,11 +91,11 @@ namespace OPJosMod.GhostMode.Patches
                     }
 
                     // Adjust audio properties for all players
-                    //mls.LogMessage($"adjusting volume for player{i}");
+                    mls.LogMessage($"adjusting volume for player{i}");
                     AudioSource currentVoiceChatAudioSource = StartOfRound.Instance.allPlayerScripts[i].currentVoiceChatAudioSource;
                     if (__instance.allPlayerScripts[i].isPlayerDead)
                     {
-                        //mls.LogMessage($"Player {i} is dead. Adjusting audio settings accordingly.");
+                        mls.LogMessage($"Player {i} is dead. Adjusting audio settings accordingly.");
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
                         currentVoiceChatAudioSource.volume = 1f;
                         currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().enabled = false;
@@ -103,7 +104,7 @@ namespace OPJosMod.GhostMode.Patches
                     }
                     else
                     {
-                        //mls.LogMessage($"Player {i} is alive. Adjusting audio settings accordingly.");
+                        mls.LogMessage($"Player {i} is alive. Adjusting audio settings accordingly.");
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
                         currentVoiceChatAudioSource.volume = 1f;
                         //currentVoiceChatAudioSource.pitch = 1f;

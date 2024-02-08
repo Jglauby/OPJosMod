@@ -623,6 +623,9 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     sprintMultiplierField.SetValue(playerControllerB, 1f);
                 }
+
+                //reset dead players voices and icons manually on revive
+                HUDManagerPatch.updateBoxesSpectateUI(HUDManager.Instance);
             }
             catch (Exception e)
             {
@@ -676,7 +679,7 @@ namespace OPJosMod.GhostMode.Patches
             HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
             isGhostMode = false;
 
-            ChangeAudioListenerToObject(__instance, StartOfRound.Instance.spectateCamera.gameObject);
+            ChangeAudioListenerToObject(__instance, __instance.playersManager.spectateCamera.gameObject);
         }         
     }
 }

@@ -79,7 +79,7 @@ namespace OPJosMod.GhostMode.Patches
             }          
         }
 
-        private static void updateBoxesSpectateUI(HUDManager __instance)
+        public static void updateBoxesSpectateUI(HUDManager __instance)
         {
             PlayerControllerB playerScript;
             for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
