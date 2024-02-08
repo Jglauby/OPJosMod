@@ -29,8 +29,8 @@ namespace OPJosMod.TheFlash.Patches
 
         private static float defaultSprintMultiplier = 1.05f;
         private static float defaultMaxSprintSpeed = 20f;
-        private static float increasedSprintMultiplier = 5f;
-        private static float increasedMaxSprintSpeed = 60f;
+        private static float increasedSprintMultiplier = 10f;
+        private static float increasedMaxSprintSpeed = 100f;
         private static float sprintMultiplier;
         private static float maxSprintSpeed;
 
@@ -66,7 +66,7 @@ namespace OPJosMod.TheFlash.Patches
                 }
             }
 
-            if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame && !__instance.inTerminalMenu)//R was pressed
+            if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame)//R was pressed
             {
                 if(adjustingSpeed == false)
                 {
