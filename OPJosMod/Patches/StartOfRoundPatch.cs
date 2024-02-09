@@ -64,6 +64,18 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
+        [HarmonyPatch("StartGame")]
+        [HarmonyPrefix]
+        public static void startGamePatch(StartOfRound __instance)
+        {
+            mls.LogMessage("rekill player locally called from start of round, because level is starting");
+
+            if (PlayerControllerBPatch.isGhostMode)
+            {
+                PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
+            }
+        }
+
         [HarmonyPatch("UpdatePlayerVoiceEffects")]
         [HarmonyPrefix]
         public static bool updatePlayerVoiceEffectsPatch(StartOfRound __instance)
@@ -87,7 +99,6 @@ namespace OPJosMod.GhostMode.Patches
                         playerControllerB2.currentVoiceChatAudioSource == null || playerControllerB2.currentVoiceChatIngameSettings == null)
                     {
                         // Attempt to refresh voice chat objects
-                        mls.LogMessage("attempt to refresh RefreshPlayerVoicePlaybackObjects");
                         __instance.RefreshPlayerVoicePlaybackObjects();
                         if (playerControllerB2.voicePlayerState == null || playerControllerB2.currentVoiceChatAudioSource == null)
                         {
@@ -97,11 +108,11 @@ namespace OPJosMod.GhostMode.Patches
                     }
 
                     // Adjust audio properties for all players
-                    mls.LogMessage($"adjusting volume for player {i}");
+                    //mls.LogMessage($"adjusting volume for player {i}");
                     AudioSource currentVoiceChatAudioSource = StartOfRound.Instance.allPlayerScripts[i].currentVoiceChatAudioSource;
                     if (__instance.allPlayerScripts[i].isPlayerDead)
                     {
-                        mls.LogMessage($"Player {i} is dead. Adjusting audio settings accordingly.");
+                        //mls.LogMessage($"Player {i} is dead. Adjusting audio settings accordingly.");
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
                         currentVoiceChatAudioSource.volume = 1f;
                         currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().enabled = false;
@@ -110,7 +121,7 @@ namespace OPJosMod.GhostMode.Patches
                     }
                     else
                     {
-                        mls.LogMessage($"Player {i} is alive. Adjusting audio settings accordingly.");
+                        //mls.LogMessage($"Player {i} is alive. Adjusting audio settings accordingly.");
                         playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
                         currentVoiceChatAudioSource.volume = 0.8f;
                         //currentVoiceChatAudioSource.pitch = 1f;
