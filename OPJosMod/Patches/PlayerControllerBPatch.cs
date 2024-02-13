@@ -294,57 +294,60 @@ namespace OPJosMod.GhostMode.Patches
                 }
                 else //is a ghost
                 {
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame && !__instance.inTerminalMenu)//C was pressed
+                    if (!__instance.inTerminalMenu && !__instance.isTypingChat)//listen to hotkeys when not typing
                     {
-                        mls.LogMessage("attempt to tp to dead body");
-                        __instance.transform.position = __instance.deadBody.transform.position;
-                    }
-
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame && !__instance.inTerminalMenu)//R was pressed
-                    {
-                        mls.LogMessage("attempt to tp to front door");
-                        __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
-                    }
-
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame && !__instance.inTerminalMenu)//O was pressed
-                    {
-                        mls.LogMessage("attempt to switch back to spectate mode");
-                        setToSpectatemode(__instance);
-                    }
-
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame && !__instance.inTerminalMenu)//left was clicked
-                    {
-                        mls.LogMessage("left clicked, tp to previous player");
-
-                        var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                        for (int i = 0; i < allPlayers.Length; i++)
+                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
                         {
-                            tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
+                            mls.LogMessage("attempt to tp to dead body");
+                            __instance.transform.position = __instance.deadBody.transform.position;
+                        }
 
-                            if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead &&
-                                __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled &&
-                                __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
+                        {
+                            mls.LogMessage("attempt to tp to front door");
+                            __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
+                        }
+
+                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
+                        {
+                            mls.LogMessage("attempt to switch back to spectate mode");
+                            setToSpectatemode(__instance);
+                        }
+
+                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame)//left was clicked
+                        {
+                            mls.LogMessage("left clicked, tp to previous player");
+
+                            var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                            while (true)
                             {
-                                __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
-                                return;
+                                tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
+
+                                if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead &&
+                                    __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled &&
+                                    __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                                {
+                                    __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
+                                    return;
+                                }
                             }
                         }
-                    }
 
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame && !__instance.inTerminalMenu)//right was clicked
-                    {
-                        mls.LogMessage("right clicked, tp to next player");
-
-                        var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                        for (int i = 0; i < allPlayers.Length; i++)
+                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame)//right was clicked
                         {
-                            tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
-                            if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead 
-                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
-                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                            mls.LogMessage("right clicked, tp to next player");
+
+                            var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                            while (true)
                             {
-                                __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
-                                return;
+                                tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
+                                if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
+                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                                {
+                                    __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
+                                    return;
+                                }
                             }
                         }
                     }
