@@ -59,6 +59,8 @@ namespace OPJosMod.GhostMode.Patches
 
         private static float maxSpeed = 10f;
 
+        private static int tpPlayerIndex = 0;
+
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
             try
@@ -308,6 +310,43 @@ namespace OPJosMod.GhostMode.Patches
                     {
                         mls.LogMessage("attempt to switch back to spectate mode");
                         setToSpectatemode(__instance);
+                    }
+
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame && !__instance.inTerminalMenu)//left was clicked
+                    {
+                        mls.LogMessage("left clicked, tp to previous player");
+
+                        var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                        for (int i = 0; i < allPlayers.Length; i++)
+                        {
+                            tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
+
+                            if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead &&
+                                __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled &&
+                                __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                            {
+                                __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
+                                return;
+                            }
+                        }
+                    }
+
+                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame && !__instance.inTerminalMenu)//right was clicked
+                    {
+                        mls.LogMessage("right clicked, tp to next player");
+
+                        var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                        for (int i = 0; i < allPlayers.Length; i++)
+                        {
+                            tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
+                            if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead 
+                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                            {
+                                __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
+                                return;
+                            }
+                        }
                     }
                 }
 
