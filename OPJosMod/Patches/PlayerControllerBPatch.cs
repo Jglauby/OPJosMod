@@ -55,6 +55,7 @@ namespace OPJosMod.GhostMode.Patches
         private static float OGnightVisionBounceIntensity;
         private static float OGnightVisionInnerSpotAngle;
         private static float OGnightVisionSpotAngle;
+        private static bool setupValuesYet = false;
 
         private static float maxSpeed = 10f;
 
@@ -86,6 +87,7 @@ namespace OPJosMod.GhostMode.Patches
                         mls.LogError("private fields not found");
                     }
 
+                    setupValuesYet = false;
                     setNightVisionMode(__instance, 0);
                     __instance.hasBegunSpectating = false;
 
@@ -117,7 +119,7 @@ namespace OPJosMod.GhostMode.Patches
         //mode: 0 => regular, 1 => super bright
         private static void setNightVisionMode(PlayerControllerB __instance, int mode)
         {
-            if (mode == 0 && OGnightVisionIntensity != 0.0f)
+            if (mode == 0)
             {
                 mls.LogMessage("setting default night vision values");
                 __instance.nightVision.type = OGnightVisionType;
@@ -226,6 +228,19 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
         {
+            if(setupValuesYet == false && allowKill)
+            {
+                mls.LogMessage("setting default night vision values");
+                setupValuesYet = true;
+                OGnightVisionType = __instance.nightVision.type;
+                OGnightVisionIntensity = __instance.nightVision.intensity;
+                OGnightVisionRange = __instance.nightVision.range;
+                OGnightVisionShadowStrength = __instance.nightVision.shadowStrength;
+                OGnightVisionBounceIntensity = __instance.nightVision.bounceIntensity;
+                OGnightVisionInnerSpotAngle = __instance.nightVision.innerSpotAngle;
+                OGnightVisionSpotAngle = __instance.nightVision.spotAngle;
+            }
+
             if ((Time.time - timeWhenSafe) >= 1.0f)
             {
                 lastSafeLocations[safeLocationsIndex] = __instance.transform.position;
@@ -579,24 +594,12 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.audioListenerLowPass.enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(enableGameOver: false, playerControllerB);
 
-                //setup brightness variables
-                if (OGnightVisionIntensity == 0.0f)
-                {
-                    mls.LogMessage("setting default night vision values");
-                    OGnightVisionType = __instance.nightVision.type;
-                    OGnightVisionIntensity = __instance.nightVision.intensity;
-                    OGnightVisionRange = __instance.nightVision.range;
-                    OGnightVisionShadowStrength = __instance.nightVision.shadowStrength;
-                    OGnightVisionBounceIntensity = __instance.nightVision.bounceIntensity;
-                    OGnightVisionInnerSpotAngle = __instance.nightVision.innerSpotAngle;
-                    OGnightVisionSpotAngle = __instance.nightVision.spotAngle;
-                }
-
                 isGhostMode = true;
                 HUDManager.Instance.spectatingPlayerText.text = "";
                 HUDManager.Instance.holdButtonToEndGameEarlyText.text = "";
                 HUDManager.Instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
                 HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
+                setupValuesYet = false;
                 setNightVisionMode(playerControllerB, 0);
                 nightVisionFlag = false;
 
