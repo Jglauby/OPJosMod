@@ -299,13 +299,13 @@ namespace OPJosMod.GhostMode.Patches
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
                         {
                             mls.LogMessage("attempt to tp to dead body");
-                            __instance.transform.position = __instance.deadBody.transform.position;
+                            specialTeleportPlayer(__instance, __instance.deadBody.transform.position);
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
                         {
                             mls.LogMessage("attempt to tp to front door");
-                            __instance.transform.position = RoundManager.FindMainEntrancePosition(true, true);
+                            specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true));
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
@@ -327,7 +327,7 @@ namespace OPJosMod.GhostMode.Patches
                                     __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled &&
                                     __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
                                 {
-                                    __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
+                                    specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position);
                                     return;
                                 }
                             }
@@ -345,7 +345,7 @@ namespace OPJosMod.GhostMode.Patches
                                     && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
                                     && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
                                 {
-                                    __instance.transform.position = __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position;
+                                    specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position);
                                     return;
                                 }
                             }
@@ -711,5 +711,13 @@ namespace OPJosMod.GhostMode.Patches
 
             ChangeAudioListenerToObject(__instance, __instance.playersManager.spectateCamera.gameObject);
         }         
+
+        private static void specialTeleportPlayer(PlayerControllerB __instance, Vector3 newPos)
+        {
+            if (GameNetworkManager.Instance.localPlayerController.playerClientId == __instance.playerClientId)
+                GameNetworkManager.Instance.localPlayerController.TeleportPlayer(newPos);
+            else
+                mls.LogError("didnt' teleport player as __instnace isn't local player on client");
+        }
     }
 }
