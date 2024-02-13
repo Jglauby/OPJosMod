@@ -299,13 +299,15 @@ namespace OPJosMod.GhostMode.Patches
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
                         {
                             mls.LogMessage("attempt to tp to dead body");
-                            specialTeleportPlayer(__instance, __instance.deadBody.transform.position);
+                            var tpMessage = "(Teleported to: your dead body)";
+                            __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
                         {
                             mls.LogMessage("attempt to tp to front door");
-                            specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true));
+                            var tpMessage = "(Teleported to: Front Door)";
+                            __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
@@ -327,7 +329,8 @@ namespace OPJosMod.GhostMode.Patches
                                     __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled &&
                                     __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
                                 {
-                                    specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position);
+                                    var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                                    __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                                     return;
                                 }
                             }
@@ -345,7 +348,8 @@ namespace OPJosMod.GhostMode.Patches
                                     && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
                                     && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
                                 {
-                                    specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position);
+                                    var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                                    __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                                     return;
                                 }
                             }
@@ -712,10 +716,16 @@ namespace OPJosMod.GhostMode.Patches
             ChangeAudioListenerToObject(__instance, __instance.playersManager.spectateCamera.gameObject);
         }         
 
-        private static void specialTeleportPlayer(PlayerControllerB __instance, Vector3 newPos)
+        private static IEnumerator specialTeleportPlayer(PlayerControllerB __instance, Vector3 newPos, string message)
         {
             if (GameNetworkManager.Instance.localPlayerController.playerClientId == __instance.playerClientId)
+            {
+                HUDManager.Instance.spectatingPlayerText.text = message;
                 GameNetworkManager.Instance.localPlayerController.TeleportPlayer(newPos);
+                yield return new WaitForSeconds(3f);
+
+                HUDManager.Instance.spectatingPlayerText.text = "";
+            }
             else
                 mls.LogError("didnt' teleport player as __instnace isn't local player on client");
         }
