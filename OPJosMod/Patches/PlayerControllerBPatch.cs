@@ -61,6 +61,7 @@ namespace OPJosMod.GhostMode.Patches
 
         private static int tpPlayerIndex = 0;
         private static Coroutine tpCoroutine;
+        private static bool isTeleporting = false;
 
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
@@ -113,6 +114,7 @@ namespace OPJosMod.GhostMode.Patches
                 jumpCoroutine = null;
                 tpPlayerIndex = 0;
                 tpCoroutine = null;
+                isTeleporting = false;
             }
             catch (Exception e)
             {
@@ -320,18 +322,21 @@ namespace OPJosMod.GhostMode.Patches
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame)//left was clicked
                         {
-                            mls.LogMessage("left clicked, tp to previous player");
+                            if (isTeleporting)
+                                return;
 
+                            isTeleporting = true;
                             var allPlayers = StartOfRound.Instance.allPlayerScripts;
                             for (int i = 0; i < allPlayers.Length; i++)
                             {
                                 tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
-
-                                if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead &&
-                                    __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled &&
-                                    __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                                mls.LogMessage($"tp index:{tpPlayerIndex}");
+                                if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
+                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
                                 {
                                     var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                                    mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
                                     tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                                     return;
                                 }
@@ -340,17 +345,21 @@ namespace OPJosMod.GhostMode.Patches
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame)//right was clicked
                         {
-                            mls.LogMessage("right clicked, tp to next player");
+                            if (isTeleporting)
+                                return;
 
+                            isTeleporting = true;
                             var allPlayers = StartOfRound.Instance.allPlayerScripts;
                             for (int i = 0; i < allPlayers.Length; i++)
                             {
                                 tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
+                                mls.LogMessage($"tp index:{tpPlayerIndex}");
                                 if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
                                     && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
-                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
+                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
                                 {
                                     var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                                    mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
                                     tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                                     return;
                                 }
@@ -720,21 +729,17 @@ namespace OPJosMod.GhostMode.Patches
 
         private static IEnumerator specialTeleportPlayer(PlayerControllerB __instance, Vector3 newPos, string message)
         {
-            if (GameNetworkManager.Instance.localPlayerController.playerClientId == __instance.playerClientId)
+            if (tpCoroutine != null)
             {
-                if (tpCoroutine != null)
-                {
-                    __instance.StopCoroutine(tpCoroutine);
-                }
-
-                HUDManager.Instance.spectatingPlayerText.text = message;
-                GameNetworkManager.Instance.localPlayerController.TeleportPlayer(newPos);
-                yield return new WaitForSeconds(3f);
-
-                HUDManager.Instance.spectatingPlayerText.text = "";
+                __instance.StopCoroutine(tpCoroutine);
             }
-            else
-                mls.LogError("didnt' teleport player as __instnace isn't local player on client");
+
+            HUDManager.Instance.spectatingPlayerText.text = message;
+            GameNetworkManager.Instance.localPlayerController.TeleportPlayer(newPos);
+            yield return new WaitForSeconds(1.5f);
+
+            HUDManager.Instance.spectatingPlayerText.text = "";     
+            isTeleporting = false;
         }
     }
 }
