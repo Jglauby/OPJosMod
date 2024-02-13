@@ -40,6 +40,7 @@ namespace OPJosMod.GhostMode
             HUDManagerPatch.SetLogSource(mls);
             CentipedeAIPatch.SetLogSource(mls);
             MouthDogAIPatch.SetLogSource(mls);
+            ForestGiantAIPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
@@ -47,6 +48,7 @@ namespace OPJosMod.GhostMode
             harmony.PatchAll(typeof(HUDManagerPatch));
             harmony.PatchAll(typeof (CentipedeAIPatch));
             harmony.PatchAll(typeof(MouthDogAIPatch));
+            harmony.PatchAll(typeof(ForestGiantAIPatch));
         }
     }
 }

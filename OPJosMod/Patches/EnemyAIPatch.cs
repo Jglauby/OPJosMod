@@ -55,5 +55,49 @@ namespace OPJosMod.GhostMode.Patches
                 cannotBeInShip = true;
             }
         }
+
+        [HarmonyPatch("GetAllPlayersInLineOfSight")]
+        [HarmonyPostfix]
+        static void getAllPlayersInLineOfSightPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
+        {
+            if (PlayerControllerBPatch.isGhostMode)
+            {
+                var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
+                var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;
+
+                if (__result != null && __result.Length > 0)
+                {
+                    // Find the index of the current player in the result array
+                    int currentPlayerIndex = -1;
+                    for (int i = 0; i < __result.Length; i++)
+                    {
+                        if (__result[i] == allPlayerScripts[playerIndex])
+                        {
+                            currentPlayerIndex = i;
+                            break;
+                        }
+                    }
+
+                    // If the current player is found in the result array, remove it
+                    if (currentPlayerIndex != -1)
+                    {
+                        // Create a new array to store the modified result
+                        PlayerControllerB[] modifiedResult = new PlayerControllerB[__result.Length - 1];
+                        int newIndex = 0;
+                        for (int i = 0; i < __result.Length; i++)
+                        {
+                            if (i != currentPlayerIndex)
+                            {
+                                modifiedResult[newIndex] = __result[i];
+                                newIndex++;
+                            }
+                        }
+
+                        // Assign the modified result back to the __result parameter
+                        __result = modifiedResult;
+                    }
+                }
+            }
+        }
     }
 }
