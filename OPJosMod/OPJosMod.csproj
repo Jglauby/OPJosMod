@@ -101,6 +101,7 @@
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches\EnemyPatches\NutcrackerEnemyAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\SandSpiderAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\ForestGiantAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\MouthDogAIPatch.cs" />
