@@ -60,6 +60,7 @@ namespace OPJosMod.GhostMode.Patches
         private static float maxSpeed = 10f;
 
         private static int tpPlayerIndex = 0;
+        private static Coroutine tpCoroutine;
 
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
@@ -110,7 +111,8 @@ namespace OPJosMod.GhostMode.Patches
                 timeWhenSafe = Time.time;
 
                 jumpCoroutine = null;
-          
+                tpPlayerIndex = 0;
+                tpCoroutine = null;
             }
             catch (Exception e)
             {
@@ -300,14 +302,14 @@ namespace OPJosMod.GhostMode.Patches
                         {
                             mls.LogMessage("attempt to tp to dead body");
                             var tpMessage = "(Teleported to: your dead body)";
-                            __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
+                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
                         {
                             mls.LogMessage("attempt to tp to front door");
                             var tpMessage = "(Teleported to: Front Door)";
-                            __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
+                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
@@ -321,7 +323,7 @@ namespace OPJosMod.GhostMode.Patches
                             mls.LogMessage("left clicked, tp to previous player");
 
                             var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                            while (true)
+                            for (int i = 0; i < allPlayers.Length; i++)
                             {
                                 tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
 
@@ -330,7 +332,7 @@ namespace OPJosMod.GhostMode.Patches
                                     __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
                                 {
                                     var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
-                                    __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                                     return;
                                 }
                             }
@@ -341,7 +343,7 @@ namespace OPJosMod.GhostMode.Patches
                             mls.LogMessage("right clicked, tp to next player");
 
                             var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                            while (true)
+                            for (int i = 0; i < allPlayers.Length; i++)
                             {
                                 tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
                                 if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
@@ -349,7 +351,7 @@ namespace OPJosMod.GhostMode.Patches
                                     && __instance.playersManager.allPlayerScripts[tpPlayerIndex] != __instance)
                                 {
                                     var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
-                                    __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                                     return;
                                 }
                             }
@@ -720,6 +722,11 @@ namespace OPJosMod.GhostMode.Patches
         {
             if (GameNetworkManager.Instance.localPlayerController.playerClientId == __instance.playerClientId)
             {
+                if (tpCoroutine != null)
+                {
+                    __instance.StopCoroutine(tpCoroutine);
+                }
+
                 HUDManager.Instance.spectatingPlayerText.text = message;
                 GameNetworkManager.Instance.localPlayerController.TeleportPlayer(newPos);
                 yield return new WaitForSeconds(3f);
