@@ -39,7 +39,7 @@ namespace OPJosMod.GhostMode.Patches
                 mls.LogMessage("enemy collide with player patch hit");
                 return false;
             }
-
+        
             return true;
         }
 

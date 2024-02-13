@@ -101,7 +101,9 @@
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches\EnemyPatches\MouthDogAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\CentipededAIPatch.cs" />
+    <Compile Include="GeneralUtils.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="Patches\HUDManagerPatch.cs" />
     <Compile Include="Patches\EnemyAIPatch.cs" />

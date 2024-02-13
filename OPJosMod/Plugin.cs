@@ -39,12 +39,14 @@ namespace OPJosMod.GhostMode
             EnemyAIPatch.SetLogSource(mls);
             HUDManagerPatch.SetLogSource(mls);
             CentipedeAIPatch.SetLogSource(mls);
+            MouthDogAIPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
             harmony.PatchAll(typeof(EnemyAIPatch));
             harmony.PatchAll(typeof(HUDManagerPatch));
             harmony.PatchAll(typeof (CentipedeAIPatch));
+            harmony.PatchAll(typeof(MouthDogAIPatch));
         }
     }
 }
