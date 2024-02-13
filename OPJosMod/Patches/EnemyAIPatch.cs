@@ -32,12 +32,17 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("OnCollideWithPlayer")]
         [HarmonyPrefix]
-        static bool onCollideWithPlayerPatch(EnemyAI __instance)
+        static bool onCollideWithPlayerPatch(EnemyAI __instance, ref Collider other)
         {
-            if (PlayerControllerBPatch.isGhostMode && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            if (PlayerControllerBPatch.isGhostMode)
             {
-                mls.LogMessage("enemy collide with player patch hit");
-                return false;
+                PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
+
+                if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
+                {
+                    mls.LogMessage("enemy collide with player patch hit");
+                    return false;
+                }
             }
         
             return true;
@@ -98,6 +103,20 @@ namespace OPJosMod.GhostMode.Patches
                     }
                 }
             }
+        }
+
+        [HarmonyPatch("KillEnemy")]
+        [HarmonyPrefix]
+        static bool killEnemyPatch(EnemyAI __instance)
+        {
+            mls.LogMessage("enemy ai tried hit killEnemyPatch");
+            if (PlayerControllerBPatch.isGhostMode && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            {
+                mls.LogMessage("enemy ai tried to direclty kill player");
+                return false;
+            }
+
+            return true;
         }
     }
 }
