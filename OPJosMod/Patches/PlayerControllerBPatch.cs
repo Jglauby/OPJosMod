@@ -69,12 +69,15 @@ namespace OPJosMod.TheFlash.Patches
                 }
             }
 
-            if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame)//R was pressed
+            if (__instance.IsOwner && !__instance.inTerminalMenu && !__instance.isTypingChat)//can toggle
             {
-                if(adjustingSpeed == false)
+                if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame)//R was pressed
                 {
-                    adjustingSpeed = true;
-                    __instance.StartCoroutine(toggleSpeed(__instance));
+                    if (adjustingSpeed == false)
+                    {
+                        adjustingSpeed = true;
+                        __instance.StartCoroutine(toggleSpeed(__instance));
+                    }
                 }
             }
         }
