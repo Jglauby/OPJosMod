@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using Random = UnityEngine.Random;
 
 namespace OPJosMod.TheFlash.Patches
 {
@@ -80,6 +81,9 @@ namespace OPJosMod.TheFlash.Patches
                     }
                 }
             }
+
+            //vibrate player
+            __instance.StartCoroutine(vibratePlayer(__instance));
         }
 
         private static IEnumerator toggleSpeed(PlayerControllerB __instance)
@@ -106,6 +110,21 @@ namespace OPJosMod.TheFlash.Patches
             }
 
             adjustingSpeed = false;
+        }
+
+        private static IEnumerator vibratePlayer(PlayerControllerB __instance)
+        {
+            float vibrateAmount = 0.005f;
+
+            Vector3 forwardDirection = __instance.transform.forward;
+            Vector3 rightDirection = Vector3.Cross(Vector3.up, forwardDirection);
+            float randomDirectionSign = Random.Range(0, 2) == 0 ? -1f : 1f;
+            Vector3 randomVibration = vibrateAmount * randomDirectionSign * rightDirection;
+
+            __instance.thisController.Move(randomVibration);
+            yield return new WaitForSeconds(0.005f);
+            __instance.thisController.Move(-randomVibration);
+            yield return new WaitForSeconds(0.005f);
         }
     }
 }
