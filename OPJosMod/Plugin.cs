@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.GhostMode.Enemy.Patches;
 using OPJosMod.GhostMode.Patches;
 using System;
 using System.Collections.Generic;
@@ -33,15 +34,17 @@ namespace OPJosMod.GhostMode
 
             mls.LogInfo("mod has started");
 
-            Patches.PlayerControllerBPatch.SetLogSource(mls);
-            Patches.StartOfRoundPatch.SetLogSource(mls);
-            Patches.EnemyAIPatch.SetLogSource(mls);
-            Patches.HUDManagerPatch.SetLogSource(mls);
+            PlayerControllerBPatch.SetLogSource(mls);
+            StartOfRoundPatch.SetLogSource(mls);
+            EnemyAIPatch.SetLogSource(mls);
+            HUDManagerPatch.SetLogSource(mls);
+            CentipedeAIPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
             harmony.PatchAll(typeof(EnemyAIPatch));
             harmony.PatchAll(typeof(HUDManagerPatch));
+            harmony.PatchAll(typeof (CentipedeAIPatch));
         }
     }
 }

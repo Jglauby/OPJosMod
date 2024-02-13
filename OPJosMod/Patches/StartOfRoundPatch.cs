@@ -102,7 +102,7 @@ namespace OPJosMod.GhostMode.Patches
                         __instance.RefreshPlayerVoicePlaybackObjects();
                         if (playerControllerB2.voicePlayerState == null || playerControllerB2.currentVoiceChatAudioSource == null)
                         {
-                            mls.LogMessage($"Was not able to access voice chat object for player #{i}; {playerControllerB2.voicePlayerState == null}; {playerControllerB2.currentVoiceChatAudioSource == null}");
+                            //mls.LogMessage($"Was not able to access voice chat object for player #{i}; {playerControllerB2.voicePlayerState == null}; {playerControllerB2.currentVoiceChatAudioSource == null}");
                             continue;
                         }
                     }

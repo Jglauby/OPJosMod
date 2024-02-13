@@ -42,5 +42,18 @@ namespace OPJosMod.GhostMode.Patches
 
             return true;
         }
+
+        [HarmonyPatch("PlayerIsTargetable")]
+        [HarmonyPrefix]
+        static void playerIsTargetablePatch(ref bool cannotBeInShip, ref PlayerControllerB playerScript)
+        {
+            //a way to make current player always return not tragetable in the enemy ai
+            if (PlayerControllerBPatch.isGhostMode && playerScript.IsOwner)
+            {
+                //mls.LogMessage("set local player to not targetable");
+                playerScript.isInHangarShipRoom = true;
+                cannotBeInShip = true;
+            }
+        }
     }
 }
