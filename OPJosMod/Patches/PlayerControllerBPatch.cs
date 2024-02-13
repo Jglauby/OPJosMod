@@ -298,7 +298,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
                 else //is a ghost
                 {
-                    if (!__instance.inTerminalMenu && !__instance.isTypingChat)//listen to hotkeys when not typing
+                    if (!StartOfRound.Instance.localPlayerController.inTerminalMenu && !StartOfRound.Instance.localPlayerController.isTypingChat)//listen to hotkeys when not typing
                     {
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
                         {
