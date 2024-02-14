@@ -31,12 +31,13 @@ namespace OPJosMod.ReviveTeam
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
 
-            mls.LogInfo("mod has started");
+            mls.LogInfo("revie team mod has started");
 
-            harmony.PatchAll(typeof(OpJosMod));
+            PlayerControllerBPatch.SetLogSource(mls);
+            StartOfRoundPatch.SetLogSource(mls);
 
-            Patches.PlayerControllerBPatch.SetLogSource(mls);
             harmony.PatchAll(typeof(PlayerControllerBPatch));
+            harmony.PatchAll(typeof(StartOfRoundPatch));
         }
     }
 }
