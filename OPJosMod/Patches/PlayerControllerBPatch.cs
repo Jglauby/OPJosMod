@@ -2,19 +2,6 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace OPJosMod.ReviveTeam.Patches
 {
@@ -27,13 +14,13 @@ namespace OPJosMod.ReviveTeam.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("ActivateItem_performed")]
-        [HarmonyPostfix]
-        static void patchActivateItem_performed(PlayerControllerB __instance)
-        {            
-            if (__instance.IsOwner && __instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
+        [HarmonyPatch("Crouch")]
+        [HarmonyPrefix]
+        static void crouchPatch(PlayerControllerB __instance)
+        {
+            if (__instance.IsOwner && (!__instance.IsServer || __instance.isHostPlayerObject))
             {
-                mls.LogMessage("attempting to revive");
+                mls.LogMessage("you crouched!");
                 ReviveDeadPlayer(__instance);
             }
         }
@@ -42,9 +29,7 @@ namespace OPJosMod.ReviveTeam.Patches
         {
             try
             {
-                //StartOfRound.Instance.ReviveDeadPlayers();
-
-                //StartOfRound.Instance.EndPlayersFiredSequenceClientRpc();
+                
             }
             catch (Exception e)
             {
