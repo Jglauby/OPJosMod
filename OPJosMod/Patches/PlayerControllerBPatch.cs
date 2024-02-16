@@ -1,7 +1,10 @@
-﻿using BepInEx.Logging;
+﻿using BepInEx;
+using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using LethalNetworkAPI;
 using System;
+using System.Xml.Linq;
 
 namespace OPJosMod.ReviveTeam.Patches
 {
@@ -29,7 +32,8 @@ namespace OPJosMod.ReviveTeam.Patches
         {
             try
             {
-                
+                LethalServerMessage<int> customServerMessage = new LethalServerMessage<int>(identifier: "customIdentifier");
+                customServerMessage.SendAllClients(3);
             }
             catch (Exception e)
             {

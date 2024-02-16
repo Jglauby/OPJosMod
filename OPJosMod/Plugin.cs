@@ -5,6 +5,7 @@ using OPJosMod.ReviveTeam.Patches;
 
 namespace OPJosMod.ReviveTeam
 {
+    [BepInDependency("LethalNetworkAPI")]
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
