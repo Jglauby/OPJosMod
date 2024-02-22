@@ -68,6 +68,9 @@ namespace OPJosMod.GhostMode.Patches
         private static bool collisionsOn = true;
         private static float noClipSpeed = 0.25f;
 
+        private static float lastInteractedTime = Time.time;
+        private static float waitTimeBetweenInteractions = 30f;
+
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
             try
@@ -436,6 +439,26 @@ namespace OPJosMod.GhostMode.Patches
                     ((Component)___nightVision).gameObject.SetActive(true);
                 }
             }
+        }
+
+        [HarmonyPatch("Interact_performed")]
+        [HarmonyPrefix]
+        private static bool interact_performedPatch(PlayerControllerB __instance, ref InputAction.CallbackContext context)
+        {
+            if (__instance.IsOwner && !__instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
+            {
+                if(Time.time - lastInteractedTime > waitTimeBetweenInteractions)
+                {
+
+                    lastInteractedTime = Time.time;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         //a playercontrollerb private function manually written out
