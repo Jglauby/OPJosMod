@@ -64,6 +64,7 @@ namespace OPJosMod.GhostMode.Patches
         private static bool isTeleporting = false;
 
         private static bool isTogglingCollisions = false;
+        private static Coroutine togglingCollisionsCoroutine;
         private static bool collisionsOn = true;
         private static float noClipSpeed = 0.25f;
 
@@ -305,6 +306,43 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     if (!StartOfRound.Instance.localPlayerController.inTerminalMenu && !StartOfRound.Instance.localPlayerController.isTypingChat)//listen to hotkeys when not typing
                     {
+                        if (!collisionsOn)//noclip movement controls
+                        {
+                            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)37]).isPressed)//W is pressed
+                            {
+                                var currentRotation = __instance.transform.rotation;
+
+                                Vector3 moveDirection = currentRotation * Vector3.forward;
+                                moveDirection.Normalize();
+
+                                __instance.transform.position += moveDirection * noClipSpeed;
+                            }
+
+                            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)1]).isPressed)//space is pressed
+                            {
+                                Vector3 upDirection = Vector3.up;
+
+                                __instance.transform.position += upDirection * noClipSpeed;
+                            }
+
+                            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)51]).isPressed)//left shift is pressed
+                            {
+                                Vector3 upDirection = -Vector3.up;
+
+                                __instance.transform.position += upDirection * noClipSpeed;
+                            }
+                        }
+
+                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)40]).wasPressedThisFrame)//Z was pressed
+                        {
+                            //toggle collisions
+                            if (!isTogglingCollisions)
+                            {
+                                isTogglingCollisions = true;
+                                togglingCollisionsCoroutine = __instance.StartCoroutine(toggleCollisions(__instance));
+                            }
+                        }
+
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
                         {
                             mls.LogMessage("attempt to tp to dead body");
@@ -420,43 +458,6 @@ namespace OPJosMod.GhostMode.Patches
                     ((Component)___nightVision).gameObject.SetActive(true);
                 }
             }
-
-            if (!collisionsOn)
-            {
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)37]).isPressed)//W was pressed
-                {
-                    var currentRotation = __instance.transform.rotation;
-
-                    Vector3 moveDirection = currentRotation * Vector3.forward;
-                    moveDirection.Normalize();
-
-                    __instance.transform.position += moveDirection * noClipSpeed;
-                }
-
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)1]).isPressed)//space was pressed
-                {
-                    Vector3 upDirection = Vector3.up;
-
-                    __instance.transform.position += upDirection * noClipSpeed;
-                }
-
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)51]).isPressed)//left shift was pressed
-                {
-                    Vector3 upDirection = -Vector3.up; 
-
-                    __instance.transform.position += upDirection * noClipSpeed;
-                }
-            }
-
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
-            {
-                //toggle collisions
-                if (!isTogglingCollisions)
-                {
-                    isTogglingCollisions = true;
-                    __instance.StartCoroutine(toggleCollisions(__instance));
-                }
-            }
         }
 
         //a playercontrollerb private function manually written out
@@ -514,6 +515,11 @@ namespace OPJosMod.GhostMode.Patches
 
         private static IEnumerator toggleCollisions(PlayerControllerB __instance)
         {
+            if (togglingCollisionsCoroutine != null)
+            {
+                __instance.StopCoroutine(togglingCollisionsCoroutine);
+            }
+
             __instance = StartOfRound.Instance.localPlayerController;
             yield return new WaitForSeconds(0.1f);
 
