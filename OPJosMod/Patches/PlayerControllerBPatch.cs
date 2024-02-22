@@ -68,8 +68,8 @@ namespace OPJosMod.GhostMode.Patches
         private static bool collisionsOn = true;
         private static float noClipSpeed = 0.25f;
 
-        private static float lastInteractedTime = Time.time;
-        private static float waitTimeBetweenInteractions = 30f;
+        public static float lastInteractedTime = Time.time;
+        public static float waitTimeBetweenInteractions = 8f;
 
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
@@ -459,6 +459,20 @@ namespace OPJosMod.GhostMode.Patches
             }
 
             return true;
+        }
+
+        [HarmonyPatch("SetHoverTipAndCurrentInteractTrigger")]
+        [HarmonyPostfix]
+        private static void setHoverTipAndCurrentInteractTriggerPatch(PlayerControllerB __instance)
+        {
+            var lastITime = lastInteractedTime;
+            var waitTime = waitTimeBetweenInteractions;
+            var remainingTime = waitTime - (Time.time - lastITime);
+
+            if (Time.time - lastITime <= waitTime && __instance.cursorTip.text != "")
+            {
+                __instance.cursorTip.text = $"Wait: {(int)remainingTime}";
+            }
         }
 
         //a playercontrollerb private function manually written out
