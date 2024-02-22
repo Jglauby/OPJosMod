@@ -91,7 +91,6 @@ namespace OPJosMod.GhostMode.Patches
                         mls.LogError("private fields not found");
                     }
 
-                    setupValuesYet = false;
                     setNightVisionMode(__instance, 0);
                     __instance.hasBegunSpectating = false;
 
@@ -656,7 +655,6 @@ namespace OPJosMod.GhostMode.Patches
                 HUDManager.Instance.holdButtonToEndGameEarlyText.text = "";
                 HUDManager.Instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
                 HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
-                setupValuesYet = false;
 
                 showAliveUI(playerControllerB, false);
 
