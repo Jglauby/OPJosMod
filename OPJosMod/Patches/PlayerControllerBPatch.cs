@@ -306,31 +306,9 @@ namespace OPJosMod.GhostMode.Patches
                 {
                     if (!StartOfRound.Instance.localPlayerController.inTerminalMenu && !StartOfRound.Instance.localPlayerController.isTypingChat)//listen to hotkeys when not typing
                     {
-                        if (!collisionsOn)//noclip movement controls
+                        if (!collisionsOn)
                         {
-                            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)37]).isPressed)//W is pressed
-                            {
-                                var currentRotation = __instance.transform.rotation;
-
-                                Vector3 moveDirection = currentRotation * Vector3.forward;
-                                moveDirection.Normalize();
-
-                                __instance.transform.position += moveDirection * noClipSpeed;
-                            }
-
-                            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)1]).isPressed)//space is pressed
-                            {
-                                Vector3 upDirection = Vector3.up;
-
-                                __instance.transform.position += upDirection * noClipSpeed;
-                            }
-
-                            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)51]).isPressed)//left shift is pressed
-                            {
-                                Vector3 upDirection = -Vector3.up;
-
-                                __instance.transform.position += upDirection * noClipSpeed;
-                            }
+                            handleNoClipControls(__instance);
                         }
 
                         if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)40]).wasPressedThisFrame)//Z was pressed
@@ -513,34 +491,6 @@ namespace OPJosMod.GhostMode.Patches
             }
         }
 
-        private static IEnumerator toggleCollisions(PlayerControllerB __instance)
-        {
-            if (togglingCollisionsCoroutine != null)
-            {
-                __instance.StopCoroutine(togglingCollisionsCoroutine);
-            }
-
-            __instance = StartOfRound.Instance.localPlayerController;
-            yield return new WaitForSeconds(0.1f);
-
-            if (collisionsOn)
-            {
-                mls.LogMessage("collisions are off");
-                collisionsOn = false;
-
-                __instance.playerCollider.enabled = false;
-            }
-            else
-            {
-                mls.LogMessage("collisions are on");
-                collisionsOn = true;
-
-                __instance.playerCollider.enabled = true;
-            }
-
-            isTogglingCollisions = false;
-        }
-
         [HarmonyPatch("Jump_performed")]
         [HarmonyPrefix]
         static void jump_performedPatch(PlayerControllerB __instance)
@@ -625,6 +575,66 @@ namespace OPJosMod.GhostMode.Patches
             if (!allowKill)
             {
                 HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
+            }
+        }
+
+        private static void handleNoClipControls(PlayerControllerB __instance)
+        {
+            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)37]).isPressed)//W is pressed
+            {
+                var currentRotation = __instance.transform.rotation;
+
+                Vector3 moveDirection = currentRotation * Vector3.forward;
+                moveDirection.Normalize();
+
+                __instance.transform.position += moveDirection * noClipSpeed;
+            }
+
+            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0xF]).isPressed)//A is pressed
+            {
+                var currentRotation = __instance.transform.rotation;
+
+                Quaternion leftRotation = Quaternion.AngleAxis(-90f, Vector3.up);
+                Vector3 leftDirection = leftRotation * currentRotation * Vector3.forward;
+                leftDirection.Normalize();
+
+                __instance.transform.position += leftDirection * noClipSpeed;
+            }
+
+            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)18]).isPressed)//D is pressed
+            {
+                var currentRotation = __instance.transform.rotation;
+
+                Quaternion rightRotation = Quaternion.AngleAxis(90f, Vector3.up);
+                Vector3 rightDirection = rightRotation * currentRotation * Vector3.forward;
+                rightDirection.Normalize();
+
+                __instance.transform.position += rightDirection * noClipSpeed;
+            }
+
+            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)33]).isPressed)//S is pressed
+            {
+                var currentRotation = __instance.transform.rotation;
+
+                Vector3 backwardDirection = currentRotation * Vector3.back;
+                backwardDirection.Normalize();
+
+                __instance.transform.position += backwardDirection * noClipSpeed;
+            }
+
+
+            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)1]).isPressed)//space is pressed
+            {
+                Vector3 upDirection = Vector3.up;
+
+                __instance.transform.position += upDirection * noClipSpeed;
+            }
+
+            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)51]).isPressed)//left shift is pressed
+            {
+                Vector3 upDirection = -Vector3.up;
+
+                __instance.transform.position += upDirection * noClipSpeed;
             }
         }
 
@@ -808,6 +818,36 @@ namespace OPJosMod.GhostMode.Patches
 
             HUDManager.Instance.spectatingPlayerText.text = "";     
             isTeleporting = false;
+        }
+
+        private static IEnumerator toggleCollisions(PlayerControllerB __instance)
+        {
+            if (togglingCollisionsCoroutine != null)
+            {
+                __instance.StopCoroutine(togglingCollisionsCoroutine);
+            }
+
+            __instance = StartOfRound.Instance.localPlayerController;
+            yield return new WaitForSeconds(0.1f);
+
+            if (collisionsOn)
+            {
+                mls.LogMessage("collisions are off");
+                HUDManager.Instance.DisplayTip("NoClip", "On");
+                collisionsOn = false;
+
+                __instance.playerCollider.enabled = false;
+            }
+            else
+            {
+                mls.LogMessage("collisions are on");
+                HUDManager.Instance.DisplayTip("NoClip", "Off");
+                collisionsOn = true;
+
+                __instance.playerCollider.enabled = true;
+            }
+
+            isTogglingCollisions = false;
         }
     }
 }
