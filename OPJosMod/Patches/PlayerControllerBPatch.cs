@@ -69,7 +69,7 @@ namespace OPJosMod.GhostMode.Patches
         private static float noClipSpeed = 0.25f;
 
         public static float lastInteractedTime = Time.time;
-        public static float waitTimeBetweenInteractions = 8f;
+        public static float waitTimeBetweenInteractions = 45f;
 
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
@@ -445,6 +445,9 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         private static bool interact_performedPatch(PlayerControllerB __instance)
         {
+            if (!isGhostMode)
+                return true;
+
             if (__instance.IsOwner && !__instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
             {
                 if (!canUse(__instance))               
@@ -478,6 +481,9 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
         {
+            if (!isGhostMode)
+                return false;
+
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
             {
                 var objectName = getHoveringObjectName(__instance);
@@ -496,7 +502,7 @@ namespace OPJosMod.GhostMode.Patches
                  * Trigger = battery charger
                  */
                 string[] noDelayObjects = { 
-                    "Cube", "LadderTrigger", "EntranceTeleportA" , "StartGameLever", "TerminalScript", "ButtonGlass", "Trigger" 
+                    "Cube", "EntranceTeleportA" , "StartGameLever", "TerminalScript", "ButtonGlass", "Trigger" 
                 };
 
                 if (noDelayObjects.Contains(objectName))
@@ -514,12 +520,15 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool canUse(PlayerControllerB __instance)
         {
+            if (!isGhostMode)
+                return true;
+
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
             {
                 var objectName = getHoveringObjectName(__instance);               
 
                 string[] nonoObjects = {
-                    "RedButton"
+                    "RedButton", "LadderTrigger"
                 };
 
                 if (nonoObjects.Contains(objectName))
@@ -533,6 +542,9 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         private static void setHoverTipAndCurrentInteractTriggerPatch(PlayerControllerB __instance)
         {
+            if (!isGhostMode)
+                return;
+
             if (shouldHaveDelay(__instance, false))
             {
                 var lastITime = lastInteractedTime;
