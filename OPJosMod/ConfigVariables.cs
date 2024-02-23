@@ -5,12 +5,12 @@ namespace OPJosMod
 {
     public static class ConfigVariables
     {
-        public static float defaultSprintMultiplier;
-        public static string flashTimeButton;
+        public static float waitTimeBetweenInteractions;
+        public static string startGhostModeButton;
 
-        public static Key getFlashTimeButton()
+        public static Key getButton(string buttonName)
         {
-            Key key = (Key)Enum.Parse(typeof(Key), flashTimeButton);
+            Key key = (Key)Enum.Parse(typeof(Key), buttonName);
             return key;
         }
     }

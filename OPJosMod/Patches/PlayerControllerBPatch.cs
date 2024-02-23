@@ -69,7 +69,6 @@ namespace OPJosMod.GhostMode.Patches
         private static float noClipSpeed = 0.25f;
 
         public static float lastInteractedTime = Time.time;
-        public static float waitTimeBetweenInteractions = 45f;
 
         public static void resetGhostModeVars(PlayerControllerB __instance)
         {
@@ -299,7 +298,7 @@ namespace OPJosMod.GhostMode.Patches
 
                 if (!isGhostMode)
                 {
-                    if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)30]).wasPressedThisFrame)//P was pressed
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.startGhostModeButton)]).wasPressedThisFrame)//P was pressed
                     {
                         mls.LogMessage("attempting to revive");
                         reviveDeadPlayer(__instance);                        
@@ -455,7 +454,7 @@ namespace OPJosMod.GhostMode.Patches
                     
                 if (shouldHaveDelay(__instance))
                 {
-                    if (Time.time - lastInteractedTime > waitTimeBetweenInteractions)
+                    if (Time.time - lastInteractedTime > ConfigVariables.waitTimeBetweenInteractions)
                     {
                         lastInteractedTime = Time.time;
                     }
@@ -548,7 +547,7 @@ namespace OPJosMod.GhostMode.Patches
             if (shouldHaveDelay(__instance, false))
             {
                 var lastITime = lastInteractedTime;
-                var waitTime = waitTimeBetweenInteractions;
+                var waitTime = ConfigVariables.waitTimeBetweenInteractions;
                 var remainingTime = waitTime - (Time.time - lastITime);
 
                 if (Time.time - lastITime <= waitTime && __instance.cursorTip.text != "")
