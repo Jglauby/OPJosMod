@@ -24,19 +24,14 @@ namespace OPJosMod.TheFlash.Patches
         {
             mls = logSource;
 
-            sprintMultiplier = defaultSprintMultiplier;
-            maxSprintSpeed = defaultMaxSprintSpeed;
+            sprintMultiplier = ConfigVariables.defaultSprintMultiplier;
+            maxSprintSpeed = ConfigVariables.defaultMaxSprintSpeed;
         }
-
-        private static float defaultSprintMultiplier = 1.04f;
-        private static float defaultMaxSprintSpeed = 15f;
+              
         private static float increasedSprintMultiplier = 10f;
         private static float increasedMaxSprintSpeed = 1500f;
         private static float sprintMultiplier;
         private static float maxSprintSpeed;
-
-        private static float walkMultiplier = 1.05f;
-        private static float maxWalkSpeed = 8f;
 
         private static bool adjustingSpeed = false;
         private static int speedMode = 0; //0 -> default, 1 -> super fast
@@ -60,12 +55,12 @@ namespace OPJosMod.TheFlash.Patches
                 }
                 else
                 {
-                    if ((float)currentValue > maxWalkSpeed)
-                        sprintMultiplierField.SetValue(__instance, maxWalkSpeed);
+                    if ((float)currentValue > ConfigVariables.maxWalkSpeed)
+                        sprintMultiplierField.SetValue(__instance, ConfigVariables.maxWalkSpeed);
 
-                    var newForce = (float)currentValue * walkMultiplier;
+                    var newForce = (float)currentValue * ConfigVariables.walkMultiplier;
 
-                    if(newForce < maxWalkSpeed)
+                    if(newForce < ConfigVariables.maxWalkSpeed)
                         sprintMultiplierField.SetValue(__instance, newForce);
                 }
             }
@@ -83,7 +78,7 @@ namespace OPJosMod.TheFlash.Patches
             }
 
             //vibrate player
-            __instance.StartCoroutine(vibratePlayer(__instance));
+            //__instance.StartCoroutine(vibratePlayer(__instance));
         }
 
         private static IEnumerator toggleSpeed(PlayerControllerB __instance)
@@ -105,8 +100,8 @@ namespace OPJosMod.TheFlash.Patches
                 HUDManager.Instance.DisplayTip("Flash Time", "Off");
 
                 speedMode = 0;
-                sprintMultiplier = defaultSprintMultiplier;
-                maxSprintSpeed = defaultMaxSprintSpeed;
+                sprintMultiplier = ConfigVariables.defaultSprintMultiplier;
+                maxSprintSpeed = ConfigVariables.defaultMaxSprintSpeed;
             }
 
             adjustingSpeed = false;
