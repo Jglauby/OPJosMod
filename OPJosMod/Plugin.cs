@@ -71,10 +71,16 @@ namespace OPJosMod.TheFlash
                                         8f,
                                         "How fast you walk");
 
+            var configFlashTimeButton = Config.Bind("Flash Time Button",
+                                        "FlashTimeButton",
+                                        "R",
+                                        "Button used to toggle flash time");
+
             ConfigVariables.defaultSprintMultiplier = configSprintMultiplier.Value;
             ConfigVariables.defaultMaxSprintSpeed = configMaxSprintSpeed.Value;
             ConfigVariables.walkMultiplier = configWalkMultiplier.Value;
             ConfigVariables.maxWalkSpeed = configMaxWalkSpeed.Value;
+            ConfigVariables.flashTimeButton = configFlashTimeButton.Value;
         }
     }
 }

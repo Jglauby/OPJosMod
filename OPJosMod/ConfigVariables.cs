@@ -1,5 +1,7 @@
 ﻿using BepInEx;
+using System;
 using System.Reflection;
+using UnityEngine.InputSystem;
 
 namespace OPJosMod
 {
@@ -9,5 +11,12 @@ namespace OPJosMod
         public static float defaultMaxSprintSpeed;
         public static float walkMultiplier;
         public static float maxWalkSpeed;
+        public static string flashTimeButton;
+
+        public static Key getFlashTimeButton()
+        {
+            Key key = (Key)Enum.Parse(typeof(Key), flashTimeButton);
+            return key;
+        }
     }
 }

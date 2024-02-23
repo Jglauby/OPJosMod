@@ -67,7 +67,7 @@ namespace OPJosMod.TheFlash.Patches
 
             if (__instance.IsOwner && !__instance.inTerminalMenu && !__instance.isTypingChat)//can toggle
             {
-                if (((ButtonControl)Keyboard.current[(Key)0x20]).wasPressedThisFrame)//R was pressed
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getFlashTimeButton()]).wasPressedThisFrame)//R was pressed, default
                 {
                     if (adjustingSpeed == false)
                     {
