@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.TheFlash.Patches;
@@ -30,7 +31,18 @@ namespace OPJosMod.TheFlash
             mls.LogInfo("mod has started");
 
             setupConfig();
+            //Config.SettingChanged += (obj, args) =>
+            //{
+            //    mls.LogMessage("config chagned!!!!");
+            //    setupConfig();
+            //    patch();
+            //};
 
+            patch();
+        }
+
+        private void patch()
+        {
             harmony.PatchAll(typeof(OpJosMod));
 
             Patches.PlayerControllerBPatch.SetLogSource(mls);
@@ -58,7 +70,6 @@ namespace OPJosMod.TheFlash
                                         "MaxWalkSpeed",
                                         8f,
                                         "How fast you walk");
-
 
             ConfigVariables.defaultSprintMultiplier = configSprintMultiplier.Value;
             ConfigVariables.defaultMaxSprintSpeed = configMaxSprintSpeed.Value;

@@ -7,7 +7,7 @@ namespace OPJosMod
     {
         public static float defaultSprintMultiplier;
         public static float defaultMaxSprintSpeed;
-        public static float walkMultiplier = 1.05f;
-        public static float maxWalkSpeed = 8f;
+        public static float walkMultiplier;
+        public static float maxWalkSpeed;
     }
 }
