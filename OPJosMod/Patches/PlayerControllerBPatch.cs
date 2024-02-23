@@ -443,19 +443,87 @@ namespace OPJosMod.GhostMode.Patches
 
         [HarmonyPatch("Interact_performed")]
         [HarmonyPrefix]
-        private static bool interact_performedPatch(PlayerControllerB __instance, ref InputAction.CallbackContext context)
+        private static bool interact_performedPatch(PlayerControllerB __instance)
         {
             if (__instance.IsOwner && !__instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
             {
-                if(Time.time - lastInteractedTime > waitTimeBetweenInteractions)
+                if (!canUse(__instance))               
+                    return false;               
+                    
+                if (shouldHaveDelay(__instance))
                 {
+                    if (Time.time - lastInteractedTime > waitTimeBetweenInteractions)
+                    {
+                        lastInteractedTime = Time.time;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
 
-                    lastInteractedTime = Time.time;
-                }
-                else
-                {
+            return true;
+        }
+
+        private static string getHoveringObjectName(PlayerControllerB __instance)
+        {
+            var objectName = __instance.hoveringOverTrigger.gameObject.name;
+            int index = objectName.IndexOf("(");
+            if (index != -1)
+                objectName = objectName.Substring(0, index).Trim();
+
+            return objectName;
+        }
+
+        private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
+        {
+            if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
+            {
+                var objectName = getHoveringObjectName(__instance);
+
+                if(showDebug)
+                    mls.LogMessage($"tried to interact with: {objectName}");
+
+                /**
+                 * Cube = Cabinent door, regular door, ship horn, move items in and out of cabnent, camera switch, open and close ship door
+                 * LadderTrigger = ladder
+                 * EntranceTeleportA = main door
+                 * StartGameLever = ship lever
+                 * TerminalScript = terminal
+                 * ButtonGlass = glass on teleport button
+                 * RedButton = either teleport button
+                 * Trigger = battery charger
+                 */
+                string[] noDelayObjects = { 
+                    "Cube", "LadderTrigger", "EntranceTeleportA" , "StartGameLever", "TerminalScript", "ButtonGlass", "Trigger" 
+                };
+
+                if (noDelayObjects.Contains(objectName))
                     return false;
-                }
+            }
+            else
+            {
+                if(showDebug)
+                    mls.LogMessage("faliled to find interacted with name");
+            }
+
+
+            return true;
+        }
+
+        private static bool canUse(PlayerControllerB __instance)
+        {
+            if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
+            {
+                var objectName = getHoveringObjectName(__instance);               
+
+                string[] nonoObjects = {
+                    "RedButton"
+                };
+
+                if (nonoObjects.Contains(objectName))
+                    return false;
             }
 
             return true;
@@ -465,13 +533,21 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         private static void setHoverTipAndCurrentInteractTriggerPatch(PlayerControllerB __instance)
         {
-            var lastITime = lastInteractedTime;
-            var waitTime = waitTimeBetweenInteractions;
-            var remainingTime = waitTime - (Time.time - lastITime);
-
-            if (Time.time - lastITime <= waitTime && __instance.cursorTip.text != "")
+            if (shouldHaveDelay(__instance, false))
             {
-                __instance.cursorTip.text = $"Wait: {(int)remainingTime}";
+                var lastITime = lastInteractedTime;
+                var waitTime = waitTimeBetweenInteractions;
+                var remainingTime = waitTime - (Time.time - lastITime);
+
+                if (Time.time - lastITime <= waitTime && __instance.cursorTip.text != "")
+                {
+                    __instance.cursorTip.text = $"Wait: {(int)remainingTime}";
+                }
+            }
+
+            if (!canUse(__instance))
+            {
+                __instance.cursorTip.text = "Can't use as a ghost!";
             }
         }
 
