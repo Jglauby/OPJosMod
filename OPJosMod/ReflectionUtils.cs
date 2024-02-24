@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod.Utils //OPJosMod.ModNameHere.Utils
+namespace OPJosMod.HideNSeek.Utils
 {
     public class ReflectionUtils
     {
