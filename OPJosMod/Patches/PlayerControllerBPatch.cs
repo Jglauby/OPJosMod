@@ -65,8 +65,7 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool isTogglingCollisions = false;
         private static Coroutine togglingCollisionsCoroutine;
-        private static bool collisionsOn = true;
-        private static float noClipSpeed = 0.25f;
+        private static bool collisionsOn = true;      
 
         public static float lastInteractedTime = Time.time;
 
@@ -313,7 +312,7 @@ namespace OPJosMod.GhostMode.Patches
                             handleNoClipControls(__instance);
                         }
 
-                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)40]).wasPressedThisFrame)//Z was pressed
+                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleNoClipButton)]).wasPressedThisFrame)//Z was pressed
                         {
                             //toggle collisions
                             if (!isTogglingCollisions)
@@ -323,21 +322,21 @@ namespace OPJosMod.GhostMode.Patches
                             }
                         }
 
-                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)17]).wasPressedThisFrame)//C was pressed
+                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportBodyButton)]).wasPressedThisFrame)//C was pressed
                         {
                             mls.LogMessage("attempt to tp to dead body");
                             var tpMessage = "(Teleported to: your dead body)";
                             tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
                         }
 
-                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x20]).wasPressedThisFrame)//R was pressed
+                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportFrontDoorButton)]).wasPressedThisFrame)//R was pressed
                         {
                             mls.LogMessage("attempt to tp to front door");
                             var tpMessage = "(Teleported to: Front Door)";
                             tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
                         }
 
-                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)29]).wasPressedThisFrame)//O was pressed
+                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.switchToSpectateButton)]).wasPressedThisFrame)//O was pressed
                         {
                             mls.LogMessage("attempt to switch back to spectate mode");
                             setToSpectatemode(__instance);
@@ -413,7 +412,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
 
                 //toggle night vision
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0x10]).wasPressedThisFrame && !__instance.inTerminalMenu)
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleBrightModeButton)]).wasPressedThisFrame && !__instance.inTerminalMenu)
                 {
                     mls.LogMessage("clicked B, trying to toggle night vision");
                     if (((Component)___nightVision).gameObject.activeSelf)
@@ -711,7 +710,7 @@ namespace OPJosMod.GhostMode.Patches
                 Vector3 moveDirection = currentRotation * Vector3.forward;
                 moveDirection.Normalize();
 
-                __instance.transform.position += moveDirection * noClipSpeed;
+                __instance.transform.position += moveDirection * ConfigVariables.noClipSpeed;
             }
 
             if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0xF]).isPressed)//A is pressed
@@ -722,7 +721,7 @@ namespace OPJosMod.GhostMode.Patches
                 Vector3 leftDirection = leftRotation * currentRotation * Vector3.forward;
                 leftDirection.Normalize();
 
-                __instance.transform.position += leftDirection * noClipSpeed;
+                __instance.transform.position += leftDirection * ConfigVariables.noClipSpeed;
             }
 
             if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)18]).isPressed)//D is pressed
@@ -733,7 +732,7 @@ namespace OPJosMod.GhostMode.Patches
                 Vector3 rightDirection = rightRotation * currentRotation * Vector3.forward;
                 rightDirection.Normalize();
 
-                __instance.transform.position += rightDirection * noClipSpeed;
+                __instance.transform.position += rightDirection * ConfigVariables.noClipSpeed;
             }
 
             if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)33]).isPressed)//S is pressed
@@ -743,7 +742,7 @@ namespace OPJosMod.GhostMode.Patches
                 Vector3 backwardDirection = currentRotation * Vector3.back;
                 backwardDirection.Normalize();
 
-                __instance.transform.position += backwardDirection * noClipSpeed;
+                __instance.transform.position += backwardDirection * ConfigVariables.noClipSpeed;
             }
 
 
@@ -751,14 +750,14 @@ namespace OPJosMod.GhostMode.Patches
             {
                 Vector3 upDirection = Vector3.up;
 
-                __instance.transform.position += upDirection * noClipSpeed;
+                __instance.transform.position += upDirection * ConfigVariables.noClipSpeed;
             }
 
             if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)51]).isPressed)//left shift is pressed
             {
                 Vector3 upDirection = -Vector3.up;
 
-                __instance.transform.position += upDirection * noClipSpeed;
+                __instance.transform.position += upDirection * ConfigVariables.noClipSpeed;
             }
         }
 

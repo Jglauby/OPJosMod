@@ -69,8 +69,44 @@ namespace OPJosMod.GhostMode
                                         "P",
                                         "Button to turn into ghost");
 
+            var configTeleportBodyButton = Config.Bind("Teleport to Dead Body Button",
+                                        "TeleportToDeadBodyButton",
+                                        "C",
+                                        "Button to teleport to your dead body");
+
+            var configToggleBrightModeButton = Config.Bind("Toggle Bright Mode Button",
+                                        "ToggleBrightModeButton",
+                                        "B",
+                                        "Button to toggle on bright mode");
+
+            var configTeleportFrontDoorButton = Config.Bind("Teleport to Front Door Button",
+                                        "TeleportToFrontDoorButton",
+                                        "R",
+                                        "Button to teleport to the front door");
+
+            var configSwitchToSpectateButton = Config.Bind("Switch to Spectate Mode Button",
+                                        "SwitchToSpectateModeButton",
+                                        "O",
+                                        "Button to switch back to specate mode");
+
+            var configToggleNoClipButton = Config.Bind("Toggle NoClip Mode Button",
+                                        "ToggleNoClipModeButton",
+                                        "Z",
+                                        "Button to enter/leave no clip mode");
+
+            var configNoClipFlySpeed = Config.Bind("NoClip Flight Speed",
+                                        "NoClipFlightSpeed",
+                                        0.3f,
+                                        "How fast you move while in no clip");
+
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
             ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
+            ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;
+            ConfigVariables.toggleBrightModeButton = configToggleBrightModeButton.Value;
+            ConfigVariables.teleportFrontDoorButton = configTeleportFrontDoorButton.Value;
+            ConfigVariables.switchToSpectateButton = configSwitchToSpectateButton.Value;
+            ConfigVariables.toggleNoClipButton = configToggleNoClipButton.Value;
+            ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
         }
     }
 }
