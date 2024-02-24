@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.1.0";
+        private const string modVersion = "2.1.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
