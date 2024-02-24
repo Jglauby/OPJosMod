@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.GhostMode.Enemy.Patches;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.InputSystem;
 
 namespace OPJosMod.GhostMode
 {
@@ -96,17 +98,36 @@ namespace OPJosMod.GhostMode
 
             var configNoClipFlySpeed = Config.Bind("NoClip Flight Speed",
                                         "NoClipFlightSpeed",
-                                        0.3f,
+                                        0.27f,
                                         "How fast you move while in no clip");
 
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
-            ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
-            ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;
-            ConfigVariables.toggleBrightModeButton = configToggleBrightModeButton.Value;
-            ConfigVariables.teleportFrontDoorButton = configTeleportFrontDoorButton.Value;
-            ConfigVariables.switchToSpectateButton = configSwitchToSpectateButton.Value;
-            ConfigVariables.toggleNoClipButton = configToggleNoClipButton.Value;
+
+            ConfigVariables.startGhostModeButton = ValidateAndAssignButton(configStartGhostModeButton, "P");
+            ConfigVariables.teleportBodyButton = ValidateAndAssignButton(configTeleportBodyButton, "C");
+            ConfigVariables.toggleBrightModeButton = ValidateAndAssignButton(configToggleBrightModeButton, "B");
+            ConfigVariables.teleportFrontDoorButton = ValidateAndAssignButton(configTeleportFrontDoorButton, "R");
+            ConfigVariables.switchToSpectateButton = ValidateAndAssignButton(configSwitchToSpectateButton, "O");
+            ConfigVariables.toggleNoClipButton = ValidateAndAssignButton(configToggleNoClipButton, "Z");
+
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
+
+            Config.Save();
+        }
+
+        private string ValidateAndAssignButton(ConfigEntry<string> configEntry, string defaultButton)
+        {
+            if (Enum.IsDefined(typeof(Key), configEntry.Value))
+            {
+                return configEntry.Value;
+            }
+            else
+            {
+                mls.LogError($"{configEntry.Value} is not a valid mapped button!");
+
+                configEntry.Value = defaultButton;
+                return defaultButton;
+            }
         }
     }
 }
