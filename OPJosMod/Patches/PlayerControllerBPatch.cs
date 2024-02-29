@@ -305,89 +305,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
                 else //is a ghost
                 {
-                    if (!StartOfRound.Instance.localPlayerController.inTerminalMenu && !StartOfRound.Instance.localPlayerController.isTypingChat)//listen to hotkeys when not typing
-                    {
-                        if (!collisionsOn)
-                        {
-                            handleNoClipControls(__instance);
-                        }
-
-                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleNoClipButton)]).wasPressedThisFrame)//Z was pressed
-                        {
-                            //toggle collisions
-                            if (!isTogglingCollisions)
-                            {
-                                isTogglingCollisions = true;
-                                togglingCollisionsCoroutine = __instance.StartCoroutine(toggleCollisions(__instance));
-                            }
-                        }
-
-                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportBodyButton)]).wasPressedThisFrame)//C was pressed
-                        {
-                            mls.LogMessage("attempt to tp to dead body");
-                            var tpMessage = "(Teleported to: your dead body)";
-                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
-                        }
-
-                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportFrontDoorButton)]).wasPressedThisFrame)//R was pressed
-                        {
-                            mls.LogMessage("attempt to tp to front door");
-                            var tpMessage = "(Teleported to: Front Door)";
-                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
-                        }
-
-                        if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.switchToSpectateButton)]).wasPressedThisFrame)//O was pressed
-                        {
-                            mls.LogMessage("attempt to switch back to spectate mode");
-                            setToSpectatemode(__instance);
-                        }
-
-                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame)//left was clicked
-                        {
-                            if (isTeleporting)
-                                return;
-
-                            isTeleporting = true;
-                            var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                            for (int i = 0; i < allPlayers.Length; i++)
-                            {
-                                tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
-                                mls.LogMessage($"tp index:{tpPlayerIndex}");
-                                if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
-                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
-                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
-                                {
-                                    var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
-                                    mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
-                                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
-                                    return;
-                                }
-                            }
-                        }
-
-                        if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame)//right was clicked
-                        {
-                            if (isTeleporting)
-                                return;
-
-                            isTeleporting = true;
-                            var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                            for (int i = 0; i < allPlayers.Length; i++)
-                            {
-                                tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
-                                mls.LogMessage($"tp index:{tpPlayerIndex}");
-                                if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
-                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
-                                    && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
-                                {
-                                    var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
-                                    mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
-                                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    listenForGhostHotkeys(__instance);
                 }
 
                 //round over reset player vars, and kill ghost
@@ -435,6 +353,93 @@ namespace OPJosMod.GhostMode.Patches
                 if (nightVisionFlag)
                 {
                     ((Component)___nightVision).gameObject.SetActive(true);
+                }
+            }
+        }
+
+        private static void listenForGhostHotkeys(PlayerControllerB __instance)
+        {
+            if (!StartOfRound.Instance.localPlayerController.inTerminalMenu && !StartOfRound.Instance.localPlayerController.isTypingChat)//listen to hotkeys when not typing
+            {
+                if (!collisionsOn)
+                {
+                    handleNoClipControls(__instance);
+                }
+
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleNoClipButton)]).wasPressedThisFrame)//Z was pressed
+                {
+                    //toggle collisions
+                    if (!isTogglingCollisions)
+                    {
+                        isTogglingCollisions = true;
+                        togglingCollisionsCoroutine = __instance.StartCoroutine(toggleCollisions(__instance));
+                    }
+                }
+
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportBodyButton)]).wasPressedThisFrame)//C was pressed
+                {
+                    mls.LogMessage("attempt to tp to dead body");
+                    var tpMessage = "(Teleported to: your dead body)";
+                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
+                }
+
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportFrontDoorButton)]).wasPressedThisFrame)//R was pressed
+                {
+                    mls.LogMessage("attempt to tp to front door");
+                    var tpMessage = "(Teleported to: Front Door)";
+                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
+                }
+
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.switchToSpectateButton)]).wasPressedThisFrame)//O was pressed
+                {
+                    mls.LogMessage("attempt to switch back to spectate mode");
+                    setToSpectatemode(__instance);
+                }
+
+                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame)//left was clicked
+                {
+                    if (isTeleporting)
+                        return;
+
+                    isTeleporting = true;
+                    var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                    for (int i = 0; i < allPlayers.Length; i++)
+                    {
+                        tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
+                        mls.LogMessage($"tp index:{tpPlayerIndex}");
+                        if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
+                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
+                        {
+                            var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                            mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
+                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                            return;
+                        }
+                    }
+                }
+
+                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame)//right was clicked
+                {
+                    if (isTeleporting)
+                        return;
+
+                    isTeleporting = true;
+                    var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                    for (int i = 0; i < allPlayers.Length; i++)
+                    {
+                        tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
+                        mls.LogMessage($"tp index:{tpPlayerIndex}");
+                        if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
+                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
+                        {
+                            var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                            mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
+                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                            return;
+                        }
+                    }
                 }
             }
         }

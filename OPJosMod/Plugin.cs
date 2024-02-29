@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.1.2";
+        private const string modVersion = "2.2.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -46,6 +46,7 @@ namespace OPJosMod.GhostMode
             ForestGiantAIPatch.SetLogSource(mls);
             SandSpiderAIPatch.SetLogSource(mls);
             NutcrackerEnemyAIPatch.SetLogSource(mls);
+            StartMatchLeverPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
@@ -56,6 +57,7 @@ namespace OPJosMod.GhostMode
             harmony.PatchAll(typeof(ForestGiantAIPatch));
             harmony.PatchAll(typeof(SandSpiderAIPatch));
             harmony.PatchAll(typeof(NutcrackerEnemyAIPatch));
+            harmony.PatchAll(typeof(StartMatchLeverPatch));
         }
 
         private void setupConfig()
