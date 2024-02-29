@@ -46,7 +46,9 @@ namespace OPJosMod.GhostMode.Patches
         private static float timeWhenSafe = Time.time;
 
         private static Ray interactRay;
-        private static bool nightVisionFlag = false;
+        private static bool isTogglingBrightMode = false;
+        private static Coroutine togglingBrightModeCoroutine;
+        private static bool isBrightModeOn = false;
 
         private static LightType OGnightVisionType;
         private static float OGnightVisionIntensity;
@@ -111,7 +113,7 @@ namespace OPJosMod.GhostMode.Patches
                 mls.LogMessage("hit reset ghost vars function");
                 allowKill = true;
                 isGhostMode = false;                
-                nightVisionFlag = false;
+                isTogglingBrightMode = false;
                 consecutiveDeathExceptions = 0;
                 lastSafeLocations = new Vector3[10];
                 timeWhenSafe = Time.time;
@@ -121,6 +123,8 @@ namespace OPJosMod.GhostMode.Patches
                 tpCoroutine = null;
                 isTeleporting = false;
                 isTogglingCollisions = false;
+                isTogglingBrightMode = false;
+                isBrightModeOn = false;
                 collisionsOn = true;
             }
             catch (Exception e)
@@ -328,32 +332,6 @@ namespace OPJosMod.GhostMode.Patches
                     __instance.bleedingHeavily = false;
                     HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
                 }
-
-                //toggle night vision
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleBrightModeButton)]).wasPressedThisFrame && !__instance.inTerminalMenu)
-                {
-                    mls.LogMessage("clicked B, trying to toggle night vision");
-                    if (((Component)___nightVision).gameObject.activeSelf)
-                    {
-                        setNightVisionMode(__instance, 0);
-                        __instance.isInsideFactory = false;
-                        nightVisionFlag = false;
-                    }
-                    if (!((Component)___nightVision).gameObject.activeSelf)
-                    {
-                        setNightVisionMode(__instance, 1);
-                        __instance.isInsideFactory = true;
-                        nightVisionFlag = true;
-                    }
-                }
-                if (!nightVisionFlag)
-                {
-                    ((Component)___nightVision).gameObject.SetActive(false);
-                }
-                if (nightVisionFlag)
-                {
-                    ((Component)___nightVision).gameObject.SetActive(true);
-                }
             }
         }
 
@@ -439,6 +417,16 @@ namespace OPJosMod.GhostMode.Patches
                             tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
                             return;
                         }
+                    }
+                }
+
+                //toggle night vision
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleBrightModeButton)]).wasPressedThisFrame)
+                {
+                    if (!isTogglingBrightMode)
+                    {
+                        isTogglingBrightMode = true;
+                        togglingBrightModeCoroutine = __instance.StartCoroutine(toggleBrightMode(__instance));
                     }
                 }
             }
@@ -934,6 +922,9 @@ namespace OPJosMod.GhostMode.Patches
             isGhostMode = false;
 
             ChangeAudioListenerToObject(__instance, __instance.playersManager.spectateCamera.gameObject);
+
+            if(isBrightModeOn)
+                togglingBrightModeCoroutine = __instance.StartCoroutine(toggleBrightMode(__instance));
         }         
 
         private static IEnumerator specialTeleportPlayer(PlayerControllerB __instance, Vector3 newPos, string message)
@@ -979,6 +970,36 @@ namespace OPJosMod.GhostMode.Patches
             }
 
             isTogglingCollisions = false;
+        }
+
+        private static IEnumerator toggleBrightMode(PlayerControllerB __instance)
+        {
+            if (togglingBrightModeCoroutine != null)
+            {
+                __instance.StopCoroutine(togglingBrightModeCoroutine);
+            }
+
+            __instance = StartOfRound.Instance.localPlayerController;
+            yield return new WaitForSeconds(0.1f);
+
+            if (isBrightModeOn)
+            {
+                mls.LogMessage("turn off bright mode");
+                isBrightModeOn = false;
+                setNightVisionMode(__instance, 0);
+                __instance.isInsideFactory = false;
+                ((Component)__instance.nightVision).gameObject.SetActive(false);
+            }
+            else
+            {
+                mls.LogMessage("turn on bright mode");
+                isBrightModeOn = true;
+                setNightVisionMode(__instance, 1);
+                __instance.isInsideFactory = true;
+                ((Component)__instance.nightVision).gameObject.SetActive(true);
+            }
+
+            isTogglingBrightMode = false;
         }
     }
 }
