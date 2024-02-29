@@ -60,7 +60,7 @@ namespace OPJosMod.GhostMode.Patches
             if (PlayerControllerBPatch.isGhostMode)
             {
                 PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
-                PlayerControllerBPatch.rekillPlayerLocally(__instance.localPlayerController, true);
+                PlayerControllerBPatch.setToSpectatemode(__instance.localPlayerController);
             }
         }
 
