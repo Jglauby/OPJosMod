@@ -521,6 +521,9 @@ namespace OPJosMod.GhostMode.Patches
             if (!isGhostMode)
                 return true;
 
+            if (ConfigVariables.waitTimeBetweenInteractions == -1)
+                return false;
+
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
             {
                 var objectName = getHoveringObjectName(__instance);               
@@ -555,7 +558,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
             }
 
-            if (!canUse(__instance))
+            if (!canUse(__instance) && __instance.cursorTip.text != "")
             {
                 __instance.cursorTip.text = "Can't use as a ghost!";
             }

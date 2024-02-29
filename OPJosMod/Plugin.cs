@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.1.1";
+        private const string modVersion = "2.1.2";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -63,7 +63,7 @@ namespace OPJosMod.GhostMode
             var configWaitTimeBetweenInteractions = Config.Bind("GhostMode interaction delay", // The section under which the option is shown
                                         "GhostModeInteractionDelay",  // The key of the configuration option in the configuration file
                                         45f, // The default value
-                                        "How long you must wait between interactions when in ghost mode"); // Description of the option to show in the config file
+                                        "How long you must wait between interactions when in ghost mode. Set to -1 to remove the ability to interact at all"); // Description of the option to show in the config file
 
 
             var configStartGhostModeButton = Config.Bind("Start Ghost Mode Button",
