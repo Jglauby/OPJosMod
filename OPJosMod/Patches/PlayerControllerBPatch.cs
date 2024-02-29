@@ -484,7 +484,7 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
         {
-            if (!isGhostMode)
+            if (!isGhostMode || ConfigVariables.getOPness() == OPnessModes.Unrestricted)
                 return false;
 
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
@@ -523,10 +523,10 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool canUse(PlayerControllerB __instance)
         {
-            if (!isGhostMode)
+            if (!isGhostMode || ConfigVariables.getOPness() == OPnessModes.Unrestricted)
                 return true;
 
-            if (ConfigVariables.waitTimeBetweenInteractions == -1)
+            if (ConfigVariables.getOPness() == OPnessModes.Limited)
                 return false;
 
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)

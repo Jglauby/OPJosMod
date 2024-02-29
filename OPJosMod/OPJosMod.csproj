@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
+    <Compile Include="OPnessModes.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />
     <Compile Include="Patches\EnemyPatches\NutcrackerEnemyAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\SandSpiderAIPatch.cs" />

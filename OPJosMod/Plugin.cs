@@ -62,11 +62,15 @@ namespace OPJosMod.GhostMode
 
         private void setupConfig()
         {
+            var configOPness = Config.Bind("OP-Ness",
+                                        "OPness",
+                                        "balanced",
+                                        "(limited, balanced, unrestricted) The three modes of ghost mode. (limited -> almost no interactions allowed.) (balanced -> delays on lots of interactions. completly restricted from a few.) (unrestricted -> no restrictions on what you can interact with at all)");
+
             var configWaitTimeBetweenInteractions = Config.Bind("GhostMode interaction delay", // The section under which the option is shown
                                         "GhostModeInteractionDelay",  // The key of the configuration option in the configuration file
                                         45f, // The default value
                                         "How long you must wait between interactions when in ghost mode. Set to -1 to remove the ability to interact at all"); // Description of the option to show in the config file
-
 
             var configStartGhostModeButton = Config.Bind("Start Ghost Mode Button",
                                         "StartGhostModeButton",
@@ -102,7 +106,7 @@ namespace OPJosMod.GhostMode
                                         "NoClipFlightSpeed",
                                         0.27f,
                                         "How fast you move while in no clip");
-
+           
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
 
             ConfigVariables.startGhostModeButton = ValidateAndAssignButton(configStartGhostModeButton, "P");
@@ -113,6 +117,7 @@ namespace OPJosMod.GhostMode
             ConfigVariables.toggleNoClipButton = ValidateAndAssignButton(configToggleNoClipButton, "Z");
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
+            ConfigVariables.OPness = ValidateAndAssignOPness(configOPness);
 
             Config.Save();
         }
@@ -129,6 +134,21 @@ namespace OPJosMod.GhostMode
 
                 configEntry.Value = defaultButton;
                 return defaultButton;
+            }
+        }
+
+        private string ValidateAndAssignOPness(ConfigEntry<string> configEntry)
+        {
+            string[] modes = new string[] { "limited", "balanced", "unrestricted" };
+            
+            if (modes.Contains(configEntry.Value?.ToLower()))
+            {
+                return configEntry.Value;
+            }
+            else
+            {
+                configEntry.Value = "balanced";
+                return "balanced";
             }
         }
     }
