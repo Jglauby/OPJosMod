@@ -18,6 +18,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.HID;
 using UnityEngine.Rendering;
 
 namespace OPJosMod.GhostMode.Patches
@@ -46,6 +47,9 @@ namespace OPJosMod.GhostMode.Patches
         private static float timeWhenSafe = Time.time;
 
         private static Ray interactRay;
+        private static RaycastHit hit;
+        private static int interactableObjectsMask = 832; //this exists in the regular player controller class as a constant
+
         private static bool isTogglingBrightMode = false;
         private static Coroutine togglingBrightModeCoroutine;
         private static bool isBrightModeOn = false;
@@ -460,16 +464,6 @@ namespace OPJosMod.GhostMode.Patches
             return true;
         }
 
-        private static string getHoveringObjectName(PlayerControllerB __instance)
-        {
-            var objectName = __instance.hoveringOverTrigger.gameObject.name;
-            int index = objectName.IndexOf("(");
-            if (index != -1)
-                objectName = objectName.Substring(0, index).Trim();
-
-            return objectName;
-        }
-
         private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
         {
             if (!isGhostMode || ConfigVariables.getOPness() == OPnessModes.Unrestricted)
@@ -477,7 +471,7 @@ namespace OPJosMod.GhostMode.Patches
 
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
             {
-                var objectName = getHoveringObjectName(__instance);
+                var objectName = GeneralUtils.simplifyObjectNames(__instance.hoveringOverTrigger.gameObject.name);
 
                 if(showDebug)
                     mls.LogMessage($"tried to interact with: {objectName}");
@@ -517,13 +511,26 @@ namespace OPJosMod.GhostMode.Patches
             if (ConfigVariables.getOPness() == OPnessModes.Limited)
                 return false;
 
+            string[] nonoObjects = {
+                    "RedButton", "LadderTrigger", "RagdollGrabbableObject"
+                };
+
+            //check interactions
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
             {
-                var objectName = getHoveringObjectName(__instance);               
+                var objectName = GeneralUtils.simplifyObjectNames(__instance.hoveringOverTrigger.gameObject.name);               
 
-                string[] nonoObjects = {
-                    "RedButton", "LadderTrigger"
-                };
+                if (nonoObjects.Contains(objectName))
+                    return false;
+            }
+
+            //check grabbing objects
+            Ray interactRay = new Ray(__instance.gameplayCamera.transform.position, __instance.gameplayCamera.transform.forward);
+            Physics.Raycast(interactRay, out RaycastHit hit, __instance.grabDistance, interactableObjectsMask);
+            GrabbableObject currentlyGrabbingObject = hit.collider?.GetComponent<GrabbableObject>();        
+            if (currentlyGrabbingObject != null)
+            {
+                var objectName = GeneralUtils.simplifyObjectNames(currentlyGrabbingObject.name);
 
                 if (nonoObjects.Contains(objectName))
                     return false;
