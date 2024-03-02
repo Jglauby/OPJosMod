@@ -1,6 +1,7 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Unity.Netcode;
 
 namespace OPJosMode.HideNSeek.Patches
 {
@@ -13,11 +14,17 @@ namespace OPJosMode.HideNSeek.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void patchUpdate(PlayerControllerB __instance)
+        public static bool isSeeker = false;
+        public static bool isHider = true;
+
+        public static void SetupHider()
         {
-            
+            PlayerControllerB localPlayerController = StartOfRound.Instance.localPlayerController;
+        }
+
+        public static void SetupSeeker()
+        {
+
         }
     }
 }

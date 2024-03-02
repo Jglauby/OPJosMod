@@ -28,7 +28,10 @@ namespace OPJosMod.HideNSeek
             setupConfig();
 
             PlayerControllerBPatch.SetLogSource(mls);
+            StartOfRoundPatch.SetLogSource(mls);
+
             harmony.PatchAll(typeof(PlayerControllerBPatch));
+            harmony.PatchAll(typeof(StartOfRoundPatch));
         }
 
         private void setupConfig()
