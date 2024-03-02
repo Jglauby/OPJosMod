@@ -1,6 +1,8 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using System.Runtime.CompilerServices;
+using Unity.Netcode;
 
 namespace OPJosMode.HideNSeek.Patches
 {
@@ -13,14 +15,32 @@ namespace OPJosMode.HideNSeek.Patches
             mls = logSource;
         }
 
+        private static bool isHost = false;
+
         [HarmonyPatch("openingDoorsSequence")]
         [HarmonyPostfix]
         static void patchOpeningDoorsSequence(StartOfRound __instance)
         {
-            //once the level actually begins this patch should be hit
-
             mls.LogMessage("level actually began");
-            PlayerControllerBPatch.SetupSeeker();
+            setupLevel();
+
+            //if the round starts and you arent set as seeker, then you didnt pull the lever and you should be a hider
+            if (!PlayerControllerBPatch.isSeeker)
+                PlayerControllerBPatch.SetupHider();
+        }
+
+        private static void setupLevel()
+        {
+            isHost = GameNetworkManager.Instance.isHostingGame;
+
+            if(isHost)
+            {
+                //remove/don't spawn all enemies on the map
+                    //may be better if they did spawn but then died, potential to hide by dead bodies
+
+
+                //ensure new enemies don't spawn?
+            }
         }
     }
 }
