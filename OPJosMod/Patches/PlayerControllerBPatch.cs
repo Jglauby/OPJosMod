@@ -48,6 +48,7 @@ namespace OPJosMode.HideNSeek.Patches
             isHider = false;
 
             lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, 15f));
+
             //increase speed slightly
             //give gun
             //remove scan option
@@ -73,9 +74,12 @@ namespace OPJosMode.HideNSeek.Patches
                 player.StopCoroutine(lockPlayerCoroutine);
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(1f);
             mls.LogMessage("player locked in place");
             player.playerCollider.enabled = false;
+
+            //add some sort of UI to indicate you are waiting and for how long
+            //will need to loop with smaller delays to update the UI every second
 
             yield return new WaitForSeconds(lockTime);
             mls.LogMessage("player unlocked!");
