@@ -20,7 +20,7 @@ namespace OPJosMode.HideNSeek.Patches
             //once the level actually begins this patch should be hit
 
             mls.LogMessage("level actually began");
-            PlayerControllerBPatch.SetupHider();
+            PlayerControllerBPatch.SetupSeeker();
         }
     }
 }
