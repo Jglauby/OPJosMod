@@ -16,7 +16,6 @@ namespace OPJosMode.HideNSeek.Patches
             mls = logSource;
         }
 
-
         [HarmonyPatch("PullLever")]
         [HarmonyPrefix]
         private static void pullLeverPatch(StartMatchLever __instance)
@@ -24,6 +23,17 @@ namespace OPJosMode.HideNSeek.Patches
             mls.LogMessage("player pulled lever, set them to seeker");
             PlayerControllerBPatch.isSeeker = true;
             PlayerControllerBPatch.isHider = false;
+        }
+
+        [HarmonyPatch("Update")]
+        [HarmonyPrefix]
+        private static void updatePatch(StartMatchLever __instance)
+        {
+            //if you havent been assigned a role yet, aka round hasnt starteed, allow anyone to pull the lever
+            if (PlayerControllerBPatch.isSeeker == false && PlayerControllerBPatch.isHider == false)
+            {
+                __instance.triggerScript.interactable = true;
+            }
         }
     }
 }
