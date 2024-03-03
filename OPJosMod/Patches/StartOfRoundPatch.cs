@@ -17,6 +17,26 @@ namespace OPJosMode.HideNSeek.Patches
 
         private static bool isHost = false;
 
+        [HarmonyPatch("ReviveDeadPlayers")]
+        [HarmonyPrefix]
+        static void reviveDeadPlayersPatch(StartOfRound __instance)
+        {
+            mls.LogMessage("revive dead players patch hit in start of round class, reset isSeeker and isHider");
+
+            PlayerControllerBPatch.isSeeker = false;
+            PlayerControllerBPatch.isHider = false;
+        }
+
+        [HarmonyPatch("ShipLeave")]
+        [HarmonyPrefix]
+        public static void shipLeavePatch(StartOfRound __instance)
+        {
+            mls.LogMessage("ship leaving, reset isSeeker and isHider");
+
+            PlayerControllerBPatch.isSeeker = false;
+            PlayerControllerBPatch.isHider = false;
+        }
+
         [HarmonyPatch("openingDoorsSequence")]
         [HarmonyPostfix]
         static void patchOpeningDoorsSequence(StartOfRound __instance)
