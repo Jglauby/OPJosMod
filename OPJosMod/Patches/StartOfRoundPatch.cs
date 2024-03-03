@@ -25,7 +25,9 @@ namespace OPJosMode.HideNSeek.Patches
             setupLevel();
 
             //if the round starts and you arent set as seeker, then you didnt pull the lever and you should be a hider
-            if (!PlayerControllerBPatch.isSeeker)
+            if (PlayerControllerBPatch.isSeeker)
+                PlayerControllerBPatch.SetupSeeker();
+            else
                 PlayerControllerBPatch.SetupHider();
         }
 

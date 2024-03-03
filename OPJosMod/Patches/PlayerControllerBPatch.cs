@@ -30,13 +30,10 @@ namespace OPJosMode.HideNSeek.Patches
             isSeeker = false;
             isHider = true;
 
-            //do nothing for a couple seconds
-            lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, 2f));
-
             //set suit to green?
 
             //teleport player inside
-            teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition()));
+            teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 5f));
             localPlayerController.isInsideFactory = true;
         }
 
@@ -55,14 +52,14 @@ namespace OPJosMode.HideNSeek.Patches
             //force enemies to whistle, on cool down
         }
 
-        private static IEnumerator customTeleportPlayer(PlayerControllerB player, Vector3 location)
+        private static IEnumerator customTeleportPlayer(PlayerControllerB player, Vector3 location, float initalDelay)
         {
             if (teleportCoroutine != null)
             {
                 player.StopCoroutine(teleportCoroutine);
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(initalDelay);
 
             GameNetworkManager.Instance.localPlayerController.TeleportPlayer(location);
         }
