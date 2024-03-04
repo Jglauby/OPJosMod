@@ -25,7 +25,6 @@ namespace OPJosMode.HideNSeek.Patches
         {
             if (PlayerControllerBPatch.isHider)
             {
-                mls.LogMessage("don't allow hider to leave facility");
                 return false;
             }
 

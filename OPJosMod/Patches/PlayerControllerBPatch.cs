@@ -28,6 +28,8 @@ namespace OPJosMode.HideNSeek.Patches
         public static bool isSeeker = false;
         public static bool isHider = false;
 
+        private static float seekerDelay = 15f;
+
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
 
@@ -74,7 +76,7 @@ namespace OPJosMode.HideNSeek.Patches
             isHider = true;
 
             //teleport player inside
-            teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 6f));
+            teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 5f));
             localPlayerController.isInsideFactory = true;
         }
 
@@ -89,13 +91,7 @@ namespace OPJosMode.HideNSeek.Patches
             isSeeker = true;
             isHider = false;
 
-            lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, 15f));
-
-            //drop shovel
-            Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
-            GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)BuyableItems.Shovel].spawnPrefab, localPlayerController.transform.position, Quaternion.identity, localPlayerController.playersManager.propsContainer);
-            obj.GetComponent<GrabbableObject>().fallTime = 0f;
-            obj.GetComponent<NetworkObject>().Spawn(true);
+            lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, seekerDelay));
 
             //force enemies to whistle, on cool down
                 //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
@@ -110,10 +106,14 @@ namespace OPJosMode.HideNSeek.Patches
 
             yield return new WaitForSeconds(initalDelay);
 
-            for (int i = 0; i < player.ItemSlots.Length; i++)
+            try
             {
-                player.DestroyItemInSlotAndSync(i);
-            }          
+                for (int i = 0; i < player.ItemSlots.Length; i++)
+                {
+                    player.DestroyItemInSlotAndSync(i);
+                }
+            }
+            catch { }
 
             GameNetworkManager.Instance.localPlayerController.TeleportPlayer(location);
         }
