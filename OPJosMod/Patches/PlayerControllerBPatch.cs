@@ -72,7 +72,7 @@ namespace OPJosMode.HideNSeek.Patches
             isSeeker = false;
             isHider = true;
 
-            localPlayerController.DropAllHeldItems();
+            localPlayerController.DropAllHeldItemsServerRpc();
 
             //teleport player inside
             teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 5f));
@@ -94,18 +94,12 @@ namespace OPJosMode.HideNSeek.Patches
 
             //drop shovel
             Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
-            foreach (var item in terminal.buyableItemsList)
-            {
-                mls.LogMessage($"item: {item.name}");
-            }
             GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)BuyableItems.Shovel].spawnPrefab, localPlayerController.transform.position, Quaternion.identity, localPlayerController.playersManager.propsContainer);
             obj.GetComponent<GrabbableObject>().fallTime = 0f;
             obj.GetComponent<NetworkObject>().Spawn();
 
-
-
             //force enemies to whistle, on cool down
-            //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
+                //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
         }
 
         private static IEnumerator customTeleportPlayer(PlayerControllerB player, Vector3 location, float initalDelay)

@@ -32,12 +32,14 @@ namespace OPJosMod.HideNSeek
             StartMatchLeverPatch.SetLogSource(mls);
             RoundManagerPatch.SetLogSource(mls);
             HUDManagerPatch.SetLogSource(mls);  
+            EntranceTeleportPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
             harmony.PatchAll(typeof(StartMatchLeverPatch));
             harmony.PatchAll(typeof(RoundManagerPatch));
             harmony.PatchAll(typeof(HUDManagerPatch));
+            harmony.PatchAll(typeof(EntranceTeleportPatch));
         }
 
         private void setupConfig()
