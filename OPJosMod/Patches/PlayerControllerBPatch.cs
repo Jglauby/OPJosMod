@@ -36,11 +36,15 @@ namespace OPJosMode.HideNSeek.Patches
         private static float sprintMultiplier = 1.01f;
         private static float maxSprintSpeed = 4f;
 
+        private static float lastCheckedTime;
+        private static float checkGameOverFrequency = 5;
+
         public static void resetRoleValues()
         {
             hasSetRole = false;
             isSeeker = false;
             isHider = false;
+            lastCheckedTime = Time.time;
         }
 
         [HarmonyPatch("Update")]
@@ -61,6 +65,26 @@ namespace OPJosMode.HideNSeek.Patches
                             ReflectionUtils.SetFieldValue(__instance, "sprintMultiplier", newForce);
                     }
                 }
+            }
+
+            if (Time.time - lastCheckedTime > checkGameOverFrequency)
+            {
+                checkIfShouldEndRound(__instance);
+                lastCheckedTime = Time.time;
+            }
+        }
+
+        private static void checkIfShouldEndRound(PlayerControllerB __instance)
+        {
+            var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
+            var shipLocation = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
+
+            //one person alive
+            if (totalPlayerCount == 1)
+            {
+                mls.LogMessage($"one person alive, round over. totalPlayers:{totalPlayerCount}");
+                customTeleportPlayer(__instance, shipLocation, 0.1f);
+                StartOfRound.Instance.EndGameServerRpc((int)__instance.playerClientId);
             }
         }
 
