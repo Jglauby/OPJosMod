@@ -30,8 +30,6 @@ namespace OPJosMode.HideNSeek.Patches
             isSeeker = false;
             isHider = true;
 
-            //set suit to green?
-
             //teleport player inside
             teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 5f));
             localPlayerController.isInsideFactory = true;
@@ -45,7 +43,7 @@ namespace OPJosMode.HideNSeek.Patches
             isHider = false;
 
             lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, 15f));
-
+            
             //increase speed slightly
             //give gun
             //remove scan option

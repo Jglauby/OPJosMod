@@ -31,11 +31,13 @@ namespace OPJosMod.HideNSeek
             StartOfRoundPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);
             RoundManagerPatch.SetLogSource(mls);
+            HUDManagerPatch.SetLogSource(mls);  
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
             harmony.PatchAll(typeof(StartMatchLeverPatch));
             harmony.PatchAll(typeof(RoundManagerPatch));
+            harmony.PatchAll(typeof(HUDManagerPatch));
         }
 
         private void setupConfig()

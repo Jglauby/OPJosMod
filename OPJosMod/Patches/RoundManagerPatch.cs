@@ -41,7 +41,8 @@ namespace OPJosMode.HideNSeek.Patches
             __instance.currentLevel.maxEnemyPowerCount = 0;
             __instance.currentLevel.maxOutsideEnemyPowerCount = 0;
 
-            //make no scrap spawn?
+            //make no scrap spawn
+            __instance.scrapAmountMultiplier = 0;
         }
     }
 }
