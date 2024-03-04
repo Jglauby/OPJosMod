@@ -27,9 +27,9 @@ namespace OPJosMode.HideNSeek.Patches
             __instance.deadlineMonitorText.text = "Have fun and such";           
             __instance.mapScreen.gameObject.SetActive(false);
 
-            // in EndOfGame
+            // in EndOfGame function call, could put this in a patch for that function?
             TimeOfDay.Instance.daysUntilDeadline = 4;
-            TimeOfDay.Instance.timeUntilDeadline = 8000;
+            TimeOfDay.Instance.timeUntilDeadline = 76000;
         }
 
         [HarmonyPatch("ReviveDeadPlayers")]
