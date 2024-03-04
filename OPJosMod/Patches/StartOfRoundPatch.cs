@@ -1,8 +1,12 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.HideNSeek.Utils;
+using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace OPJosMode.HideNSeek.Patches
 {
@@ -33,6 +37,30 @@ namespace OPJosMode.HideNSeek.Patches
 
             PlayerControllerBPatch.isSeeker = false;
             PlayerControllerBPatch.isHider = false;
+        }
+
+        [HarmonyPatch(typeof(StartOfRound), "Start")]
+        [HarmonyPostfix]
+        public static void StartOfRoundSuitPatch(StartOfRound __instance)
+        {
+            if (GameNetworkManager.Instance.isHostingGame)
+            {
+                int[] array = new int[4] { 1, 2, 3, 24 };
+                foreach (int num in array)
+                {
+                    ReflectionUtils.InvokeMethod(StartOfRound.Instance, "SpawnUnlockable", new object[] { num });
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(StartOfRound), "ResetShip")]
+        [HarmonyPostfix]
+        public static void ResetShipSuitPatch(StartOfRound __instance)
+        {
+            if (GameNetworkManager.Instance.isHostingGame)
+            {
+                StartOfRoundSuitPatch(__instance);
+            }
         }
     }
 }

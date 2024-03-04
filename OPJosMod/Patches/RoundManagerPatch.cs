@@ -35,7 +35,7 @@ namespace OPJosMode.HideNSeek.Patches
         {
             mls.LogMessage("load new level patch hit");
 
-            //GameNetworkManager.Instance.isHostingGame
+            //make no enemies spawn
             __instance.currentMaxInsidePower = 0;
             __instance.currentMaxOutsidePower = 0;
             __instance.currentLevel.maxEnemyPowerCount = 0;
