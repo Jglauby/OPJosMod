@@ -25,8 +25,7 @@ namespace OPJosMode.HideNSeek.Patches
         {
             mls.LogMessage("revive dead players patch hit in start of round class, reset isSeeker and isHider");
 
-            PlayerControllerBPatch.isSeeker = false;
-            PlayerControllerBPatch.isHider = false;
+            PlayerControllerBPatch.resetRoleValues();
         }
 
         [HarmonyPatch("ShipLeave")]
@@ -35,8 +34,7 @@ namespace OPJosMode.HideNSeek.Patches
         {
             mls.LogMessage("ship leaving, reset isSeeker and isHider");
 
-            PlayerControllerBPatch.isSeeker = false;
-            PlayerControllerBPatch.isHider = false;
+            PlayerControllerBPatch.resetRoleValues();
         }
 
         [HarmonyPatch(typeof(StartOfRound), "Start")]

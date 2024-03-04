@@ -1,13 +1,16 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod;
 using OPJosMod.HideNSeek.Config;
 using OPJosMod.HideNSeek.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace OPJosMode.HideNSeek.Patches
 {
@@ -20,6 +23,7 @@ namespace OPJosMode.HideNSeek.Patches
             mls = logSource;
         }
 
+        public static bool hasSetRole = false;
         public static bool isSeeker = false;
         public static bool isHider = false;
 
@@ -28,6 +32,13 @@ namespace OPJosMode.HideNSeek.Patches
 
         private static float sprintMultiplier = 1.01f;
         private static float maxSprintSpeed = 4f;
+
+        public static void resetRoleValues()
+        {
+            hasSetRole = false;
+            isSeeker = false;
+            isHider = false;
+        }
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
@@ -52,10 +63,16 @@ namespace OPJosMode.HideNSeek.Patches
 
         public static void SetupHider()
         {
+            if (hasSetRole)
+                return;
+
+            hasSetRole = true;
             mls.LogMessage("setup player as a hider");
             PlayerControllerB localPlayerController = StartOfRound.Instance.localPlayerController;
             isSeeker = false;
             isHider = true;
+
+            localPlayerController.DropAllHeldItems();
 
             //teleport player inside
             teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 5f));
@@ -64,19 +81,31 @@ namespace OPJosMode.HideNSeek.Patches
 
         public static void SetupSeeker()
         {
+            if (hasSetRole)
+                return;
+
+            hasSetRole = true;
             mls.LogMessage("setup player as seeker");
             PlayerControllerB localPlayerController = StartOfRound.Instance.localPlayerController;
             isSeeker = true;
             isHider = false;
 
             lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, 15f));
-            
-            //increase speed slightly
-            //give gun
+
+            //drop shovel
+            Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
+            foreach (var item in terminal.buyableItemsList)
+            {
+                mls.LogMessage($"item: {item.name}");
+            }
+            GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)BuyableItems.Shovel].spawnPrefab, localPlayerController.transform.position, Quaternion.identity, localPlayerController.playersManager.propsContainer);
+            obj.GetComponent<GrabbableObject>().fallTime = 0f;
+            obj.GetComponent<NetworkObject>().Spawn();
+
 
 
             //force enemies to whistle, on cool down
-                //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
+            //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
         }
 
         private static IEnumerator customTeleportPlayer(PlayerControllerB player, Vector3 location, float initalDelay)

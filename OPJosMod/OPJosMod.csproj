@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuyableItems.cs" />
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="Patches\RoundManagerPatch.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />
