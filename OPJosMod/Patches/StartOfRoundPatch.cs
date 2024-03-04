@@ -19,6 +19,17 @@ namespace OPJosMode.HideNSeek.Patches
             mls = logSource;
         }
 
+        [HarmonyPatch("Update")]
+        [HarmonyPostfix]
+        static void startPatch(StartOfRound __instance)
+        {
+            __instance.deadlineMonitorText.text = "Hide N Seek!";
+            __instance.profitQuotaMonitorText.text = "Have fun and such";
+            __instance.mapScreen.gameObject.SetActive(false);
+
+            //TimeOfDay.Instance.daysUntilDeadline = 4;
+        }
+
         [HarmonyPatch("ReviveDeadPlayers")]
         [HarmonyPrefix]
         static void reviveDeadPlayersPatch(StartOfRound __instance)
