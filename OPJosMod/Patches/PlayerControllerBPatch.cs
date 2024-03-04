@@ -1,8 +1,11 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.HideNSeek.Config;
+using OPJosMod.HideNSeek.Utils;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -22,6 +25,30 @@ namespace OPJosMode.HideNSeek.Patches
 
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
+
+        private static float sprintMultiplier = 1.01f;
+        private static float maxSprintSpeed = 4f;
+
+        [HarmonyPatch("Update")]
+        [HarmonyPostfix]
+        private static void updatePatch(PlayerControllerB __instance)
+        {
+            if (isSeeker)
+            {
+                var isWalking = ReflectionUtils.GetFieldValue<bool>(__instance, "isWalking");
+                if (isWalking)
+                {
+                    var currentValue = ReflectionUtils.GetFieldValue<float>(__instance, "sprintMultiplier");
+                    if (__instance.isSprinting)
+                    {
+                        var newForce = (float)currentValue * sprintMultiplier;
+
+                        if (newForce < maxSprintSpeed)
+                            ReflectionUtils.SetFieldValue(__instance, "sprintMultiplier", newForce);
+                    }
+                }
+            }
+        }
 
         public static void SetupHider()
         {
@@ -46,8 +73,10 @@ namespace OPJosMode.HideNSeek.Patches
             
             //increase speed slightly
             //give gun
-            //remove scan option
+
+
             //force enemies to whistle, on cool down
+                //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
         }
 
         private static IEnumerator customTeleportPlayer(PlayerControllerB player, Vector3 location, float initalDelay)
