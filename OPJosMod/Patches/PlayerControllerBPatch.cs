@@ -7,6 +7,7 @@ using OPJosMod.HideNSeek.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
@@ -72,10 +73,8 @@ namespace OPJosMode.HideNSeek.Patches
             isSeeker = false;
             isHider = true;
 
-            localPlayerController.DropAllHeldItemsServerRpc();
-
             //teleport player inside
-            teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 5f));
+            teleportCoroutine = localPlayerController.StartCoroutine(customTeleportPlayer(localPlayerController, RoundManager.FindMainEntrancePosition(), 6f));
             localPlayerController.isInsideFactory = true;
         }
 
@@ -96,7 +95,7 @@ namespace OPJosMode.HideNSeek.Patches
             Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
             GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)BuyableItems.Shovel].spawnPrefab, localPlayerController.transform.position, Quaternion.identity, localPlayerController.playersManager.propsContainer);
             obj.GetComponent<GrabbableObject>().fallTime = 0f;
-            obj.GetComponent<NetworkObject>().Spawn();
+            obj.GetComponent<NetworkObject>().Spawn(true);
 
             //force enemies to whistle, on cool down
                 //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
@@ -110,6 +109,11 @@ namespace OPJosMode.HideNSeek.Patches
             }
 
             yield return new WaitForSeconds(initalDelay);
+
+            for (int i = 0; i < player.ItemSlots.Length; i++)
+            {
+                player.DestroyItemInSlotAndSync(i);
+            }          
 
             GameNetworkManager.Instance.localPlayerController.TeleportPlayer(location);
         }
