@@ -23,11 +23,13 @@ namespace OPJosMode.HideNSeek.Patches
         [HarmonyPostfix]
         static void startPatch(StartOfRound __instance)
         {
-            __instance.deadlineMonitorText.text = "Hide N Seek!";
-            __instance.profitQuotaMonitorText.text = "Have fun and such";
+            __instance.profitQuotaMonitorText.text = "Hide N Seek!";
+            __instance.deadlineMonitorText.text = "Have fun and such";           
             __instance.mapScreen.gameObject.SetActive(false);
 
-            //TimeOfDay.Instance.daysUntilDeadline = 4;
+            // in EndOfGame
+            TimeOfDay.Instance.daysUntilDeadline = 4;
+            TimeOfDay.Instance.timeUntilDeadline = 8000;
         }
 
         [HarmonyPatch("ReviveDeadPlayers")]
