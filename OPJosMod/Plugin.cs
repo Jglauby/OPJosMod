@@ -34,7 +34,6 @@ namespace OPJosMod.HideNSeek
             HUDManagerPatch.SetLogSource(mls);  
             EntranceTeleportPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
-            //TimeOfDayPatch.SetLogSource(mls);
 
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(StartOfRoundPatch));
@@ -43,7 +42,6 @@ namespace OPJosMod.HideNSeek
             harmony.PatchAll(typeof(HUDManagerPatch));
             harmony.PatchAll(typeof(EntranceTeleportPatch));
             harmony.PatchAll(typeof(ShovelPatch));
-            //harmony.PatchAll(typeof(TimeOfDayPatch));
         }
 
         private void setupConfig()
