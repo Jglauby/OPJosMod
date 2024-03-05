@@ -1,9 +1,4 @@
 ﻿using BepInEx.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace OPJosMod.OneHitShovel
@@ -28,7 +23,7 @@ namespace OPJosMod.OneHitShovel
                 collider.enabled = false;
             }
 
-            EnemyAI enemyAIComponent = gameObject.GetComponent<EnemyAI>();
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
             if (enemyAIComponent != null)
             {
                 mls.LogMessage("enemy ai isn't null");
@@ -38,6 +33,35 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai is null");
             }
+        }
+
+        private static EnemyAI findClosestEnemyAI(GameObject gameObject)
+        {
+            EnemyAI resultingEnemy = null;
+
+            EnemyAI[] enemyAIs = Object.FindObjectsOfType<EnemyAI>(); 
+            float closestDistance = Mathf.Infinity; 
+
+            foreach (EnemyAI enemyAI in enemyAIs)
+            {
+                float distance = Vector3.Distance(gameObject.transform.position, enemyAI.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance; 
+                    resultingEnemy = enemyAI; 
+                }
+            }
+
+            if (resultingEnemy != null)
+            {
+                Debug.Log("Closest EnemyAI found: " + resultingEnemy.name);
+            }
+            else
+            {
+                Debug.Log("No EnemyAI found in the scene.");
+            }
+
+            return resultingEnemy;
         }
     }
 }
