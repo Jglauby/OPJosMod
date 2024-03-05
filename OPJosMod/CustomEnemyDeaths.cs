@@ -28,6 +28,7 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai isn't null");
                 enemyAIComponent.isEnemyDead = true;
+                enemyAIComponent.creatureAnimator.enabled = false;
             }
             else
             {

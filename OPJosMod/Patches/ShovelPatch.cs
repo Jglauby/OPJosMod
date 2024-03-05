@@ -58,6 +58,11 @@ namespace OPJosMod.OneHitShovel.Patches
                 {
                     CustomEnemyDeaths.killHumanoid(hitObject);
                 }
+
+                if (hitObject.name == "FGiantModelContainer")
+                {
+                    CustomEnemyDeaths.killHumanoid(hitObject);
+                }
             }
         }
     }

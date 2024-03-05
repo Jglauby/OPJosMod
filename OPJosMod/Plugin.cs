@@ -31,14 +31,9 @@ namespace OPJosMod.OneHitShovel
 
             PlayerControllerBPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
-            ForestGiantAIPatch.SetLogSource(mls);
             CustomEnemyDeaths.SetLogSource(mls);
 
             harmony.PatchAll();
-
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
-            harmony.PatchAll(typeof(SpringManAIPatch));
-            harmony.PatchAll(typeof(ForestGiantAIPatch));
         }
 
         private void setupConfig()//example config setup
