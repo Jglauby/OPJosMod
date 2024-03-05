@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.2.0";
+        private const string modVersion = "2.3.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -79,7 +79,7 @@ namespace OPJosMod.GhostMode
 
             var configTeleportBodyButton = Config.Bind("Teleport to Dead Body Button",
                                         "TeleportToDeadBodyButton",
-                                        "C",
+                                        "Backspace",
                                         "Button to teleport to your dead body");
 
             var configToggleBrightModeButton = Config.Bind("Toggle Bright Mode Button",
@@ -89,8 +89,13 @@ namespace OPJosMod.GhostMode
 
             var configTeleportFrontDoorButton = Config.Bind("Teleport to Front Door Button",
                                         "TeleportToFrontDoorButton",
-                                        "R",
+                                        "UpArrow",
                                         "Button to teleport to the front door");
+
+            var configTeleportShipButton = Config.Bind("Teleport to Ship Button",
+                                        "TeleportToShipButton",
+                                        "DownArrow",
+                                        "Button to teleport you to the ship");
 
             var configSwitchToSpectateButton = Config.Bind("Switch to Spectate Mode Button",
                                         "SwitchToSpectateModeButton",
@@ -110,11 +115,12 @@ namespace OPJosMod.GhostMode
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
 
             ConfigVariables.startGhostModeButton = ValidateAndAssignButton(configStartGhostModeButton, "P");
-            ConfigVariables.teleportBodyButton = ValidateAndAssignButton(configTeleportBodyButton, "C");
+            ConfigVariables.teleportBodyButton = ValidateAndAssignButton(configTeleportBodyButton, "Backspace");
             ConfigVariables.toggleBrightModeButton = ValidateAndAssignButton(configToggleBrightModeButton, "B");
-            ConfigVariables.teleportFrontDoorButton = ValidateAndAssignButton(configTeleportFrontDoorButton, "R");
+            ConfigVariables.teleportFrontDoorButton = ValidateAndAssignButton(configTeleportFrontDoorButton, "UpArrow");
             ConfigVariables.switchToSpectateButton = ValidateAndAssignButton(configSwitchToSpectateButton, "O");
             ConfigVariables.toggleNoClipButton = ValidateAndAssignButton(configToggleNoClipButton, "Z");
+            ConfigVariables.teleportShipButton = ValidateAndAssignButton(configTeleportShipButton, "DownArrow");
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
             ConfigVariables.OPness = ValidateAndAssignOPness(configOPness);

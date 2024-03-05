@@ -15,6 +15,7 @@ namespace OPJosMod
         public static string toggleNoClipButton;
         public static float noClipSpeed;
         public static string OPness;
+        public static string teleportShipButton;
 
         public static Key getButton(string buttonName)
         {

@@ -358,18 +358,25 @@ namespace OPJosMod.GhostMode.Patches
                     }
                 }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportBodyButton)]).wasPressedThisFrame)//C was pressed
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportBodyButton)]).wasPressedThisFrame)//backspace was pressed
                 {
                     mls.LogMessage("attempt to tp to dead body");
                     var tpMessage = "(Teleported to: your dead body)";
                     tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
                 }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportFrontDoorButton)]).wasPressedThisFrame)//R was pressed
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportFrontDoorButton)]).wasPressedThisFrame)//up arrow was pressed
                 {
                     mls.LogMessage("attempt to tp to front door");
                     var tpMessage = "(Teleported to: Front Door)";
                     tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
+                }
+
+                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportShipButton)]).wasPressedThisFrame)//down arrow was pressed
+                {
+                    mls.LogMessage("attempt to tp to ship");
+                    var tpMessage = "(Teleported to: Ship)";
+                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.Instance.playersManager.playerSpawnPositions[0].position, tpMessage));
                 }
 
                 if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.switchToSpectateButton)]).wasPressedThisFrame)//O was pressed
