@@ -34,7 +34,7 @@ namespace OPJosMode.HideNSeek.Patches
         private static Coroutine lockPlayerCoroutine;
 
         private static float sprintMultiplier = 1.01f;
-        private static float maxSprintSpeed = 4f;
+        private static float maxSprintSpeed = 3f;
 
         private static float lastCheckedTime;
         private static float checkGameOverFrequency = 5;
@@ -83,7 +83,6 @@ namespace OPJosMode.HideNSeek.Patches
             if (totalPlayerCount == 1)
             {
                 mls.LogMessage($"one person alive, round over. totalPlayers:{totalPlayerCount}");
-                customTeleportPlayer(__instance, shipLocation, 0.1f);
                 StartOfRound.Instance.EndGameServerRpc((int)__instance.playerClientId);
             }
         }

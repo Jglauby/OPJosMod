@@ -3,8 +3,10 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.HideNSeek.Utils;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -30,6 +32,43 @@ namespace OPJosMode.HideNSeek.Patches
             }
 
             return true;
+        }
+
+        [HarmonyPatch("FillEndGameStats")]
+        [HarmonyPrefix]
+        private static void fillEndGameStatsPatchPre(HUDManager __instance, ref EndOfGameStats stats)
+        {
+            for (int i = 0; i < RoundManager.Instance.playersManager.allPlayerScripts.Length; i++)
+            {
+                StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Clear();
+
+                if (RoundManager.Instance.playersManager.allPlayerScripts[i].isPlayerDead)
+                {
+                    mls.LogMessage($"player{i} is dead, so they lost");
+                    StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Add("Lost the game :(");
+                }
+                else
+                {
+                    mls.LogMessage($"player{i} won!");
+                    StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Add("Won the game!");
+                }
+            }
+        }
+
+        [HarmonyPatch("FillEndGameStats")]
+        [HarmonyPostfix]
+        private static void fillEndGameStatsPatchPost(HUDManager __instance, ref EndOfGameStats stats)
+        {
+            HUDManager.Instance.statsUIElements.allPlayersDeadOverlay.gameObject.SetActive(false);
+
+            if (StartOfRound.Instance.localPlayerController.isPlayerDead)
+            {
+                HUDManager.Instance.statsUIElements.gradeLetter.text = "L";
+            }
+            else
+            {
+                HUDManager.Instance.statsUIElements.gradeLetter.text = "W";
+            }
         }
     }
 }

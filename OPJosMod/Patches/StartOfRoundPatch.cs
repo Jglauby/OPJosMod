@@ -47,6 +47,11 @@ namespace OPJosMode.HideNSeek.Patches
         {
             mls.LogMessage("ship leaving, reset isSeeker and isHider");
 
+            if (!StartOfRound.Instance.localPlayerController.isPlayerDead)
+            {
+                mls.LogMessage("ship taking off but player isn't dead");
+                StartOfRound.Instance.localPlayerController.transform.position = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
+            }
             PlayerControllerBPatch.resetRoleValues();
         }
 
