@@ -18,11 +18,12 @@ namespace OPJosMod.OneHitShovel.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void patchUpdate(PlayerControllerB __instance)
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPrefix]
+        private static bool killPlayerPatch(PlayerControllerB __instance)
         {
-            
+            mls.LogMessage("dont kill player, testing");
+            return false;
         }
     }
 }
