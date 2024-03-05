@@ -61,6 +61,11 @@ namespace OPJosMode.HideNSeek.Patches
                 GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)BuyableItems.Shovel].spawnPrefab, __instance.playersManager.playerSpawnPositions[0].position, Quaternion.identity, StartOfRound.Instance.localPlayerController.playersManager.propsContainer);
                 obj.GetComponent<GrabbableObject>().fallTime = 0f;
                 obj.GetComponent<NetworkObject>().Spawn();
+
+                //set time speed, more players => longer days
+                var playerCount = __instance.playersManager.allPlayerScripts.Length;
+                var daySpeedIncrease = 4f;
+                TimeOfDay.Instance.globalTimeSpeedMultiplier = (daySpeedIncrease * 4) / playerCount;
             }
         }
     }
