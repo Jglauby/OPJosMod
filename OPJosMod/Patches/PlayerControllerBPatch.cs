@@ -98,6 +98,8 @@ namespace OPJosMode.HideNSeek.Patches
             if (hasSetRole)
                 return;
 
+            HUDManager.Instance.DisplayTip("Role Set", "You are a Hider!");
+
             hasSetRole = true;
             mls.LogMessage("setup player as a hider");
             PlayerControllerB localPlayerController = StartOfRound.Instance.localPlayerController;
@@ -113,6 +115,8 @@ namespace OPJosMode.HideNSeek.Patches
         {
             if (hasSetRole)
                 return;
+
+            HUDManager.Instance.DisplayTip("Role Set", "You are Seeker!");
 
             hasSetRole = true;
             mls.LogMessage("setup player as seeker");

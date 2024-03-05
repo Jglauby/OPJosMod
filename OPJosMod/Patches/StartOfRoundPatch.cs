@@ -52,6 +52,7 @@ namespace OPJosMode.HideNSeek.Patches
             {
                 mls.LogMessage("ship taking off but player isn't dead");
                 StartOfRound.Instance.localPlayerController.transform.position = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
+                HUDManager.Instance.DisplayTip("Round Over!", "Stay on ship");
             }
             PlayerControllerBPatch.resetRoleValues();
         }
