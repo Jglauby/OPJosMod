@@ -28,7 +28,7 @@ namespace OPJosMode.HideNSeek.Patches
         public static bool isSeeker = false;
         public static bool isHider = false;
 
-        private static float seekerDelay = 15f;
+        private static float seekerDelay = 45f;
 
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
@@ -162,8 +162,8 @@ namespace OPJosMode.HideNSeek.Patches
             mls.LogMessage("player locked in place");
             player.playerCollider.enabled = false;
 
-            //add some sort of UI to indicate you are waiting and for how long
-            //will need to loop with smaller delays to update the UI every second
+            //improve ui
+            HUDManager.Instance.DisplayTip("Seeker can't move for", $"{lockTime} seconds");
 
             yield return new WaitForSeconds(lockTime);
             mls.LogMessage("player unlocked!");
