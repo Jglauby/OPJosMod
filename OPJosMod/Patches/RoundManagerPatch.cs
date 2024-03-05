@@ -64,7 +64,7 @@ namespace OPJosMode.HideNSeek.Patches
 
                 //set time speed, more players => longer days
                 var playerCount = __instance.playersManager.allPlayerScripts.Length;
-                var daySpeedIncrease = 4f;
+                var daySpeedIncrease = 2f;
                 TimeOfDay.Instance.globalTimeSpeedMultiplier = (daySpeedIncrease * 4) / playerCount;
             }
         }

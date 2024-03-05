@@ -29,7 +29,7 @@ namespace OPJosMode.HideNSeek.Patches
 
             // in EndOfGame function call, could put this in a patch for that function?
             TimeOfDay.Instance.daysUntilDeadline = 4;
-            TimeOfDay.Instance.timeUntilDeadline = 76000; //69 days lol
+            TimeOfDay.Instance.timeUntilDeadline = 75500; //69 days lol
         }
 
         [HarmonyPatch("ReviveDeadPlayers")]

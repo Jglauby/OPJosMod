@@ -72,6 +72,12 @@ namespace OPJosMode.HideNSeek.Patches
                 checkIfShouldEndRound(__instance);
                 lastCheckedTime = Time.time;
             }
+
+            //round is actually happening
+            if (isSeeker || isHider)
+            {
+                HUDManager.Instance.SetClockVisible(true);
+            }
         }
 
         private static void checkIfShouldEndRound(PlayerControllerB __instance)
