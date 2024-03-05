@@ -1,5 +1,4 @@
 ﻿using BepInEx.Logging;
-using GameNetcodeStuff;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace OPJosMod.OneHitShovel.Patches
 {
-    [HarmonyPatch(typeof(PlayerControllerB))]
-    internal class PlayerControllerBPatch
+    [HarmonyPatch(typeof(Shovel))]
+    internal class ShovelPatch
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
@@ -18,11 +17,11 @@ namespace OPJosMod.OneHitShovel.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void patchUpdate(PlayerControllerB __instance)
+        [HarmonyPatch("HitShovel")]
+        [HarmonyPrefix]
+        private static void hitShovelPatch(Shovel __instance)
         {
-            
+            __instance.shovelHitForce = 30;
         }
     }
 }
