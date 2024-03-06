@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using OPJosMod.OneHitShovel.Utils;
 using UnityEngine;
 
 namespace OPJosMod.OneHitShovel
@@ -39,7 +40,7 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai is null");
             }
 
-            enemyAIComponent.KillEnemyServerRpc(false);
+            updateLocationOnServer(enemyAIComponent);
         }
 
         public static void killInPlace(GameObject gameObject)
@@ -65,7 +66,7 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai is null");
             }
 
-            enemyAIComponent.KillEnemyServerRpc(false);
+            updateLocationOnServer(enemyAIComponent);
         }
 
         public static void killFourLegged(GameObject gameObject)
@@ -96,7 +97,7 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai is null");
             }
 
-            enemyAIComponent.KillEnemyServerRpc(false);
+            updateLocationOnServer(enemyAIComponent);
         }
 
         public static void killSlime(GameObject gameObject)
@@ -126,7 +127,18 @@ namespace OPJosMod.OneHitShovel
                 destroySlimePart(gameObject, name);       
             }
 
-            enemyAIComponent.KillEnemyServerRpc(false);
+            updateLocationOnServer(enemyAIComponent);
+        }
+
+        private static void updateLocationOnServer(EnemyAI enemy)
+        {
+            enemy.KillEnemyServerRpc(false);
+
+            short rotation = (short)enemy.transform.rotation.eulerAngles.y;
+            ReflectionUtils.InvokeMethod(enemy, "UpdateEnemyRotationServerRpc", new object[] { rotation });
+
+            Vector3 postion = enemy.transform.position;
+            ReflectionUtils.InvokeMethod(enemy, "UpdateEnemyPositionServerRpc", new object[] { postion });
         }
 
         private static void stopAllSounds(EnemyAI enemy)
