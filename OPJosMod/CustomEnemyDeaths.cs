@@ -40,6 +40,30 @@ namespace OPJosMod.OneHitShovel
             }
         }
 
+        public static void killInPlace(GameObject gameObject)
+        {
+            mls.LogMessage($"try to kill {gameObject.name}");
+
+            Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
+            foreach (Collider collider in colliders)
+            {
+                collider.enabled = false;
+            }
+
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            if (enemyAIComponent != null)
+            {
+                mls.LogMessage("enemy ai isn't null");
+                enemyAIComponent.isEnemyDead = true;
+                enemyAIComponent.creatureAnimator.enabled = false;
+                stopAllSounds(enemyAIComponent);
+            }
+            else
+            {
+                mls.LogMessage("enemy ai is null");
+            }
+        }
+
         public static void killFourLegged(GameObject gameObject)
         {
             mls.LogMessage($"try to kill {gameObject.name}");

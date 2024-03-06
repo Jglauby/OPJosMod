@@ -60,6 +60,8 @@ namespace OPJosMod.OneHitShovel.Patches
 
             string[] fourLeggedNames = new string[] { "PufferModel" };
 
+            string[] dieInPlaceNames = new string[] { "Bone.", "Bone" };
+
             string[] slimeNames = new string[] { "BoneEast", "BoneNorth", "BoneSouth", "BoneWest",
                 "BoneNorthWest", "BoneNorthEast", "BoneSouthEast", "BoneSouthWest", "Center"};
 
@@ -78,6 +80,19 @@ namespace OPJosMod.OneHitShovel.Patches
                 if (slimeNames.Contains(hitObject.name))
                 {
                     CustomEnemyDeaths.killSlime(hitObject);
+                }
+
+                if (hitObject.name != null)
+                {
+                    int dotIndex = hitObject.name.LastIndexOf('.');
+                    if (dotIndex != -1)
+                    {
+                        string trimmedName = hitObject.name.Substring(0, dotIndex + 1);
+                        if (dieInPlaceNames.Contains(trimmedName))
+                        {
+                            CustomEnemyDeaths.killInPlace(hitObject);
+                        }
+                    }
                 }
             }
         }
