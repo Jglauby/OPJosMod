@@ -38,6 +38,8 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai is null");
             }
+
+            enemyAIComponent.KillEnemyServerRpc(false);
         }
 
         public static void killInPlace(GameObject gameObject)
@@ -62,6 +64,8 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai is null");
             }
+
+            enemyAIComponent.KillEnemyServerRpc(false);
         }
 
         public static void killFourLegged(GameObject gameObject)
@@ -90,7 +94,9 @@ namespace OPJosMod.OneHitShovel
             else
             {
                 mls.LogMessage("enemy ai is null");
-            }         
+            }
+
+            enemyAIComponent.KillEnemyServerRpc(false);
         }
 
         public static void killSlime(GameObject gameObject)
@@ -119,6 +125,8 @@ namespace OPJosMod.OneHitShovel
             {
                 destroySlimePart(gameObject, name);       
             }
+
+            enemyAIComponent.KillEnemyServerRpc(false);
         }
 
         private static void stopAllSounds(EnemyAI enemy)
