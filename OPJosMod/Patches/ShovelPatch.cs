@@ -49,19 +49,35 @@ namespace OPJosMod.OneHitShovel.Patches
                 }
             }
 
-            //at this point we now should have what we hit
             //FGiantModelContainer -> forest giant
             //SpringManModel -> coil head
+            //PufferModel -> puffer
+            //DressGirlModel -> ghost girl
+            //BoneEast -> blob
+            //Bone.003 -> earth worm
+            //MeshContainer -> jester
+            string[] humanoidNames = new string[] { "SpringManModel", "FGiantModelContainer", "DressGirlModel", "MeshContainer" };
+
+            string[] fourLeggedNames = new string[] { "PufferModel" };
+
+            string[] slimeNames = new string[] { "BoneEast", "BoneNorth", "BoneSouth", "BoneWest",
+                "BoneNorthWest", "BoneNorthEast", "BoneSouthEast", "BoneSouthWest", "Center"};
+
             if (hitObject != null && hitObject.name != "Player")
             {
-                if (hitObject.name == "SpringManModel")
+                if (humanoidNames.Contains(hitObject.name))
                 {
                     CustomEnemyDeaths.killHumanoid(hitObject);
                 }
 
-                if (hitObject.name == "FGiantModelContainer")
+                if (fourLeggedNames.Contains(hitObject.name))
                 {
-                    CustomEnemyDeaths.killHumanoid(hitObject);
+                    CustomEnemyDeaths.killFourLegged(hitObject);
+                }
+
+                if (slimeNames.Contains(hitObject.name))
+                {
+                    CustomEnemyDeaths.killSlime(hitObject);
                 }
             }
         }

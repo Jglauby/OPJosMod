@@ -32,11 +32,111 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai isn't null");
                 enemyAIComponent.isEnemyDead = true;
                 enemyAIComponent.creatureAnimator.enabled = false;
+                stopAllSounds(enemyAIComponent);
             }
             else
             {
                 mls.LogMessage("enemy ai is null");
             }
+        }
+
+        public static void killFourLegged(GameObject gameObject)
+        {
+            mls.LogMessage($"try to kill {gameObject.name}");
+            gameObject.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+
+            Renderer renderer = gameObject.GetComponent<Renderer>();
+            float moveUpDistance = (renderer != null) ? renderer.bounds.size.y * 0.1f : 1f; 
+            gameObject.transform.position += new Vector3(0f, moveUpDistance, 0f);
+
+            Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
+            foreach (Collider collider in colliders)
+            {
+                collider.enabled = false;
+            }
+
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            if (enemyAIComponent != null)
+            {
+                mls.LogMessage("enemy ai isn't null");
+                enemyAIComponent.isEnemyDead = true;
+                enemyAIComponent.creatureAnimator.enabled = false;
+                stopAllSounds(enemyAIComponent);
+            }
+            else
+            {
+                mls.LogMessage("enemy ai is null");
+            }         
+        }
+
+        public static void killSlime(GameObject gameObject)
+        {
+            mls.LogMessage($"try to kill {gameObject.name}");
+
+            string[] slimeNames = new string[] { "BoneEast", "BoneNorth", "BoneSouth", "BoneWest",
+                "BoneNorthWest", "BoneNorthEast", "BoneSouthEast", "BoneSouthWest", "Center"};
+
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            if (enemyAIComponent != null)
+            {
+                mls.LogMessage("enemy ai isn't null");
+                enemyAIComponent.isEnemyDead = true;
+                enemyAIComponent.creatureAnimator.enabled = false;
+            }
+            else
+            {
+                mls.LogMessage("enemy ai is null");
+            }
+
+            Object.Destroy(enemyAIComponent);
+            stopAllSounds(enemyAIComponent);
+
+            foreach(string name in slimeNames)
+            {
+                destroySlimePart(gameObject, name);       
+            }
+        }
+
+        private static void stopAllSounds(EnemyAI enemy)
+        {
+            AudioSource[] objectAudioSources = enemy.GetComponentsInChildren<AudioSource>();
+
+            foreach (AudioSource audioSource in objectAudioSources)
+            {
+                audioSource.Stop();
+            }
+        }
+
+        private static void destroySlimePart(GameObject gameObject, string name)
+        {
+            GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
+            GameObject closestObject = null;
+            float closestDistance = Mathf.Infinity;
+
+            foreach (GameObject obj in allGameObjects)
+            {
+                if (obj.name == name)
+                {
+                    float distance = Vector3.Distance(gameObject.transform.position, obj.transform.position);
+                    if (distance < closestDistance && distance < 10)
+                    {
+                        closestDistance = distance;
+                        closestObject = obj;
+                    }
+                }
+            }
+
+            if (closestObject != null)
+            {
+                mls.LogMessage("Closest Enemy with name '" + name + "' found: " + closestObject.name);
+            }
+            else
+            {
+                mls.LogMessage("No Enemy with name '" + name + "' found in the scene.");
+            }
+
+            
+            Object.Destroy(closestObject);
         }
 
         private static EnemyAI findClosestEnemyAI(GameObject gameObject)
