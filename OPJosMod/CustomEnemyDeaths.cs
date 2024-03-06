@@ -15,7 +15,10 @@ namespace OPJosMod.OneHitShovel
         {
             mls.LogMessage($"try to kill {gameObject.name}");
             gameObject.transform.rotation = Quaternion.Euler(-90f, 0f, 90f);
-            gameObject.transform.position += new Vector3(0f, 0.1f, 0f);
+
+            Renderer renderer = gameObject.GetComponent<Renderer>();
+            float moveUpDistance = (renderer != null) ? renderer.bounds.size.x * 0.1f : 0.1f;
+            gameObject.transform.position += new Vector3(0f, moveUpDistance, 0f);
 
             Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
             foreach (Collider collider in colliders)
