@@ -40,7 +40,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             {
                 if ((int)GameNetworkManager.Instance.localPlayerController.playerClientId == playerId)
                 {
-                    mls.LogMessage("nutcracker should swapped target to client player");
+                    mls.LogMessage("kept nutcracker from switching target to current player");
                     __instance.StopInspection();
                     __instance.currentBehaviourStateIndex = ReflectionUtils.GetFieldValue<int>(__instance, "previousBehaviourState");
                     return false;

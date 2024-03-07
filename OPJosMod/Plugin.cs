@@ -47,17 +47,9 @@ namespace OPJosMod.GhostMode
             SandSpiderAIPatch.SetLogSource(mls);
             NutcrackerEnemyAIPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);
+            LandminePatch.SetLogSource(mls);
 
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
-            harmony.PatchAll(typeof(StartOfRoundPatch));
-            harmony.PatchAll(typeof(EnemyAIPatch));
-            harmony.PatchAll(typeof(HUDManagerPatch));
-            harmony.PatchAll(typeof (CentipedeAIPatch));
-            harmony.PatchAll(typeof(MouthDogAIPatch));
-            harmony.PatchAll(typeof(ForestGiantAIPatch));
-            harmony.PatchAll(typeof(SandSpiderAIPatch));
-            harmony.PatchAll(typeof(NutcrackerEnemyAIPatch));
-            harmony.PatchAll(typeof(StartMatchLeverPatch));
+            harmony.PatchAll();
         }
 
         private void setupConfig()
