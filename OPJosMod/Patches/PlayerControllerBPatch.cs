@@ -249,7 +249,6 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
         {
-            mls.LogMessage($"detect enemies set to: {ConfigVariables.enemiesDetectYou}");
             if(setupValuesYet == false && allowKill)
             {
                 mls.LogMessage("setting default night vision values");

@@ -42,7 +42,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
                 var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;
                 var currentPlayer = allPlayerScripts[playerIndex];
 
-                if (GeneralUtils.twoPointsAreClose(noisePosition, currentPlayer.transform.position, 2f))
+                if (GeneralUtils.twoPointsAreClose(noisePosition, currentPlayer.transform.position, 5f))
                 {
                     mls.LogMessage("noise was close to you, so don't detect this noise");
                     return false;

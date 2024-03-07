@@ -32,24 +32,22 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             mls = logSource;
         }
 
-        private static int lastFocusedPlayer = -1;
-
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        private static void updatePatch(NutcrackerEnemyAI __instance)
+        [HarmonyPatch("SwitchTargetToPlayer")]
+        [HarmonyPrefix]
+        private static bool switchTargetToPlayerPatch(NutcrackerEnemyAI __instance, ref int playerId)
         {
             if (PlayerControllerBPatch.isGhostMode)
             {
-                if ((int)GameNetworkManager.Instance.localPlayerController.playerClientId == __instance.lastPlayerSeenMoving)
+                if ((int)GameNetworkManager.Instance.localPlayerController.playerClientId == playerId)
                 {
-                    mls.LogMessage("nutcracker should have seen client player");
-                    __instance.lastPlayerSeenMoving = lastFocusedPlayer;
-                }
-                else
-                {
-                    lastFocusedPlayer = __instance.lastPlayerSeenMoving;
+                    mls.LogMessage("nutcracker should swapped target to client player");
+                    __instance.StopInspection();
+                    __instance.currentBehaviourStateIndex = ReflectionUtils.GetFieldValue<int>(__instance, "previousBehaviourState");
+                    return false;
                 }
             }
+
+            return true;
         }
     }
 }
