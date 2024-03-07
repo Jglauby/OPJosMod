@@ -77,6 +77,7 @@
     <Compile Include="GeneralUtil.cs" />
     <Compile Include="Patches\EntranceTeleportPatch.cs" />
     <Compile Include="Patches\RoundManagerPatch.cs" />
+    <Compile Include="Patches\FlashlightItemPatch.cs" />
     <Compile Include="Patches\TerminalPatch.cs" />
     <Compile Include="Patches\ShovelPatch.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />
