@@ -16,11 +16,26 @@ namespace OPJosMode.HideNSeek.Patches
             mls = logSource;
         }
 
+        [HarmonyPatch("Start")]
+        [HarmonyPrefix]
+        private static void startPatch(Terminal __instance)
+        {
+            if (GameNetworkManager.Instance.isHostingGame)
+            {
+                __instance.groupCredits = 123456789;
+                __instance.SyncGroupCreditsServerRpc(__instance.groupCredits, __instance.numberOfItemsInDropship);
+            }
+        }
+
         [HarmonyPatch("RunTerminalEvents")]
         [HarmonyPrefix]
         private static void runTerminalEventsPatch(Terminal __instance)
         {
-            __instance.groupCredits = 12345;
+            if (GameNetworkManager.Instance.isHostingGame)
+            {
+                __instance.groupCredits = 123456789;
+                __instance.SyncGroupCreditsServerRpc(__instance.groupCredits, __instance.numberOfItemsInDropship);
+            }
         }
     }
 }
