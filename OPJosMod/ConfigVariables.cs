@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BepInEx.Logging;
+using System;
 using System.Linq;
 using UnityEngine.InputSystem;
 
@@ -16,6 +17,7 @@ namespace OPJosMod
         public static float noClipSpeed;
         public static string OPness;
         public static string teleportShipButton;
+        public static bool enemiesDetectYou;
 
         public static Key getButton(string buttonName)
         {

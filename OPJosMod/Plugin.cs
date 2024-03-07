@@ -111,7 +111,12 @@ namespace OPJosMod.GhostMode
                                         "NoClipFlightSpeed",
                                         0.27f,
                                         "How fast you move while in no clip");
-           
+
+            var configEnemyDetection = Config.Bind("Enemies Detect Ghost",
+                                        "EnemiesDetectGhost",
+                                        "false",
+                                        "Enemies are able to detect you as a ghost, true or false");
+
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
 
             ConfigVariables.startGhostModeButton = ValidateAndAssignButton(configStartGhostModeButton, "P");
@@ -124,6 +129,7 @@ namespace OPJosMod.GhostMode
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
             ConfigVariables.OPness = ValidateAndAssignOPness(configOPness);
+            ConfigVariables.enemiesDetectYou = ValidateAndAssignBool(configEnemyDetection, false);
 
             Config.Save();
         }
@@ -140,6 +146,26 @@ namespace OPJosMod.GhostMode
 
                 configEntry.Value = defaultButton;
                 return defaultButton;
+            }
+        }
+
+        private bool ValidateAndAssignBool(ConfigEntry<string> configEntry, bool defaultValue)
+        {
+            string boolName = configEntry.Value.ToLower();
+            if (string.Equals(boolName, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                configEntry.Value = "true";
+                return true;
+            }
+            else if (string.Equals(boolName, "false", StringComparison.OrdinalIgnoreCase))
+            {
+                configEntry.Value = "false";
+                return false;
+            }
+            else
+            {
+                configEntry.Value = defaultValue.ToString();
+                return defaultValue;
             }
         }
 
