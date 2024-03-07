@@ -80,6 +80,13 @@ namespace OPJosMode.HideNSeek.Patches
             }
         }
 
+        [HarmonyPatch("Start")]
+        [HarmonyPrefix]
+        private static void startPatch(PlayerControllerB __instance)
+        {
+            __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity = __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity / ConfigVariables.flashlightPower;
+        }
+
         [HarmonyPatch("KillPlayer")]
         [HarmonyPostfix]
         private static void killPlayerPatch(PlayerControllerB __instance)

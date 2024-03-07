@@ -1,6 +1,7 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod;
+using OPJosMod.HideNSeek.Config;
 
 namespace OPJosMode.HideNSeek.Patches
 {
@@ -22,7 +23,7 @@ namespace OPJosMode.HideNSeek.Patches
             if(__instance.flashlightTypeID == (int)FlashlightTypes.NormalFlashlight)
             {
                 __instance.itemProperties.requiresBattery = false;
-                __instance.flashlightBulb.intensity = __instance.flashlightBulb.intensity / 5;
+                __instance.flashlightBulb.intensity = __instance.flashlightBulb.intensity / ConfigVariables.flashlightPower;
             }
         }
     }

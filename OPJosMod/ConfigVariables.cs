@@ -9,6 +9,7 @@ namespace OPJosMod.HideNSeek.Config
 {
     public static class ConfigVariables
     {
+        public static int flashlightPower = 5; // 1/5th the power
         //public static float defaultSprintMultiplier;
         //public static string flashTimeButton;
         //
