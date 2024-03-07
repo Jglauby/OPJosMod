@@ -34,16 +34,19 @@ namespace OPJosMod.GhostMode.Enemy.Patches
 
         [HarmonyPatch("Update")]
         [HarmonyPrefix]
-        private static void updatePrePatch(CentipedeAI __instance)
+        private static bool updatePrePatch(CentipedeAI __instance)
         {
             if (PlayerControllerBPatch.isGhostMode)
             {
-                if (__instance.currentBehaviourStateIndex == 2 && EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+                //do nothing if ghost is closest to centipede and its hanging from ceiling
+                if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId
+                    && __instance.currentBehaviourStateIndex == 1)
                 {
-                    mls.LogMessage("swap to behavior state 0");
-                    __instance.SwitchToBehaviourState(1);
+                    return false;
                 }
             }
+
+            return true;
         }
     }
 }
