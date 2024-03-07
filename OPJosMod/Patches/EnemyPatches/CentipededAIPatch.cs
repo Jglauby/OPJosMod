@@ -31,5 +31,19 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         {
             mls = logSource;
         }
+
+        [HarmonyPatch("Update")]
+        [HarmonyPrefix]
+        private static void updatePrePatch(CentipedeAI __instance)
+        {
+            if (PlayerControllerBPatch.isGhostMode)
+            {
+                if (__instance.currentBehaviourStateIndex == 2 && EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+                {
+                    mls.LogMessage("swap to behavior state 0");
+                    __instance.SwitchToBehaviourState(1);
+                }
+            }
+        }
     }
 }

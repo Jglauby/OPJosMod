@@ -18,6 +18,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 namespace OPJosMod.GhostMode.Patches
 {
@@ -117,6 +118,35 @@ namespace OPJosMod.GhostMode.Patches
             }
 
             return true;
+        }
+
+        public static PlayerControllerB getClosestPlayerIncludingGhost(EnemyAI enemy)
+        {
+            PlayerControllerB resultingPlayer = null;
+
+            PlayerControllerB[] players = Object.FindObjectsOfType<PlayerControllerB>();
+            float closestDistance = Mathf.Infinity;
+
+            foreach (PlayerControllerB player in players)
+            {
+                float distance = Vector3.Distance(enemy.transform.position, player.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    resultingPlayer = player;
+                }
+            }
+
+            if (resultingPlayer != null)
+            {
+                mls.LogMessage("Closest player found: " + resultingPlayer.name);
+            }
+            else
+            {
+                mls.LogError("No EnemyAI found in the scene.");
+            }
+
+            return resultingPlayer;
         }
     }
 }
