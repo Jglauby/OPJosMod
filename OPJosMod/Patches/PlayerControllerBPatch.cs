@@ -80,6 +80,17 @@ namespace OPJosMode.HideNSeek.Patches
             }
         }
 
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPostfix]
+        private static void killPlayerPatch(PlayerControllerB __instance)
+        {
+            if (isSeeker)
+            {
+                mls.LogMessage("end game called as you are a seeker");
+                StartOfRound.Instance.EndGameServerRpc((int)__instance.playerClientId);
+            }
+        }
+
         private static void checkIfShouldEndRound(PlayerControllerB __instance)
         {
             var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
