@@ -37,6 +37,7 @@ namespace OPJosMod.HideNSeek
             TerminalPatch.SetLogSource(mls);
             GeneralUtil.SetLogSource(mls);
             FlashlightItemPatch.SetLogSource(mls);
+            TurretPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
