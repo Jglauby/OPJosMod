@@ -10,7 +10,7 @@ namespace OPJosMod.HideNSeek
     {
         private const string modGUID = "OpJosMod.HideNSeek";
         private const string modName = "HideNSeek";
-        private const string modVersion = "0.7.0";
+        private const string modVersion = "0.8.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -35,15 +35,9 @@ namespace OPJosMod.HideNSeek
             EntranceTeleportPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
             TerminalPatch.SetLogSource(mls);
+            GeneralUtil.SetLogSource(mls);
 
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
-            harmony.PatchAll(typeof(StartOfRoundPatch));
-            harmony.PatchAll(typeof(StartMatchLeverPatch));
-            harmony.PatchAll(typeof(RoundManagerPatch));
-            harmony.PatchAll(typeof(HUDManagerPatch));
-            harmony.PatchAll(typeof(EntranceTeleportPatch));
-            harmony.PatchAll(typeof(ShovelPatch));
-            harmony.PatchAll(typeof(TerminalPatch));
+            harmony.PatchAll();
         }
 
         private void setupConfig()

@@ -56,15 +56,14 @@ namespace OPJosMode.HideNSeek.Patches
                 //    Object.Destroy(shovels[k].gameObject);
                 //}
 
-                //create and drop shovel
-                Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
-                GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)BuyableItems.Shovel].spawnPrefab, __instance.playersManager.playerSpawnPositions[0].position, Quaternion.identity, StartOfRound.Instance.localPlayerController.playersManager.propsContainer);
-                obj.GetComponent<GrabbableObject>().fallTime = 0f;
-                obj.GetComponent<NetworkObject>().Spawn();
+                //create and drop shovel and flashlight
+                var spawnLocation = __instance.playersManager.playerSpawnPositions[0].position;
+                GeneralUtil.spawnItemAtLocation(BuyableItems.Shovel, spawnLocation);
+                GeneralUtil.spawnItemAtLocation(BuyableItems.Flashlight, spawnLocation);
 
                 //set time speed, more players => longer days
                 var playerCount = __instance.playersManager.allPlayerScripts.Length;
-                var daySpeedIncrease = 2f;
+                var daySpeedIncrease = 2.5f;
                 TimeOfDay.Instance.globalTimeSpeedMultiplier = (daySpeedIncrease * 4) / playerCount;
             }
         }

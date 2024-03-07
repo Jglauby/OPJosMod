@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="BuyableItems.cs" />
     <Compile Include="ConfigVariables.cs" />
+    <Compile Include="GeneralUtil.cs" />
     <Compile Include="Patches\EntranceTeleportPatch.cs" />
     <Compile Include="Patches\RoundManagerPatch.cs" />
     <Compile Include="Patches\TerminalPatch.cs" />
