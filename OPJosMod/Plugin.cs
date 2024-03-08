@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.OneHitShovel.CustomRpc;
 using OPJosMod.OneHitShovel.Patches;
 using Unity.Netcode;
 
@@ -34,6 +35,7 @@ namespace OPJosMod.OneHitShovel
             ShovelPatch.SetLogSource(mls);
             CustomEnemyDeaths.SetLogSource(mls);
             HUDManagerPatch.SetLogSource(mls);
+            RpcMessageHandler.SetLogSource(mls);
 
             harmony.PatchAll();
         }

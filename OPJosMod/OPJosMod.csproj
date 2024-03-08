@@ -75,6 +75,9 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="CustomEnemyDeaths.cs" />
+    <Compile Include="CustomRpc\MessageCodes.cs" />
+    <Compile Include="CustomRpc\RpcMessage.cs" />
+    <Compile Include="CustomRpc\RpcMessageHandler.cs" />
     <Compile Include="Patches\HudManagerPatch.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Patches\ShovelPatch.cs" />

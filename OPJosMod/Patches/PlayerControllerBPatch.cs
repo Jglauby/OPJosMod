@@ -1,11 +1,15 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.OneHitShovel.CustomRpc;
+using OPJosMod.OneHitShovel.CustomRpcs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OPJosMod.OneHitShovel.Patches
 {
@@ -16,6 +20,30 @@ namespace OPJosMod.OneHitShovel.Patches
         public static void SetLogSource(ManualLogSource logSource)
         {
             mls = logSource;
+        }
+
+        private static bool sendingMessageStarted = false;
+
+        [HarmonyPatch("Jump_performed")]
+        [HarmonyPrefix]
+        private static void jump_performed(PlayerControllerB __instance)
+        {
+            mls.LogMessage("you jumped!");
+
+            if (!sendingMessageStarted)
+            {
+                var rpcMessage = new RpcMessage("other user jumped!", (int)__instance.playerClientId, MessageCodes.Request);
+                __instance.StartCoroutine(sendMessage(rpcMessage));
+                sendingMessageStarted = true;
+            }
+        }
+
+        private static IEnumerator sendMessage(RpcMessage message)
+        {
+            yield return new WaitForSeconds(3f);
+
+            RpcMessageHandler.SendRpcMessage(message);
+            sendingMessageStarted = false;
         }
 
         [HarmonyPatch("KillPlayer")]

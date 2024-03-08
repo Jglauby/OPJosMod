@@ -1,6 +1,8 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.OneHitShovel.CustomRpc;
+using OPJosMod.OneHitShovel.CustomRpcs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +22,16 @@ namespace OPJosMod.OneHitShovel.Patches
 
         [HarmonyPatch("AddPlayerChatMessageServerRpc")]
         [HarmonyPrefix]
-        private static void addPlayerChatMessageServerRpcPatch(ref string chatMessage, ref int playerId)
+        private static bool addPlayerChatMessageServerRpcPatch(ref string chatMessage, ref int playerId)
         {
-            mls.LogMessage($"chat message:{chatMessage} playerID:{playerId}");
+            //checks if it is a custom rpc call
+            if (MessageCodeUtil.stringContainsMessageCode(chatMessage))
+            {
+                RpcMessageHandler.ReceiveRpcMessage(chatMessage, playerId);
+                return false;
+            }        
+
+            return true;
         }
     }
 }
