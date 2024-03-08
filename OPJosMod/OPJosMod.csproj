@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="CustomEnemyDeaths.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />

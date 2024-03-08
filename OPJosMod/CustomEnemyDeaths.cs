@@ -104,9 +104,6 @@ namespace OPJosMod.OneHitShovel
         {
             mls.LogMessage($"try to kill {gameObject.name}");
 
-            string[] slimeNames = new string[] { "BoneEast", "BoneNorth", "BoneSouth", "BoneWest",
-                "BoneNorthWest", "BoneNorthEast", "BoneSouthEast", "BoneSouthWest", "Center"};
-
             EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
             if (enemyAIComponent != null)
             {
@@ -122,7 +119,7 @@ namespace OPJosMod.OneHitShovel
             Object.Destroy(enemyAIComponent);
             stopAllSounds(enemyAIComponent);
 
-            foreach(string name in slimeNames)
+            foreach(string name in Constants.slimeNames)
             {
                 destroySlimePart(gameObject, name);       
             }
