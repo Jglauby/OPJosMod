@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace OPJosMod.OneHitShovel.Patches
 {
-    [HarmonyPatch(typeof(PlayerControllerB))]
-    internal class PlayerControllerBPatch
+    [HarmonyPatch(typeof(HUDManager))]
+    internal class HUDManagerPatch
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
@@ -18,12 +18,11 @@ namespace OPJosMod.OneHitShovel.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("KillPlayer")]
+        [HarmonyPatch("AddPlayerChatMessageServerRpc")]
         [HarmonyPrefix]
-        private static bool killPlayerPatch(PlayerControllerB __instance)
+        private static void addPlayerChatMessageServerRpcPatch(HUDManager __instance)
         {
-            mls.LogMessage("dont kill player, testing");
-            return false;
+            mls.LogMessage("hit add chat server call");
         }
     }
 }
