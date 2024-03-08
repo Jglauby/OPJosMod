@@ -20,9 +20,9 @@ namespace OPJosMod.OneHitShovel.Patches
 
         [HarmonyPatch("AddPlayerChatMessageServerRpc")]
         [HarmonyPrefix]
-        private static void addPlayerChatMessageServerRpcPatch(HUDManager __instance)
+        private static void addPlayerChatMessageServerRpcPatch(ref string chatMessage, ref int playerId)
         {
-            mls.LogMessage("hit add chat server call");
+            mls.LogMessage($"chat message:{chatMessage} playerID:{playerId}");
         }
     }
 }
