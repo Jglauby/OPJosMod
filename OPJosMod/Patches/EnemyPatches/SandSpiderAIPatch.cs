@@ -36,7 +36,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         static bool triggerChaseWithPlayerPatch(ref PlayerControllerB playerScript)
         {
-            if (PlayerControllerBPatch.isGhostMode && StartOfRound.Instance.localPlayerController.playerClientId == playerScript.playerClientId)
+            if (PlayerControllerBPatch.isGhostMode && StartOfRound.Instance.localPlayerController.playerClientId == playerScript.playerClientId && !ConfigVariables.enemiesDetectYou)
             {
                 mls.LogMessage("spider supposed to trigger chase with player");
                 return false;

@@ -17,7 +17,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         private static bool avoidClosestPlayerPatch(FlowermanAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
                 if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
                 {

@@ -17,7 +17,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         private static bool updatePrePatch(CentipedeAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
                 //do nothing if ghost is closest to centipede and its hanging from ceiling
                 if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId

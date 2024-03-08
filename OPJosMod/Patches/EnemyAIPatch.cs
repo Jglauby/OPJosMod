@@ -54,7 +54,7 @@ namespace OPJosMod.GhostMode.Patches
         static void playerIsTargetablePatch(ref bool cannotBeInShip, ref PlayerControllerB playerScript)
         {
             //a way to make current player always return not tragetable in the enemy ai
-            if (PlayerControllerBPatch.isGhostMode && playerScript.IsOwner)
+            if (PlayerControllerBPatch.isGhostMode && playerScript.IsOwner && !ConfigVariables.enemiesDetectYou)
             {
                 //mls.LogMessage("set local player to not targetable");
                 playerScript.isInHangarShipRoom = true;
@@ -66,7 +66,7 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPostfix]
         static void getAllPlayersInLineOfSightPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;

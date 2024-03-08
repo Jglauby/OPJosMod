@@ -36,7 +36,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         private static bool detectNoisePatch(ref Vector3 noisePosition)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;

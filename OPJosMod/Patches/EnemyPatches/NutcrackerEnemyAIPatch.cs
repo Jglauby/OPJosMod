@@ -36,7 +36,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         private static bool switchTargetToPlayerPatch(NutcrackerEnemyAI __instance, ref int playerId)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
                 if ((int)GameNetworkManager.Instance.localPlayerController.playerClientId == playerId)
                 {

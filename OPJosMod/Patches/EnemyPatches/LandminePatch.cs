@@ -36,13 +36,16 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         private static bool onTriggerEnterPatch(ref Collider other)
         {
-            if (other.CompareTag("Player"))
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
-                PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
-                if (!(component != GameNetworkManager.Instance.localPlayerController) && component != null && !component.isPlayerDead)
+                if (other.CompareTag("Player"))
                 {
-                    mls.LogMessage("ghost stepped on mine, do nothing");
-                    return false;
+                    PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
+                    if (!(component != GameNetworkManager.Instance.localPlayerController) && component != null && !component.isPlayerDead)
+                    {
+                        mls.LogMessage("ghost stepped on mine, do nothing");
+                        return false;
+                    }
                 }
             }
 
@@ -53,13 +56,16 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         [HarmonyPrefix]
         private static bool onTriggerExitPatch(ref Collider other)
         {
-            if (other.CompareTag("Player"))
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
-                PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
-                if (component != null && !component.isPlayerDead && !(component != GameNetworkManager.Instance.localPlayerController))
+                if (other.CompareTag("Player"))
                 {
-                    mls.LogMessage("ghost stepped off mine, do nothing");
-                    return false;
+                    PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
+                    if (component != null && !component.isPlayerDead && !(component != GameNetworkManager.Instance.localPlayerController))
+                    {
+                        mls.LogMessage("ghost stepped off mine, do nothing");
+                        return false;
+                    }
                 }
             }
 
