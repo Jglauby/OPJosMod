@@ -34,5 +34,18 @@ namespace OPJosMod.OneHitShovel.Patches
                 RpcMessageHandler.ReceiveRpcMessage(chatMessage, playerId);
             }
         }
+
+        [HarmonyPatch("AddChatMessage")]
+        [HarmonyPrefix]
+        private static bool addChatMessagePatch(ref string chatMessage)
+        {
+            //keep chat from showing up if it was a just being used for a rpc call
+            if (MessageCodeUtil.stringContainsMessageCode(chatMessage))
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
