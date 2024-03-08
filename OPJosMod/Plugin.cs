@@ -48,6 +48,7 @@ namespace OPJosMod.GhostMode
             NutcrackerEnemyAIPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);
             LandminePatch.SetLogSource(mls);
+            FlowermanAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }

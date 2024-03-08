@@ -4,8 +4,8 @@ using OPJosMod.GhostMode.Patches;
 
 namespace OPJosMod.GhostMode.Enemy.Patches
 {
-    [HarmonyPatch(typeof(CentipedeAI))]
-    internal class CentipedeAIPatch
+    [HarmonyPatch(typeof(FlowermanAI))]
+    internal class FlowermanAIPatch
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
@@ -13,15 +13,13 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Update")]
+        [HarmonyPatch("AvoidClosestPlayer")]
         [HarmonyPrefix]
-        private static bool updatePrePatch(CentipedeAI __instance)
+        private static bool avoidClosestPlayerPatch(FlowermanAI __instance)
         {
             if (PlayerControllerBPatch.isGhostMode)
             {
-                //do nothing if ghost is closest to centipede and its hanging from ceiling
-                if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId
-                    && __instance.currentBehaviourStateIndex == 1)
+                if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
                 {
                     return false;
                 }
