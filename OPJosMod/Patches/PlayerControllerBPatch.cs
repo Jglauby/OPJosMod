@@ -32,7 +32,7 @@ namespace OPJosMod.OneHitShovel.Patches
 
             if (!sendingMessageStarted)
             {
-                var rpcMessage = new RpcMessage("other user jumped!", (int)__instance.playerClientId, MessageCodes.Request);
+                var rpcMessage = new RpcMessage("other user jumped!", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
                 __instance.StartCoroutine(sendMessage(rpcMessage));
                 sendingMessageStarted = true;
             }
@@ -41,7 +41,6 @@ namespace OPJosMod.OneHitShovel.Patches
         private static IEnumerator sendMessage(RpcMessage message)
         {
             yield return new WaitForSeconds(3f);
-
             RpcMessageHandler.SendRpcMessage(message);
             sendingMessageStarted = false;
         }

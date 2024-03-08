@@ -44,6 +44,9 @@ namespace OPJosMod.OneHitShovel.CustomRpc
 
         public static void ReceiveRpcMessage(string message, int user) 
         {
+            if (user == (int)StartOfRound.Instance.localPlayerController.playerClientId)
+                return;
+
             var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
             if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
             {               
