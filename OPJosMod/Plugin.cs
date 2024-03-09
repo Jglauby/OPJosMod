@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.MODNAMEHERE.CustomRpc;
 using OPJosMod.Patches;
 using System;
 using System.Collections.Generic;
@@ -34,10 +35,11 @@ namespace OPJosMod//.ModNameHere
             mls.LogInfo("mod has started");
             setupConfig();
 
-            harmony.PatchAll(typeof(OpJosMod));
+            HUDManagerPatchForRPC.SetLogSource(mls);
+            RpcMessageHandler.SetLogSource(mls);
+            PlayerControllerBPatch.SetLogSource(mls);
 
-            Patches.PlayerControllerBPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
+            harmony.PatchAll();
         }
 
         private void setupConfig()//example config setup
