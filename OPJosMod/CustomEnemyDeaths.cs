@@ -3,6 +3,7 @@ using OPJosMod.OneHitShovel.CustomRpc;
 using OPJosMod.OneHitShovel.Utils;
 using System;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -42,9 +43,7 @@ namespace OPJosMod.OneHitShovel
             else
             {
                 mls.LogMessage("enemy ai is null");
-            }
-
-            updateLocationOnServer(enemyAIComponent, gameObject);
+            }          
         }
 
         public static void killInPlace(GameObject gameObject)
@@ -69,8 +68,6 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai is null");
             }
-
-            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
         public static void killFourLegged(GameObject gameObject)
@@ -100,8 +97,6 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai is null");
             }
-
-            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
         public static void killSlime(GameObject gameObject)
@@ -127,16 +122,19 @@ namespace OPJosMod.OneHitShovel
             {
                 destroySlimePart(gameObject, name);       
             }
-
-            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
-        private static void updateLocationOnServer(EnemyAI enemyAi, GameObject gameObject)
+        public static void updateLocationOnServer(GameObject gameObject)
         {
+            var enemyAi = findClosestEnemyAI(gameObject.transform.position);
             enemyAi.KillEnemyServerRpc(false);
-           
+
+            //send message to update death for other players with mod
             var rpcMessage = new RpcMessage($"EnemyDied:{gameObject.transform.position}", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
             RpcMessageHandler.SendRpcMessage(rpcMessage);
+
+            //handle case where other players don't have mod
+            //ReflectionUtils.InvokeMethod(enemyAi, "UpdateEnemyPositionServerRpc", new object[] { new Vector3(0, 0, 0) });
         }
 
         private static void stopAllSounds(EnemyAI enemy)
@@ -212,15 +210,17 @@ namespace OPJosMod.OneHitShovel
 
         public static void KillAnyEnemy(EnemyAI enemy)
         {
+            mls.LogMessage($"enemy died {enemy.name}");
             GameObject gameObject = enemy.gameObject;
 
             KillGameObjectEnemy(gameObject);
         }
 
         public static void KillGameObjectEnemy(GameObject gameObject)
-        {
+        {           
             if (gameObject != null && gameObject.name != "Player")
             {
+                mls.LogMessage($"kill game object with name: {gameObject.name}");
                 if (Constants.humanoidNames.Contains(gameObject.name))
                 {
                     CustomEnemyDeaths.killHumanoid(gameObject);
@@ -248,6 +248,10 @@ namespace OPJosMod.OneHitShovel
                         }
                     }
                 }
+            }
+            else
+            {
+                mls.LogError("game object was null");
             }
         }
     }

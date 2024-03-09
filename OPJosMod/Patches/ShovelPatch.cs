@@ -50,6 +50,7 @@ namespace OPJosMod.OneHitShovel.Patches
             }
 
             CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
+            CustomEnemyDeaths.updateLocationOnServer(hitObject);
         }
     }
 }
