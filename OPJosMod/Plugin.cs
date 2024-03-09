@@ -34,7 +34,7 @@ namespace OPJosMod.OneHitShovel
             PlayerControllerBPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
             CustomEnemyDeaths.SetLogSource(mls);
-            HUDManagerPatch.SetLogSource(mls);
+            HUDManagerPatchForRPC.SetLogSource(mls);
             RpcMessageHandler.SetLogSource(mls);
 
             harmony.PatchAll();

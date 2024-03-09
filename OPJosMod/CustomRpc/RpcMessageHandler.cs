@@ -1,12 +1,5 @@
 ﻿using BepInEx.Logging;
-using OPJosMod.OneHitShovel.CustomRpcs;
-using OPJosMod.OneHitShovel.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace OPJosMod.OneHitShovel.CustomRpc
@@ -26,7 +19,6 @@ namespace OPJosMod.OneHitShovel.CustomRpc
         {
             if (Time.time - lastSentTime > messageWaitTime)
             {
-                mls.LogMessage($"sending message: {message.Message}");
                 lastSentTime = Time.time;
                 HUDManager hudManagerInstance = HUDManager.Instance;
                 if (hudManagerInstance != null)

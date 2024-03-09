@@ -1,19 +1,11 @@
 ﻿using BepInEx.Logging;
-using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.OneHitShovel.CustomRpc;
-using OPJosMod.OneHitShovel.CustomRpcs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
-namespace OPJosMod.OneHitShovel.Patches
+namespace OPJosMod.OneHitShovel.CustomRpc
 {
     [HarmonyPatch(typeof(HUDManager))]
-    internal class HUDManagerPatch
+    internal class HUDManagerPatchForRPC
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
