@@ -22,27 +22,12 @@ namespace OPJosMod.OneHitShovel.Patches
             mls = logSource;
         }
 
-        private static bool sendingMessageStarted = false;
-
         [HarmonyPatch("Jump_performed")]
         [HarmonyPrefix]
         private static void jump_performed(PlayerControllerB __instance)
         {
-            mls.LogMessage("you jumped!");
-
-            if (!sendingMessageStarted)
-            {
-                var rpcMessage = new RpcMessage("other user jumped!", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
-                __instance.StartCoroutine(sendMessage(rpcMessage));
-                sendingMessageStarted = true;
-            }
-        }
-
-        private static IEnumerator sendMessage(RpcMessage message)
-        {
-            yield return new WaitForSeconds(3f);
-            RpcMessageHandler.SendRpcMessage(message);
-            sendingMessageStarted = false;
+            var rpcMessage = new RpcMessage("other user jumped!", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
+            RpcMessageHandler.SendRpcMessage(rpcMessage);
         }
 
         [HarmonyPatch("KillPlayer")]

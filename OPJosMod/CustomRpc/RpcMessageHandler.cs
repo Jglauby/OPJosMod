@@ -19,27 +19,35 @@ namespace OPJosMod.OneHitShovel.CustomRpc
             mls = logSource;
         }
 
+        private static float lastSentTime = Time.time;
+        private static float messageWaitTime = 1f;
+
         public static void SendRpcMessage(RpcMessage message)
         {
-            HUDManager hudManagerInstance = HUDManager.Instance;
-            if (hudManagerInstance != null)
+            if (Time.time - lastSentTime > messageWaitTime)
             {
-                MethodInfo method = typeof(HUDManager).GetMethod("AddPlayerChatMessageServerRpc", BindingFlags.Instance | BindingFlags.NonPublic);
-
-                if (method != null)
+                mls.LogMessage($"sending message: {message.Message}");
+                lastSentTime = Time.time;
+                HUDManager hudManagerInstance = HUDManager.Instance;
+                if (hudManagerInstance != null)
                 {
-                    object[] parameters = new object[] { message.getMessageWithCode(), message.FromUser };
-                    method.Invoke(hudManagerInstance, parameters);
+                    MethodInfo method = typeof(HUDManager).GetMethod("AddPlayerChatMessageServerRpc", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                    if (method != null)
+                    {
+                        object[] parameters = new object[] { message.getMessageWithCode(), message.FromUser };
+                        method.Invoke(hudManagerInstance, parameters);
+                    }
+                    else
+                    {
+                        mls.LogError("AddPlayerChatMessageServerRpc method not found in HUDManager class.");
+                    }
                 }
                 else
                 {
-                    mls.LogError("AddPlayerChatMessageServerRpc method not found in HUDManager class.");
+                    mls.LogError("HUDManager.Instance is null.");
                 }
-            }
-            else
-            {
-                mls.LogError("HUDManager.Instance is null.");
-            }
+            }          
         }
 
         public static void ReceiveRpcMessage(string message, int user) 
