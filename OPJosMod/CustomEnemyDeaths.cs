@@ -1,6 +1,10 @@
 ﻿using BepInEx.Logging;
+using OPJosMod.OneHitShovel.CustomRpc;
 using OPJosMod.OneHitShovel.Utils;
+using System;
+using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace OPJosMod.OneHitShovel
 {
@@ -27,7 +31,7 @@ namespace OPJosMod.OneHitShovel
                 collider.enabled = false;
             }
 
-            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject.transform.position);
             if (enemyAIComponent != null)
             {
                 mls.LogMessage("enemy ai isn't null");
@@ -40,7 +44,7 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai is null");
             }
 
-            updateLocationOnServer(enemyAIComponent);
+            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
         public static void killInPlace(GameObject gameObject)
@@ -53,7 +57,7 @@ namespace OPJosMod.OneHitShovel
                 collider.enabled = false;
             }
 
-            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject.transform.position);
             if (enemyAIComponent != null)
             {
                 mls.LogMessage("enemy ai isn't null");
@@ -66,7 +70,7 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai is null");
             }
 
-            updateLocationOnServer(enemyAIComponent);
+            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
         public static void killFourLegged(GameObject gameObject)
@@ -84,7 +88,7 @@ namespace OPJosMod.OneHitShovel
                 collider.enabled = false;
             }
 
-            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject.transform.position);
             if (enemyAIComponent != null)
             {
                 mls.LogMessage("enemy ai isn't null");
@@ -97,14 +101,14 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("enemy ai is null");
             }
 
-            updateLocationOnServer(enemyAIComponent);
+            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
         public static void killSlime(GameObject gameObject)
         {
             mls.LogMessage($"try to kill {gameObject.name}");
 
-            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject);
+            EnemyAI enemyAIComponent = findClosestEnemyAI(gameObject.transform.position);
             if (enemyAIComponent != null)
             {
                 mls.LogMessage("enemy ai isn't null");
@@ -124,18 +128,15 @@ namespace OPJosMod.OneHitShovel
                 destroySlimePart(gameObject, name);       
             }
 
-            updateLocationOnServer(enemyAIComponent);
+            updateLocationOnServer(enemyAIComponent, gameObject);
         }
 
-        private static void updateLocationOnServer(EnemyAI enemy)
+        private static void updateLocationOnServer(EnemyAI enemyAi, GameObject gameObject)
         {
-            enemy.KillEnemyServerRpc(false);
-
-            short rotation = (short)enemy.transform.rotation.eulerAngles.y;
-            ReflectionUtils.InvokeMethod(enemy, "UpdateEnemyRotationServerRpc", new object[] { rotation });
-
-            Vector3 postion = enemy.transform.position;
-            ReflectionUtils.InvokeMethod(enemy, "UpdateEnemyPositionServerRpc", new object[] { postion });
+            enemyAi.KillEnemyServerRpc(false);
+           
+            var rpcMessage = new RpcMessage($"EnemyDied:{gameObject.transform.position}", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
+            RpcMessageHandler.SendRpcMessage(rpcMessage);
         }
 
         private static void stopAllSounds(EnemyAI enemy)
@@ -159,7 +160,7 @@ namespace OPJosMod.OneHitShovel
                 if (obj.name == name)
                 {
                     float distance = Vector3.Distance(gameObject.transform.position, obj.transform.position);
-                    if (distance < closestDistance && distance < 10)
+                    if (distance < closestDistance && distance < 15)
                     {
                         closestDistance = distance;
                         closestObject = obj;
@@ -180,7 +181,7 @@ namespace OPJosMod.OneHitShovel
             Object.Destroy(closestObject);
         }
 
-        private static EnemyAI findClosestEnemyAI(GameObject gameObject)
+        public static EnemyAI findClosestEnemyAI(Vector3 location)
         {
             EnemyAI resultingEnemy = null;
 
@@ -189,7 +190,7 @@ namespace OPJosMod.OneHitShovel
 
             foreach (EnemyAI enemyAI in enemyAIs)
             {
-                float distance = Vector3.Distance(gameObject.transform.position, enemyAI.transform.position);
+                float distance = Vector3.Distance(location, enemyAI.transform.position);
                 if (distance < closestDistance)
                 {
                     closestDistance = distance; 
@@ -199,14 +200,55 @@ namespace OPJosMod.OneHitShovel
 
             if (resultingEnemy != null)
             {
-                Debug.Log("Closest EnemyAI found: " + resultingEnemy.name);
+                mls.LogMessage("Closest EnemyAI found: " + resultingEnemy.name);
             }
             else
             {
-                Debug.Log("No EnemyAI found in the scene.");
+                mls.LogError("No EnemyAI found in the scene.");
             }
 
             return resultingEnemy;
+        }
+
+        public static void KillAnyEnemy(EnemyAI enemy)
+        {
+            GameObject gameObject = enemy.gameObject;
+
+            KillGameObjectEnemy(gameObject);
+        }
+
+        public static void KillGameObjectEnemy(GameObject gameObject)
+        {
+            if (gameObject != null && gameObject.name != "Player")
+            {
+                if (Constants.humanoidNames.Contains(gameObject.name))
+                {
+                    CustomEnemyDeaths.killHumanoid(gameObject);
+                }
+
+                if (Constants.fourLeggedNames.Contains(gameObject.name))
+                {
+                    CustomEnemyDeaths.killFourLegged(gameObject);
+                }
+
+                if (Constants.slimeNames.Contains(gameObject.name))
+                {
+                    CustomEnemyDeaths.killSlime(gameObject);
+                }
+
+                if (gameObject.name != null)
+                {
+                    int dotIndex = gameObject.name.LastIndexOf('.');
+                    if (dotIndex != -1)
+                    {
+                        string trimmedName = gameObject.name.Substring(0, dotIndex + 1);
+                        if (Constants.dieInPlaceNames.Contains(trimmedName))
+                        {
+                            CustomEnemyDeaths.killInPlace(gameObject);
+                        }
+                    }
+                }
+            }
         }
     }
 }

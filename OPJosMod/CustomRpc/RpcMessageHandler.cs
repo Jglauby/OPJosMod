@@ -49,8 +49,11 @@ namespace OPJosMod.OneHitShovel.CustomRpc
 
             var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
             if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
-            {               
-                mls.LogMessage(decodedMessage + $" user {user}");
+            {
+                if (decodedMessage.Contains("EnemyDied:"))
+                {
+                    handleKillEnemyMessage(decodedMessage);
+                }
 
                 SendRpcResponse(decodedMessage);
             }
@@ -64,6 +67,15 @@ namespace OPJosMod.OneHitShovel.CustomRpc
         {
             var responseMessage = new RpcMessage(message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
             SendRpcMessage(responseMessage);
+        }
+
+        private static void handleKillEnemyMessage(string message)
+        {
+            string plainMessage = message.Substring("EnemyDied:".Length).Trim();
+            Vector3 newPosition = GeneralUtil.StringToVector3(plainMessage);
+
+            EnemyAI enemy = CustomEnemyDeaths.findClosestEnemyAI(newPosition);
+            CustomEnemyDeaths.KillAnyEnemy(enemy);
         }
     }
 }

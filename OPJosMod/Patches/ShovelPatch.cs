@@ -49,36 +49,7 @@ namespace OPJosMod.OneHitShovel.Patches
                 }
             }
 
-            if (hitObject != null && hitObject.name != "Player")
-            {
-                if (Constants.humanoidNames.Contains(hitObject.name))
-                {
-                    CustomEnemyDeaths.killHumanoid(hitObject);
-                }
-
-                if (Constants.fourLeggedNames.Contains(hitObject.name))
-                {
-                    CustomEnemyDeaths.killFourLegged(hitObject);
-                }
-
-                if (Constants.slimeNames.Contains(hitObject.name))
-                {
-                    CustomEnemyDeaths.killSlime(hitObject);
-                }
-
-                if (hitObject.name != null)
-                {
-                    int dotIndex = hitObject.name.LastIndexOf('.');
-                    if (dotIndex != -1)
-                    {
-                        string trimmedName = hitObject.name.Substring(0, dotIndex + 1);
-                        if (Constants.dieInPlaceNames.Contains(trimmedName))
-                        {
-                            CustomEnemyDeaths.killInPlace(hitObject);
-                        }
-                    }
-                }
-            }
+            CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
         }
     }
 }

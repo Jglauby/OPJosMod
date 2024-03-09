@@ -14,14 +14,6 @@ namespace OPJosMod.OneHitShovel.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Jump_performed")]
-        [HarmonyPrefix]
-        private static void jump_performed(PlayerControllerB __instance)
-        {
-            var rpcMessage = new RpcMessage("other user jumped!", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
-            RpcMessageHandler.SendRpcMessage(rpcMessage);
-        }
-
         [HarmonyPatch("KillPlayer")]
         [HarmonyPrefix]
         private static bool killPlayerPatch(PlayerControllerB __instance)
