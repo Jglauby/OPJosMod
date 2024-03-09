@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.HideNSeek.CustomRpc;
 using OPJosMode.HideNSeek.Patches;
 
 namespace OPJosMod.HideNSeek
@@ -10,7 +11,7 @@ namespace OPJosMod.HideNSeek
     {
         private const string modGUID = "OpJosMod.HideNSeek";
         private const string modName = "HideNSeek";
-        private const string modVersion = "0.8.0";
+        private const string modVersion = "0.9.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -27,6 +28,8 @@ namespace OPJosMod.HideNSeek
             mls.LogInfo("mod has started");
             setupConfig();
 
+            RpcMessageHandler.SetLogSource(mls);
+            HUDManagerPatchForRPC.SetLogSource(mls);
             PlayerControllerBPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);
