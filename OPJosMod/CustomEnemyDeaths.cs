@@ -134,7 +134,6 @@ namespace OPJosMod.OneHitShovel
             RpcMessageHandler.SendRpcMessage(rpcMessage);
 
             //handle case where other players don't have mod
-            //ReflectionUtils.InvokeMethod(enemyAi, "UpdateEnemyPositionServerRpc", new object[] { new Vector3(0, 0, 0) });
         }
 
         private static void stopAllSounds(EnemyAI enemy)
