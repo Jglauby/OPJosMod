@@ -78,7 +78,7 @@ namespace OPJosMode.HideNSeek.Patches
                     if (Time.time - lastWhistledAt > whistelDelay)
                     {
                         lastWhistledAt = Time.time;
-                        makeClosestPlayerWhistle(__instance);
+                        makeClosestPlayerWhistle(StartOfRound.Instance.localPlayerController);
                     }
                     else
                     {
@@ -221,9 +221,38 @@ namespace OPJosMode.HideNSeek.Patches
             RpcMessageHandler.SendRpcMessage(rpcMessage);
         }
 
-        private static void makeClosestPlayerWhistle(PlayerControllerB player)
+        private static void makeClosestPlayerWhistle(PlayerControllerB localPlayer)
         {
             mls.LogMessage("MAKE THEM WHISTLE");
+
+            var closestPlayer = findClosestPlayer(localPlayer);
+
+            string message = MessageTaskUtil.GetCode(MessageTasks.MakePlayerWhistle) + closestPlayer.playerClientId;
+            RpcMessage rpcMessage = new RpcMessage(message, (int)localPlayer.playerClientId, MessageCodes.Request);
+            RpcMessageHandler.SendRpcMessage(rpcMessage);
+        }
+
+        private static PlayerControllerB findClosestPlayer(PlayerControllerB localPlayer)
+        {
+            PlayerControllerB closestPlayer = null;
+            float currentClosestDistance = float.MaxValue;
+
+            var allPlayers = RoundManager.Instance.playersManager.allPlayerScripts;
+            foreach (PlayerControllerB player in allPlayers)
+            {
+                if (player.playerClientId != localPlayer.playerClientId)
+                {
+                    float distance = Vector3.Distance(localPlayer.transform.position, player.transform.position);
+
+                    if (distance < currentClosestDistance)
+                    {
+                        closestPlayer = player;
+                        currentClosestDistance = distance;
+                    }
+                }
+            }
+
+            return closestPlayer;
         }
     }
 }

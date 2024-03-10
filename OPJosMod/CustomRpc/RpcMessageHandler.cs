@@ -13,7 +13,7 @@ namespace OPJosMod.HideNSeek.CustomRpc
         }
 
         private static float lastSentTime = Time.time;
-        private static float messageWaitTime = 1f;
+        private static float messageWaitTime = 0.5f;
 
         public static void SendRpcMessage(RpcMessage message)
         {
@@ -44,20 +44,21 @@ namespace OPJosMod.HideNSeek.CustomRpc
 
         public static void ReceiveRpcMessage(string message, int user) 
         {
-            if (user == (int)StartOfRound.Instance.localPlayerController.playerClientId)
-                return;
-
-            var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
-            if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
+            if (user != (int)StartOfRound.Instance.localPlayerController.playerClientId)
             {
-                MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
-                handleTask(task);
+                var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
+                if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
+                {
+                    MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
+                    string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
+                    handleTask(task, taskMessage);
 
-                SendRpcResponse(decodedMessage);
-            }
-            else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
-            {
-                mls.LogMessage("got the response that the other clients recieved this message");
+                    SendRpcResponse(decodedMessage);
+                }
+                else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
+                {
+                    mls.LogMessage("got the response that the other clients recieved this message");
+                }
             }
         }
 
@@ -67,12 +68,15 @@ namespace OPJosMod.HideNSeek.CustomRpc
             SendRpcMessage(responseMessage);
         }
 
-        private static void handleTask(MessageTasks task)
+        private static void handleTask(MessageTasks task, string message)
         {
             switch (task)
             {
                 case MessageTasks.StartedSeeking:
                     CompleteRecievedTasks.SeekingStarted();
+                    break;
+                case MessageTasks.MakePlayerWhistle:
+                    CompleteRecievedTasks.MakePlayerWhistle(message);
                     break;
                 case MessageTasks.ErrorNoTask:
                     mls.LogError("got an error task");

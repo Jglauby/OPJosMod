@@ -1,8 +1,11 @@
-﻿namespace OPJosMod.HideNSeek.CustomRpc
+﻿using System;
+
+namespace OPJosMod.HideNSeek.CustomRpc
 {
     public enum MessageTasks 
     {
         StartedSeeking,
+        MakePlayerWhistle,
         ErrorNoTask
     }
 
@@ -14,6 +17,8 @@
             {
                 case MessageTasks.StartedSeeking:
                     return ":StartedSeeking:";
+                case MessageTasks.MakePlayerWhistle:
+                    return ":MakeWhistle:";
                 case MessageTasks.ErrorNoTask:
                     return ":Error:";
             }
@@ -21,10 +26,25 @@
             return ":Error:";
         }
 
+        public static string getMessageWithoutTask(string message)
+        {
+            foreach (MessageTasks task in Enum.GetValues(typeof(MessageTasks)))
+            {
+                string code = GetCode(task);
+                message = message.Replace(code, "");
+            }
+
+            return message.Trim();
+        }
+
         public static MessageTasks getMessageTask(string givenString)
         {
             if (givenString.Contains(GetCode(MessageTasks.StartedSeeking))){
                 return MessageTasks.StartedSeeking;
+            }
+            else if (givenString.Contains(GetCode(MessageTasks.MakePlayerWhistle)))
+            {
+                return MessageTasks.MakePlayerWhistle;
             }
             else
             {

@@ -30,6 +30,7 @@ namespace OPJosMod.HideNSeek
 
             RpcMessageHandler.SetLogSource(mls);
             HUDManagerPatchForRPC.SetLogSource(mls);
+            CompleteRecievedTasks.SetLogSource(mls);
             PlayerControllerBPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);

@@ -23,8 +23,6 @@ namespace OPJosMode.HideNSeek.Patches
         [HarmonyPostfix]
         private static void finishGeneratingNewLevelClientRpcPatch(RoundManager __instance)
         {
-            mls.LogMessage("FinishGeneratingNewLevelClientRpc patch hit");
-
             //if the round starts and you arent set as seeker, then you didnt pull the lever and you should be a hider
             if (PlayerControllerBPatch.isSeeker)
                 PlayerControllerBPatch.SetupSeeker();
