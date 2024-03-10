@@ -78,7 +78,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomRpc\CompleteRecievedTasks.cs" />
     <Compile Include="CustomRpc\HudManagerPatchForRPC.cs" />
+    <Compile Include="CustomRpc\MessageTasks.cs" />
     <Compile Include="CustomRpc\MessageCodes.cs" />
     <Compile Include="CustomRpc\RpcMessage.cs" />
     <Compile Include="CustomRpc\RpcMessageHandler.cs" />

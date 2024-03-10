@@ -49,8 +49,9 @@ namespace OPJosMod.HideNSeek.CustomRpc
 
             var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
             if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
-            {               
-                mls.LogMessage(decodedMessage + $" user {user}");
+            {
+                MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
+                handleTask(task);
 
                 SendRpcResponse(decodedMessage);
             }
@@ -64,6 +65,19 @@ namespace OPJosMod.HideNSeek.CustomRpc
         {
             var responseMessage = new RpcMessage(message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
             SendRpcMessage(responseMessage);
+        }
+
+        private static void handleTask(MessageTasks task)
+        {
+            switch (task)
+            {
+                case MessageTasks.StartedSeeking:
+                    CompleteRecievedTasks.SeekingStarted();
+                    break;
+                case MessageTasks.ErrorNoTask:
+                    mls.LogError("got an error task");
+                    break;
+            }
         }
     }
 }

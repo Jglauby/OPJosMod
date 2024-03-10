@@ -3,6 +3,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod;
 using OPJosMod.HideNSeek.Config;
+using OPJosMod.HideNSeek.CustomRpc;
 using OPJosMod.HideNSeek.Utils;
 using System;
 using System.Collections;
@@ -195,6 +196,9 @@ namespace OPJosMode.HideNSeek.Patches
             player.playerCollider.enabled = true;
 
             //let hiders know u lookin for them
+            string message = MessageTaskUtil.GetCode(MessageTasks.StartedSeeking);
+            RpcMessage rpcMessage = new RpcMessage(message, (int)player.playerClientId, MessageCodes.Request);
+            RpcMessageHandler.SendRpcMessage(rpcMessage);
         }
     }
 }
