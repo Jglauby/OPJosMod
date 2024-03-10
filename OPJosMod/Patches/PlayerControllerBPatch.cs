@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -28,7 +29,7 @@ namespace OPJosMode.HideNSeek.Patches
         public static bool isSeeker = false;
         public static bool isHider = false;
 
-        private static float seekerDelay = 45f;
+        private static float seekerDelay = 15f; //set to 45
 
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
@@ -167,6 +168,9 @@ namespace OPJosMode.HideNSeek.Patches
             catch { }
 
             GameNetworkManager.Instance.localPlayerController.TeleportPlayer(location);
+            //GameNetworkManager.Instance.localPlayerController.isInElevator = false;
+            //GameNetworkManager.Instance.localPlayerController.isInHangarShipRoom = false;
+            //GameNetworkManager.Instance.localPlayerController.isInsideFactory = true;
         }
 
         private static IEnumerator lockPlayer(PlayerControllerB player, float lockTime)
@@ -180,12 +184,17 @@ namespace OPJosMode.HideNSeek.Patches
             mls.LogMessage("player locked in place");
             player.playerCollider.enabled = false;
 
-            //improve ui
-            HUDManager.Instance.DisplayTip("Seeker can't move for", $"{lockTime} seconds");
+            for (int i = 0; i < lockTime; i++)
+            {
+                yield return new WaitForSeconds(1f);
+                HUDManagerPatch.CustomDisplayTip($"{lockTime - i}", "seconds remain", false);
+            }
+            HUDManagerPatch.CustomDisplayTip($"0", "seconds remain", false);
 
-            yield return new WaitForSeconds(lockTime);
             mls.LogMessage("player unlocked!");
             player.playerCollider.enabled = true;
+
+            //let hiders know u lookin for them
         }
     }
 }

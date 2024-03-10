@@ -70,5 +70,17 @@ namespace OPJosMode.HideNSeek.Patches
                 HUDManager.Instance.statsUIElements.gradeLetter.text = "W";
             }
         }
+
+        public static void CustomDisplayTip(string headerText, string bodyText, bool makeSound = true)
+        {
+            HUDManager instance = HUDManager.Instance;
+            ((TMP_Text)instance.tipsPanelHeader).text = headerText;
+            ((TMP_Text)instance.tipsPanelBody).text = bodyText;
+
+            instance.tipsPanelAnimator.SetTrigger("TriggerHint");
+
+            if (makeSound)
+                RoundManager.PlayRandomClip(instance.UIAudio, instance.tipsSFX, randomize: false);
+        }
     }
 }
