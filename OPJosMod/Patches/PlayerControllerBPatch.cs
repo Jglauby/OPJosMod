@@ -13,6 +13,8 @@ using System.Reflection;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using Object = UnityEngine.Object;
 
 namespace OPJosMode.HideNSeek.Patches
@@ -41,6 +43,9 @@ namespace OPJosMode.HideNSeek.Patches
         private static float lastCheckedTime;
         private static float checkGameOverFrequency = 5;
 
+        private static float lastWhistledAt = Time.time;
+        private static float whistelDelay = 30f;
+
         public static void resetRoleValues()
         {
             hasSetRole = false;
@@ -65,6 +70,21 @@ namespace OPJosMode.HideNSeek.Patches
 
                         if (newForce < maxSprintSpeed)
                             ReflectionUtils.SetFieldValue(__instance, "sprintMultiplier", newForce);
+                    }
+                }
+
+                if (Mouse.current.rightButton.wasPressedThisFrame)//right click was clicked
+                {                    
+                    if (Time.time - lastWhistledAt > whistelDelay)
+                    {
+                        lastWhistledAt = Time.time;
+                        makeClosestPlayerWhistle(__instance);
+                    }
+                    else
+                    {
+                        //dont display if just clicked
+                        if (Time.time - lastWhistledAt > 1)
+                            HUDManagerPatch.CustomDisplayTip("Can't Whistle", $"for {(int)(whistelDelay - (Time.time - lastWhistledAt))} seconds", false);
                     }
                 }
             }
@@ -188,9 +208,9 @@ namespace OPJosMode.HideNSeek.Patches
             for (int i = 0; i < lockTime; i++)
             {
                 yield return new WaitForSeconds(1f);
-                HUDManagerPatch.CustomDisplayTip($"{lockTime - i}", "seconds remain", false);
+                HUDManagerPatch.CustomDisplayTip($"{lockTime - (i + 1)}", "seconds remain", false);
             }
-            HUDManagerPatch.CustomDisplayTip($"0", "seconds remain", false);
+            HUDManagerPatch.CustomDisplayTip($"GO FIND", "THEM!", false);
 
             mls.LogMessage("player unlocked!");
             player.playerCollider.enabled = true;
@@ -199,6 +219,11 @@ namespace OPJosMode.HideNSeek.Patches
             string message = MessageTaskUtil.GetCode(MessageTasks.StartedSeeking);
             RpcMessage rpcMessage = new RpcMessage(message, (int)player.playerClientId, MessageCodes.Request);
             RpcMessageHandler.SendRpcMessage(rpcMessage);
+        }
+
+        private static void makeClosestPlayerWhistle(PlayerControllerB player)
+        {
+            mls.LogMessage("MAKE THEM WHISTLE");
         }
     }
 }
