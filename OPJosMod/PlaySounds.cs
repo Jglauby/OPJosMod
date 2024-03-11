@@ -26,6 +26,8 @@ namespace OPJosMod
         {
             InitializePlaySounds();
             var audioSource = player.itemAudio;
+            audioSource.volume = 0.7f;
+            audioSource.maxDistance = 80;
 
             if (Vector3.Distance(lastPositionAtFart, player.transform.position) > 2f)
             {
@@ -34,7 +36,7 @@ namespace OPJosMod
             timesPlayingInOneSpot++;
             lastPositionAtFart = player.transform.position;
             RoundManager.PlayRandomClip(audioSource, fartAudios, randomize: true, 1f, -1);
-            RoundManager.Instance.PlayAudibleNoise(player.transform.position, 8f, 0.8f, timesPlayingInOneSpot, false && StartOfRound.Instance.hangarDoorsClosed, 101158);
+            RoundManager.Instance.PlayAudibleNoise(player.transform.position, 22f, 0.5f, timesPlayingInOneSpot, false && StartOfRound.Instance.hangarDoorsClosed, 101158);
         }
     }
 }

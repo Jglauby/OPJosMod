@@ -84,7 +84,7 @@ namespace OPJosMode.HideNSeek.Patches
                     {
                         //dont display if just clicked
                         if (Time.time - lastWhistledAt > 1)
-                            HUDManagerPatch.CustomDisplayTip("Can't Whistle", $"for {(int)(whistelDelay - (Time.time - lastWhistledAt))} seconds", false);
+                            HUDManagerPatch.CustomDisplayTip("Ability on cooldown", $"for {(int)(whistelDelay - (Time.time - lastWhistledAt))} seconds", false);
                     }
                 }
             }
@@ -224,6 +224,7 @@ namespace OPJosMode.HideNSeek.Patches
         private static void makeClosestPlayerWhistle(PlayerControllerB localPlayer)
         {
             mls.LogMessage("Making closest player whistle");
+            HUDManagerPatch.CustomDisplayTip("Closest Player", "made a noise", false);
             var closestPlayer = findClosestPlayer(localPlayer);
             PlaySounds.PlayFart(closestPlayer);
 
