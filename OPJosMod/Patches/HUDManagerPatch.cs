@@ -27,7 +27,7 @@ namespace OPJosMode.HideNSeek.Patches
         {
             if (PlayerControllerBPatch.isSeeker)
             {
-                mls.LogMessage("don't allow pinging as seeker");
+                //mls.LogMessage("don't allow pinging as seeker");
                 return false;
             }
 
