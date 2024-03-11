@@ -80,5 +80,15 @@ namespace OPJosMode.HideNSeek.Patches
                 StartOfRoundSuitPatch(__instance);
             }
         }
+
+        [HarmonyPatch("SetPlanetsWeather")]
+		[HarmonyPostfix]
+        private static void setPlanetsWeatherPatch(ref SelectableLevel[] ___levels)
+        {
+            for (int i = 0; i < ___levels.Length; i++)
+            {
+                ___levels[i].currentWeather = (LevelWeatherType)(-1);
+            }
+        }
     }
 }

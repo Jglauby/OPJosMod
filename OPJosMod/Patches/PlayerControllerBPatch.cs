@@ -32,7 +32,7 @@ namespace OPJosMode.HideNSeek.Patches
         public static bool isSeeker = false;
         public static bool isHider = false;
 
-        private static float seekerDelay = 15f; //set to 45
+        private static float seekerDelay = 45f; //set to 45
 
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
@@ -44,7 +44,7 @@ namespace OPJosMode.HideNSeek.Patches
         private static float checkGameOverFrequency = 5;
 
         private static float lastWhistledAt = Time.time;
-        private static float whistelDelay = 7f; //set to 30
+        private static float whistelDelay = 30f; //set to 30
 
         private static int lastCheckedAliveCount = -1;
 
