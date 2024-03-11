@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OPJosMod.HideNSeek.CustomRpc
 {
@@ -33,6 +34,7 @@ namespace OPJosMod.HideNSeek.CustomRpc
             if((int)StartOfRound.Instance.localPlayerController.playerClientId == playerClientId)
             {
                 //FORCE U TO WHISTLE!!!
+                
             }
         }
     }

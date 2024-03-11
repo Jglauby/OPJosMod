@@ -44,7 +44,7 @@ namespace OPJosMode.HideNSeek.Patches
         private static float checkGameOverFrequency = 5;
 
         private static float lastWhistledAt = Time.time;
-        private static float whistelDelay = 30f;
+        private static float whistelDelay = 7f; //set to 30
 
         public static void resetRoleValues()
         {
@@ -223,7 +223,7 @@ namespace OPJosMode.HideNSeek.Patches
 
         private static void makeClosestPlayerWhistle(PlayerControllerB localPlayer)
         {
-            mls.LogMessage("MAKE THEM WHISTLE");
+            mls.LogMessage("Making closest player whistle");
 
             var closestPlayer = findClosestPlayer(localPlayer);
 
