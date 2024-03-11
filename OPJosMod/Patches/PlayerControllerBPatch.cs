@@ -130,7 +130,7 @@ namespace OPJosMode.HideNSeek.Patches
             {
                 mls.LogMessage($"one person alive, round over. totalPlayers:{totalPlayerCount}");
                 StartOfRound.Instance.EndGameServerRpc((int)__instance.playerClientId);
-            }
+            }          
         }
 
         public static void SetupHider()
@@ -224,9 +224,10 @@ namespace OPJosMode.HideNSeek.Patches
         private static void makeClosestPlayerWhistle(PlayerControllerB localPlayer)
         {
             mls.LogMessage("Making closest player whistle");
-
             var closestPlayer = findClosestPlayer(localPlayer);
+            PlaySounds.PlayFart(closestPlayer);
 
+            //send message
             string message = MessageTaskUtil.GetCode(MessageTasks.MakePlayerWhistle) + closestPlayer.playerClientId;
             RpcMessage rpcMessage = new RpcMessage(message, (int)localPlayer.playerClientId, MessageCodes.Request);
             RpcMessageHandler.SendRpcMessage(rpcMessage);

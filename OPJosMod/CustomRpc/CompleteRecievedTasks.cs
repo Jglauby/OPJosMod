@@ -31,10 +31,13 @@ namespace OPJosMod.HideNSeek.CustomRpc
             int playerClientId = int.Parse(playerIdString);
             mls.LogMessage($"make player{playerClientId} whistle");
 
-            if((int)StartOfRound.Instance.localPlayerController.playerClientId == playerClientId)
+            var fartingPlayer = StartOfRound.Instance.allPlayerScripts[playerClientId];
+            PlaySounds.PlayFart(fartingPlayer);
+
+            if ((int)StartOfRound.Instance.localPlayerController.playerClientId == playerClientId)
             {
-                //FORCE U TO WHISTLE!!!
-                
+                //you are the one who is makign noise
+                mls.LogMessage("seeker made u make noise");
             }
         }
     }
