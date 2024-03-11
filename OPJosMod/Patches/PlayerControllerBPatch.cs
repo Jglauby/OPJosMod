@@ -46,6 +46,8 @@ namespace OPJosMode.HideNSeek.Patches
         private static float lastWhistledAt = Time.time;
         private static float whistelDelay = 7f; //set to 30
 
+        private static int lastCheckedAliveCount = -1;
+
         public static void resetRoleValues()
         {
             hasSetRole = false;
@@ -125,12 +127,18 @@ namespace OPJosMode.HideNSeek.Patches
             var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
             var shipLocation = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
 
+            if (totalPlayerCount < lastCheckedAliveCount && lastCheckedAliveCount != -1)
+            {
+                HUDManagerPatch.CustomDisplayTip("Someone has Died!", $"{totalPlayerCount} players remain");
+            }
+            lastCheckedAliveCount = totalPlayerCount;
+
             //one person alive
             if (totalPlayerCount == 1)
             {
                 mls.LogMessage($"one person alive, round over. totalPlayers:{totalPlayerCount}");
                 StartOfRound.Instance.EndGameServerRpc((int)__instance.playerClientId);
-            }          
+            }
         }
 
         public static void SetupHider()
