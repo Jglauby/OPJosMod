@@ -20,7 +20,7 @@ namespace OPJosMod.OneHitShovel.Patches
         {
             mls = logSource;
         }
-
+        
         [HarmonyPatch("HitShovel")]
         [HarmonyPrefix]
         private static void hitShovelPatch(Shovel __instance)
@@ -49,8 +49,11 @@ namespace OPJosMod.OneHitShovel.Patches
                 }
             }
 
-            CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
-            CustomEnemyDeaths.updateLocationOnServer(hitObject);
+            if (hitObject != null)
+            {
+                CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
+                CustomEnemyDeaths.updateLocationOnServer(hitObject);
+            }
         }
     }
 }
