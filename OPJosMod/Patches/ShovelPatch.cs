@@ -25,34 +25,41 @@ namespace OPJosMod.OneHitShovel.Patches
         [HarmonyPrefix]
         private static void hitShovelPatch(Shovel __instance)
         {
-            __instance.shovelHitForce = 30;
-            GameObject hitObject = null;
-
-            var previousPlayerHeldBy = ReflectionUtils.GetFieldValue<PlayerControllerB>(__instance, "previousPlayerHeldBy");
-            var objectsHitByShovel = ReflectionUtils.GetFieldValue<RaycastHit[]>(__instance, "objectsHitByShovel");
-            var objectsHitByShovelList = ReflectionUtils.GetFieldValue<List<RaycastHit>>(__instance, "objectsHitByShovelList");
-            var shovelMask = ReflectionUtils.GetFieldValue<int>(__instance, "shovelMask");
-
-            previousPlayerHeldBy.activatingItem = false;
-
-            previousPlayerHeldBy.twoHanded = false;
-            objectsHitByShovel = Physics.SphereCastAll(previousPlayerHeldBy.gameplayCamera.transform.position + previousPlayerHeldBy.gameplayCamera.transform.right * -0.35f, 0.8f, previousPlayerHeldBy.gameplayCamera.transform.forward, 1.5f, shovelMask, (QueryTriggerInteraction)2);
-            objectsHitByShovelList = objectsHitByShovel.OrderBy(x => x.distance).ToList();
-            for (int i = 0; i < objectsHitByShovelList.Count; i++)
+            try
             {
-                RaycastHit val = objectsHitByShovelList[i];
+                __instance.shovelHitForce = 30;
+                GameObject hitObject = null;
 
-                if (val.transform.TryGetComponent<IHittable>(out var component))
+                var previousPlayerHeldBy = ReflectionUtils.GetFieldValue<PlayerControllerB>(__instance, "previousPlayerHeldBy");
+                var objectsHitByShovel = ReflectionUtils.GetFieldValue<RaycastHit[]>(__instance, "objectsHitByShovel");
+                var objectsHitByShovelList = ReflectionUtils.GetFieldValue<List<RaycastHit>>(__instance, "objectsHitByShovelList");
+                var shovelMask = ReflectionUtils.GetFieldValue<int>(__instance, "shovelMask");
+
+                previousPlayerHeldBy.activatingItem = false;
+
+                previousPlayerHeldBy.twoHanded = false;
+                objectsHitByShovel = Physics.SphereCastAll(previousPlayerHeldBy.gameplayCamera.transform.position + previousPlayerHeldBy.gameplayCamera.transform.right * -0.35f, 0.8f, previousPlayerHeldBy.gameplayCamera.transform.forward, 1.5f, shovelMask, (QueryTriggerInteraction)2);
+                objectsHitByShovelList = objectsHitByShovel.OrderBy(x => x.distance).ToList();
+                for (int i = 0; i < objectsHitByShovelList.Count; i++)
                 {
-                    mls.LogMessage("Hit object: " + val.transform.gameObject.name);
-                    hitObject = val.transform.gameObject;
+                    RaycastHit val = objectsHitByShovelList[i];
+
+                    if (val.transform.TryGetComponent<IHittable>(out var component))
+                    {
+                        mls.LogMessage("Hit object: " + val.transform.gameObject.name);
+                        hitObject = val.transform.gameObject;
+                    }
+                }
+
+                if (hitObject != null)
+                {
+                    CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
+                    CustomEnemyDeaths.updateLocationOnServer(hitObject);
                 }
             }
-
-            if (hitObject != null)
+            catch (Exception e)
             {
-                CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
-                CustomEnemyDeaths.updateLocationOnServer(hitObject);
+                mls.LogError(e);
             }
         }
     }

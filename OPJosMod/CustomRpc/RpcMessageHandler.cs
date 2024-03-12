@@ -75,7 +75,11 @@ namespace OPJosMod.OneHitShovel.CustomRpc
             Vector3 newPosition = GeneralUtil.StringToVector3(plainMessage);
 
             EnemyAI enemy = CustomEnemyDeaths.findClosestEnemyAI(newPosition);
-            CustomEnemyDeaths.KillAnyEnemy(enemy);
+
+            if (enemy != null)
+                CustomEnemyDeaths.KillAnyEnemy(enemy);
+            else
+                mls.LogMessage("couldnt find enemy to kill");
         }
     }
 }

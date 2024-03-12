@@ -127,7 +127,11 @@ namespace OPJosMod.OneHitShovel
         public static void updateLocationOnServer(GameObject gameObject)
         {
             var enemyAi = findClosestEnemyAI(gameObject.transform.position);
-            enemyAi.KillEnemyServerRpc(false);
+
+            if (enemyAi != null)
+                enemyAi.KillEnemyServerRpc(false);
+            else
+                mls.LogMessage("no enemy to kill");
 
             //send message to update death for other players with mod
             var rpcMessage = new RpcMessage($"EnemyDied:{gameObject.transform.position}", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
