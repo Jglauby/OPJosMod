@@ -32,7 +32,7 @@ namespace OPJosMode.HideNSeek.Patches
         public static bool isSeeker = false;
         public static bool isHider = false;
 
-        private static float seekerDelay = 45f; //set to 45
+        private static float seekerDelay = 50f; //set to 50
 
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
@@ -187,14 +187,9 @@ namespace OPJosMode.HideNSeek.Patches
 
             yield return new WaitForSeconds(initalDelay);
 
-            try
-            {
-                for (int i = 0; i < player.ItemSlots.Length; i++)
-                {
-                    player.DestroyItemInSlotAndSync(i);
-                }
-            }
-            catch { }
+            player.DropAllHeldItemsAndSync();
+
+            yield return new WaitForSeconds(1f);
 
             GameNetworkManager.Instance.localPlayerController.TeleportPlayer(location);
             //GameNetworkManager.Instance.localPlayerController.isInElevator = false;

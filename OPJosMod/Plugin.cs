@@ -11,7 +11,7 @@ namespace OPJosMod.HideNSeek
     {
         private const string modGUID = "OpJosMod.HideNSeek";
         private const string modName = "HideNSeek";
-        private const string modVersion = "0.9.0";
+        private const string modVersion = "0.9.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;

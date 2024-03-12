@@ -47,8 +47,10 @@ namespace OPJosMode.HideNSeek.Patches
         {
             mls.LogMessage("ship leaving, reset isSeeker and isHider");
             mls.LogMessage($"current day time {TimeOfDay.Instance.currentDayTime} global time at end of day{TimeOfDay.Instance.globalTimeAtEndOfDay}");
-
-            if (!StartOfRound.Instance.localPlayerController.isPlayerDead && (TimeOfDay.Instance.currentDayTime + 5) < TimeOfDay.Instance.globalTimeAtEndOfDay)
+            mls.LogMessage(PlayerControllerBPatch.isHider + "->ishider" + PlayerControllerBPatch.isSeeker + "->isSeekr");
+            if (!StartOfRound.Instance.localPlayerController.isPlayerDead 
+                && PlayerControllerBPatch.isHider
+                && (TimeOfDay.Instance.currentDayTime + 10) > TimeOfDay.Instance.globalTimeAtEndOfDay)
             {
                 mls.LogMessage("ship taking off but player isn't dead");
                 StartOfRound.Instance.localPlayerController.transform.position = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
