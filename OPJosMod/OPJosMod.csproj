@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="OPnessModes.cs" />
+    <Compile Include="Patches\EnemyPatches\CrawlerAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\FlowermanAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\LandminePatch.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />

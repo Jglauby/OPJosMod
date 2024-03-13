@@ -882,6 +882,10 @@ namespace OPJosMod.GhostMode.Patches
 
                 //reset dead players voices and icons manually on revive
                 HUDManagerPatch.updateBoxesSpectateUI(HUDManager.Instance);
+
+                //make ghostsUnTarget you
+                if (!ConfigVariables.enemiesDetectYou)
+                    EnemyAIPatch.makeEnemiesDropFocus(__instance);
             }
             catch (Exception e)
             {

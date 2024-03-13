@@ -2,6 +2,7 @@
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace OPJosMod.GhostMode.Patches
 
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
                 {
-                    mls.LogMessage("enemy collide with player patch hit");
+                    //mls.LogMessage("enemy collide with player patch hit");
                     return false;
                 }
             }
@@ -147,6 +148,26 @@ namespace OPJosMod.GhostMode.Patches
             }
 
             return resultingPlayer;
+        }
+
+        public static void makeEnemiesDropFocus(PlayerControllerB player)
+        {
+            mls.LogMessage($"enemies dropped focus on {player.name}");
+
+            EnemyAI[] allEnemies = Object.FindObjectsOfType<EnemyAI>();
+            foreach(EnemyAI enemy in allEnemies)
+            {
+                //enemy.targetPlayer = null;
+                //
+                //if (enemy is CrawlerAI)
+                //{
+                //    mls.LogMessage("enemy is a crawler");
+                //    CrawlerAI crawlerEnemy = (CrawlerAI)enemy;
+                //
+                //    ReflectionUtils.SetFieldValue(crawlerEnemy, "hasEnteredChaseMode", false);
+                //    crawlerEnemy.SwitchToBehaviourStateOnLocalClient(0);
+                //}
+            }
         }
     }
 }
