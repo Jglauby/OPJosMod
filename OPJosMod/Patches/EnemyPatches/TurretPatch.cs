@@ -32,23 +32,22 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             mls = logSource;
         }
 
-        //[HarmonyPatch("CheckForPlayersInLineOfSight")]
-        //[HarmonyPrefix]
-        //private static bool checkForPlayersInLineOfSightPatch(Turret __instance, ref PlayerControllerB __result)
-        //{
-        //    if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
-        //    {
-        //        __result = __instance.CheckForPlayersInLineOfSight(3f);
-        //
-        //        //tryign to target you
-        //        if (__result != null && __result.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
-        //        {
-        //            mls.LogMessage("dont let turret target you as ghost");
-        //            return false;
-        //        }
-        //    }
-        //
-        //    return true;
-        //}
+        [HarmonyPatch(typeof(Turret), "CheckForPlayersInLineOfSight")]
+        [HarmonyPrefix]
+        private static bool checkForPlayersInLineOfSightPatch(ref PlayerControllerB __result, Turret __instance, float radius = 2f, bool angleRangeCheck = false)
+        {
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            {
+                if (StartOfRound.Instance.localPlayerController.HasLineOfSightToPosition(__instance.transform.position))
+                {
+                    __result = null;
+
+                    mls.LogMessage("Don't let turret target you as ghost");
+                    return false;
+                }
+            }
+
+            return true; // Allow the original method to execute in other cases
+        }
     }
 }
