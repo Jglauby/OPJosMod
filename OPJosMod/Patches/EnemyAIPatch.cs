@@ -121,6 +121,22 @@ namespace OPJosMod.GhostMode.Patches
             return true;
         }
 
+        [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
+        [HarmonyPrefix]
+        static bool checkLineOfSightForClosestPlayerPatch(EnemyAI __instance)
+        {
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            {
+                if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+                {
+                    mls.LogMessage("enemy can't see if player is in line of sight");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static PlayerControllerB getClosestPlayerIncludingGhost(EnemyAI enemy)
         {
             PlayerControllerB resultingPlayer = null;
