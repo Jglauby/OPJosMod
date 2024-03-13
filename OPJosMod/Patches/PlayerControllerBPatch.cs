@@ -79,6 +79,23 @@ namespace OPJosMod.GhostMode.Patches
         {
             try
             {
+                mls.LogMessage("hit reset ghost vars function");
+                allowKill = true;
+                isGhostMode = false;
+                isTogglingBrightMode = false;
+                consecutiveDeathExceptions = 0;
+                lastSafeLocations = new Vector3[10];
+                timeWhenSafe = Time.time;
+
+                jumpCoroutine = null;
+                tpPlayerIndex = 0;
+                tpCoroutine = null;
+                isTeleporting = false;
+                isTogglingCollisions = false;
+                isTogglingBrightMode = false;
+                isBrightModeOn = false;
+                collisionsOn = true;
+
                 if (__instance != null) 
                 {
                     __instance.StopAllCoroutines();
@@ -112,28 +129,11 @@ namespace OPJosMod.GhostMode.Patches
                     HUDManager.Instance.RemoveSpectateUI();
 
                     showAliveUI(__instance, true);
-                }
-                
-                mls.LogMessage("hit reset ghost vars function");
-                allowKill = true;
-                isGhostMode = false;                
-                isTogglingBrightMode = false;
-                consecutiveDeathExceptions = 0;
-                lastSafeLocations = new Vector3[10];
-                timeWhenSafe = Time.time;
-
-                jumpCoroutine = null;
-                tpPlayerIndex = 0;
-                tpCoroutine = null;
-                isTeleporting = false;
-                isTogglingCollisions = false;
-                isTogglingBrightMode = false;
-                isBrightModeOn = false;
-                collisionsOn = true;
+                }              
             }
             catch (Exception e)
             {
-                mls.LogMessage(e);
+                mls.LogMessage($"error durign resetign ghost values: {e}");
             }
         }
 
