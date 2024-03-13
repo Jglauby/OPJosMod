@@ -106,6 +106,8 @@
     <Compile Include="Patches\EnemyPatches\CrawlerAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\FlowermanAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\LandminePatch.cs" />
+    <Compile Include="Patches\EnemyPatches\MaskedPlayerEnemyPatch.cs" />
+    <Compile Include="Patches\EnemyPatches\TurretPatch.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />
     <Compile Include="Patches\EnemyPatches\NutcrackerEnemyAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\SandSpiderAIPatch.cs" />

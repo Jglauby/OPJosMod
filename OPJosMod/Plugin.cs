@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.4.1";
+        private const string modVersion = "2.4.2";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -50,6 +50,8 @@ namespace OPJosMod.GhostMode
             LandminePatch.SetLogSource(mls);
             FlowermanAIPatch.SetLogSource(mls);
             CrawlerAIPatch.SetLogSource(mls);
+            TurretPatch.SetLogSource(mls);
+            MaskedPlayerEnemyPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }

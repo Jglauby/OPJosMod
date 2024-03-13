@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.GhostMode.Patches;
 
@@ -26,6 +27,28 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             }
 
             return true;
+        }
+
+        [HarmonyPatch("AddToAngerMeter")]
+        [HarmonyPrefix]
+        private static bool addToAngerMeterPatch(FlowermanAI __instance)
+        {
+            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            {
+                bool hasPlayerInside = false;
+                foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
+                {
+                    if (player.isInsideFactory && player.playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
+                    {
+                        hasPlayerInside = true;
+                        break;
+                    }
+                }
+
+                return hasPlayerInside;
+            }
+
+            return true; 
         }
     }
 }

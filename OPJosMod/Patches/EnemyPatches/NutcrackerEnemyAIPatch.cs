@@ -42,7 +42,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
                 {
                     mls.LogMessage("kept nutcracker from switching target to current player");
                     __instance.StopInspection();
-                    __instance.currentBehaviourStateIndex = ReflectionUtils.GetFieldValue<int>(__instance, "previousBehaviourState");
+                    __instance.currentBehaviourStateIndex = 0;
                     return false;
                 }
             }
