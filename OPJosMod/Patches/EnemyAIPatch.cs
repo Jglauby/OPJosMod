@@ -157,8 +157,9 @@ namespace OPJosMod.GhostMode.Patches
             EnemyAI[] allEnemies = Object.FindObjectsOfType<EnemyAI>();
             foreach(EnemyAI enemy in allEnemies)
             {
-                //enemy.targetPlayer = null;
-                //
+                if (enemy.targetPlayer.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+                    enemy.targetPlayer = null;
+                
                 //if (enemy is CrawlerAI)
                 //{
                 //    mls.LogMessage("enemy is a crawler");
