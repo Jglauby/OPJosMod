@@ -137,6 +137,13 @@ namespace OPJosMode.HideNSeek.Patches
             if (totalPlayerCount == 1)
             {
                 mls.LogMessage($"one person alive, round over. totalPlayers:{totalPlayerCount}");
+
+                if (isSeeker)
+                {
+                    mls.LogMessage("you are seeker and round is over teleported to ship");
+                    teleportCoroutine = __instance.StartCoroutine(customTeleportPlayer(__instance, shipLocation, 0.1f));
+                }
+
                 StartOfRound.Instance.EndGameServerRpc((int)__instance.playerClientId);
             }
         }

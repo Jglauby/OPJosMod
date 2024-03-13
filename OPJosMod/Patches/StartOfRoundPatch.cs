@@ -45,9 +45,7 @@ namespace OPJosMode.HideNSeek.Patches
         [HarmonyPrefix]
         public static void shipLeavePatch(StartOfRound __instance)
         {
-            mls.LogMessage("ship leaving, reset isSeeker and isHider");
-            mls.LogMessage($"current day time {TimeOfDay.Instance.currentDayTime} global time at end of day{TimeOfDay.Instance.globalTimeAtEndOfDay}");
-            mls.LogMessage(PlayerControllerBPatch.isHider + "->ishider" + PlayerControllerBPatch.isSeeker + "->isSeekr");
+            //if you are a hider and day is over teleport back to ship
             if (!StartOfRound.Instance.localPlayerController.isPlayerDead 
                 && PlayerControllerBPatch.isHider
                 && (TimeOfDay.Instance.currentDayTime + 10) > TimeOfDay.Instance.globalTimeAtEndOfDay)
