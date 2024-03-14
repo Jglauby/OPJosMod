@@ -3,6 +3,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.HideNSeek.Utils;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Unity.Netcode;
@@ -53,6 +54,18 @@ namespace OPJosMode.HideNSeek.Patches
                 mls.LogMessage("ship taking off but player isn't dead");
                 StartOfRound.Instance.localPlayerController.transform.position = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
                 HUDManager.Instance.DisplayTip("Round Over!", "Stay on ship");
+            }
+
+            if (!StartOfRound.Instance.localPlayerController.isPlayerDead
+                && PlayerControllerBPatch.isSeeker)
+            {
+                var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
+                if (totalPlayerCount == 1)//one person alive
+                {
+                    mls.LogMessage("you won as seeker!");
+                    StartOfRound.Instance.localPlayerController.transform.position = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
+                    HUDManager.Instance.DisplayTip("Round Over!", "Stay on ship");
+                }
             }
             PlayerControllerBPatch.resetRoleValues();
         }
