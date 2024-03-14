@@ -22,7 +22,7 @@ namespace OPJosMod.GhostMode
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
-
+        
         internal ManualLogSource mls;
 
         void Awake()
@@ -52,6 +52,7 @@ namespace OPJosMod.GhostMode
             CrawlerAIPatch.SetLogSource(mls);
             TurretPatch.SetLogSource(mls);
             MaskedPlayerEnemyPatch.SetLogSource(mls);
+            JesterAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }

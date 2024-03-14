@@ -20,11 +20,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace OPJosMod.GhostMode.Enemy.Patches
 {
-    [HarmonyPatch(typeof(Turret))]
-    internal class TurretPatch
+    [HarmonyPatch(typeof(JesterAI))]
+    internal class JesterAIPatch
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
@@ -32,22 +33,24 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch(typeof(Turret), "CheckForPlayersInLineOfSight")]
+        [HarmonyPatch("Update")]
         [HarmonyPrefix]
-        private static bool checkForPlayersInLineOfSightPatch(ref PlayerControllerB __result, Turret __instance, float radius = 2f, bool angleRangeCheck = false)
+        private static void updatePatch(JesterAI __instance)
         {
             if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
-                if (StartOfRound.Instance.localPlayerController.HasLineOfSightToPosition(__instance.transform.position, 360, 120))
+                if (__instance.currentBehaviourStateIndex == 2 || __instance.currentBehaviourStateIndex == 1)//if currently chasing a player/ or winding
                 {
-                    __result = null;
-
-                    mls.LogMessage("Don't let turret target you as ghost");
-                    return false;
+                    if (EnemyAIPatch.ghostOnlyPlayerInFacility())
+                    { 
+                        if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+                        {
+                            mls.LogMessage("swaping jester back to state 0");
+                            __instance.SwitchToBehaviourState(1);
+                        }
+                    }
                 }
             }
-
-            return true; // Allow the original method to execute in other cases
         }
     }
 }

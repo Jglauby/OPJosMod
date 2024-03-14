@@ -186,5 +186,26 @@ namespace OPJosMod.GhostMode.Patches
                 //}
             }
         }
+
+        public static bool ghostOnlyPlayerInFacility()
+        {
+            int countInFactory = 0; //players in factory that arent ghost
+            for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
+            {
+                if (StartOfRound.Instance.allPlayerScripts[i].isPlayerControlled && StartOfRound.Instance.allPlayerScripts[i].isInsideFactory
+                    && StartOfRound.Instance.allPlayerScripts[i].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
+                {
+                    countInFactory++;
+                }
+            }
+
+            if (countInFactory == 0)
+            {
+                mls.LogMessage("ghost only one in facility");
+                return true;
+            }
+
+            return false;
+        }
     }
 }
