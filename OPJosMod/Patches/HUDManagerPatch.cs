@@ -71,6 +71,13 @@ namespace OPJosMode.HideNSeek.Patches
             }
         }
 
+        [HarmonyPatch("ApplyPenalty")]
+        [HarmonyPrefix]
+        private static bool applyPenaltyPatch(HUDManager __instance, ref int playersDead, ref int bodiesInsured)
+        {
+            return false;
+        }
+
         public static void CustomDisplayTip(string headerText, string bodyText, bool makeSound = true)
         {
             HUDManager instance = HUDManager.Instance;
