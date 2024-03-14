@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.HideNSeek.Config;
 using OPJosMod.HideNSeek.CustomRpc;
 using OPJosMode.HideNSeek.Patches;
 
@@ -48,18 +49,24 @@ namespace OPJosMod.HideNSeek
 
         private void setupConfig()
         {
-            //var configSprintMultiplier = Config.Bind("Sprint Multiplier", // The section under which the option is shown
-            //                            "SprintMultiplier",  // The key of the configuration option in the configuration file
-            //                            1.04f, // The default value
-            //                            "How fast your speed rams up when sprinting"); // Description of the option to show in the config file
-            //
-            //var configFlashTimeButton = Config.Bind("Flash Time Button",
-            //                            "FlashTimeButton",
-            //                            "R",
-            //                            "Button used to toggle flash time");
-            //
-            //ConfigVariables.defaultSprintMultiplier = configSprintMultiplier.Value;
-            //ConfigVariables.flashTimeButton = configFlashTimeButton.Value;
+            var configSeekerDelay = Config.Bind("Seeker Delay", // The section under which the option is shown
+                                        "SeekerDelay",  // The key of the configuration option in the configuration file
+                                        50f, // The default value
+                                        "How long until the seeker can begin seeking"); // Description of the option to show in the config file
+            
+            var configSeekerAbilityCooldown = Config.Bind("Seeker Ability CD",
+                                        "SeekerAbilityCD",
+                                        30f,
+                                        "Cooldown for seekers ability");
+
+            var configFlashlightPower = Config.Bind("Small Flashlight Power",
+                                        "SmallFlashlightPower",
+                                        5,
+                                        "Fraction of brightness, ex) 5 = 1/5th power");
+
+            ConfigVariables.seekerDelay = configSeekerDelay.Value;
+            ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
+            ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
         }
     }
 }

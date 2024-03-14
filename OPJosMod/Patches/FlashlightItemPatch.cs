@@ -21,7 +21,7 @@ namespace OPJosMode.HideNSeek.Patches
             if(__instance.flashlightTypeID == (int)FlashlightTypes.NormalFlashlight)
             {
                 __instance.itemProperties.requiresBattery = false;
-                __instance.flashlightBulb.intensity = __instance.flashlightBulb.intensity / ConfigVariables.flashlightPower;
+                __instance.flashlightBulb.intensity = __instance.flashlightBulb.intensity / ConfigVariables.smallFlashlightPower;
             }
         }
     }

@@ -32,8 +32,6 @@ namespace OPJosMode.HideNSeek.Patches
         public static bool isSeeker = false;
         public static bool isHider = false;
 
-        private static float seekerDelay = 50f; //set to 50
-
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
 
@@ -43,8 +41,7 @@ namespace OPJosMode.HideNSeek.Patches
         private static float lastCheckedTime;
         private static float checkGameOverFrequency = 5;
 
-        private static float lastWhistledAt = Time.time;
-        private static float whistelDelay = 30f; //set to 30
+        private static float lastUsedSeekerAbilityAt = Time.time;
 
         private static int lastCheckedAliveCount = -1;
 
@@ -77,16 +74,16 @@ namespace OPJosMode.HideNSeek.Patches
 
                 if (Mouse.current.rightButton.wasPressedThisFrame)//right click was clicked
                 {                    
-                    if (Time.time - lastWhistledAt > whistelDelay)
+                    if (Time.time - lastUsedSeekerAbilityAt > ConfigVariables.seekerAbilityCD)
                     {
-                        lastWhistledAt = Time.time;
+                        lastUsedSeekerAbilityAt = Time.time;
                         makeClosestPlayerWhistle(StartOfRound.Instance.localPlayerController);
                     }
                     else
                     {
                         //dont display if just clicked
-                        if (Time.time - lastWhistledAt > 1)
-                            HUDManagerPatch.CustomDisplayTip("Ability on cooldown", $"for {(int)(whistelDelay - (Time.time - lastWhistledAt))} seconds", false);
+                        if (Time.time - lastUsedSeekerAbilityAt > 1)
+                            HUDManagerPatch.CustomDisplayTip("Ability on cooldown", $"for {(int)(ConfigVariables.seekerAbilityCD - (Time.time - lastUsedSeekerAbilityAt))} seconds", false);
                     }
                 }
             }
@@ -108,7 +105,7 @@ namespace OPJosMode.HideNSeek.Patches
         [HarmonyPrefix]
         private static void startPatch(PlayerControllerB __instance)
         {
-            __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity = __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity / ConfigVariables.flashlightPower;
+            __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity = __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity / ConfigVariables.smallFlashlightPower;
         }
 
         [HarmonyPatch("KillPlayer")]
@@ -172,7 +169,7 @@ namespace OPJosMode.HideNSeek.Patches
             isSeeker = true;
             isHider = false;
 
-            lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, seekerDelay));
+            lockPlayerCoroutine = localPlayerController.StartCoroutine(lockPlayer(localPlayerController, ConfigVariables.seekerDelay));
 
             //force enemies to whistle, on cool down
                 //will need some sort of existing server function i can call so that the noise is heard across all clients not just seekers client
