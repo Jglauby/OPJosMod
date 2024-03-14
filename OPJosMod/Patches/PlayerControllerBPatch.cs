@@ -35,9 +35,6 @@ namespace OPJosMode.HideNSeek.Patches
         private static Coroutine teleportCoroutine;
         private static Coroutine lockPlayerCoroutine;
 
-        private static float sprintMultiplier = 1.01f;
-        private static float maxSprintSpeed = 3f;
-
         private static float lastCheckedTime;
         private static float checkGameOverFrequency = 5;
 
@@ -65,9 +62,9 @@ namespace OPJosMode.HideNSeek.Patches
                     var currentValue = ReflectionUtils.GetFieldValue<float>(__instance, "sprintMultiplier");
                     if (__instance.isSprinting)
                     {
-                        var newForce = (float)currentValue * sprintMultiplier;
+                        var newForce = (float)currentValue * ConfigVariables.seekerSprintMultiplier;
 
-                        if (newForce < maxSprintSpeed)
+                        if (newForce < ConfigVariables.seekerMaxSprintSpeed)
                             ReflectionUtils.SetFieldValue(__instance, "sprintMultiplier", newForce);
                     }
                 }

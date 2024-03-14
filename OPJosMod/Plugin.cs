@@ -64,9 +64,21 @@ namespace OPJosMod.HideNSeek
                                         5,
                                         "Fraction of brightness, ex) 5 = 1/5th power");
 
+            var configSeekerSprintMultiplier = Config.Bind("Seeking Sprint Multiplier",
+                                        "SeekingSprintMultiplier",
+                                        1.01f,
+                                        "How fast you accelerate as a seeker");
+
+            var configSeekerSprintTopSpeed = Config.Bind("Seeking Sprint Top Speed",
+                                        "SeekingSprintTopSpeed",
+                                        3f,
+                                        "The fastest the seeker can move");
+
             ConfigVariables.seekerDelay = configSeekerDelay.Value;
             ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
             ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
+            ConfigVariables.seekerSprintMultiplier = configSeekerSprintMultiplier.Value;
+            ConfigVariables.seekerMaxSprintSpeed = configSeekerSprintTopSpeed.Value;
         }
     }
 }
