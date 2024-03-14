@@ -38,7 +38,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
         {
             if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
             {
-                if ((int)GameNetworkManager.Instance.localPlayerController.playerClientId == playerId)
+                if ((int)StartOfRound.Instance.localPlayerController.playerClientId == playerId)
                 {
                     mls.LogMessage("kept nutcracker from switching target to current player");
                     __instance.StopInspection();
@@ -48,6 +48,6 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             }
 
             return true;
-        }
+        }    
     }
 }
