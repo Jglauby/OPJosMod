@@ -41,6 +41,7 @@ namespace OPJosMode.HideNSeek.Patches
         [HarmonyPrefix]
         private static void fillEndGameStatsPatchPre(HUDManager __instance, ref EndOfGameStats stats)
         {
+            //populate stats normally
             for (int i = 0; i < RoundManager.Instance.playersManager.allPlayerScripts.Length; i++)
             {
                 StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Clear();
@@ -54,6 +55,26 @@ namespace OPJosMode.HideNSeek.Patches
                 {
                     mls.LogMessage($"player{i} won!");
                     StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Add("Won the game!");
+                }
+            }
+
+            //populate stats if you have more company
+            for (int i = 0; i < __instance.statsUIElements.playerNotesText.Length; i++)
+            {
+                var player = RoundManager.Instance.playersManager.allPlayerScripts[i];
+                var text = __instance.statsUIElements.playerNotesText[i];
+
+                if (!player.playerUsername.Contains("Player #"))
+                {
+                    if (player.isPlayerDead)
+                        text.text = "They lost :(";
+                    else
+                        text.text = "They Won!";
+                }
+                else
+                {
+                    mls.LogMessage($"dont put stats for player {i}");
+                    text.text = "";
                 }
             }
         }
@@ -107,7 +128,9 @@ namespace OPJosMode.HideNSeek.Patches
             Vector3 offset = new Vector3(-21.78f, -59.48f, 12.15f);
             HUDManager.Instance.profitQuotaDaysLeftText.transform.position = offset;
 
+            HUDManager.Instance.profitQuotaDaysLeftText2.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
             HUDManager.Instance.profitQuotaDaysLeftText2.text = maingText;
+            HUDManager.Instance.profitQuotaDaysLeftText2.fontSize = 46;
             HUDManager.Instance.reachedProfitQuotaAnimator.SetTrigger("displayDaysLeft");
 
             if (makeSound)

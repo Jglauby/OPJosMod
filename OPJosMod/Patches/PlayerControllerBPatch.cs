@@ -120,13 +120,13 @@ namespace OPJosMode.HideNSeek.Patches
         {
             var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
             var shipLocation = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
-
+            
             if (totalPlayerCount < lastCheckedAliveCount && lastCheckedAliveCount != -1)
             {
                 if (isSeeker)
                     HUDManagerPatch.CustomDisplayTip("Someone has Died!", $"{totalPlayerCount} players remain", false);
                 else if (isHider)
-                    HUDManagerPatch.CustomDisplayBigMessage($"Someone Died! {totalPlayerCount} players remain");
+                    HUDManagerPatch.CustomDisplayBigMessage($"Someone Died! \n {totalPlayerCount} players remain");
             }
             lastCheckedAliveCount = totalPlayerCount;
 
