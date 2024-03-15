@@ -77,7 +77,7 @@ namespace OPJosMod.HideNSeek
 
             var configDaySpeedMultiplier = Config.Bind("Day Speed Multiplier",
                                         "DaySpeedMultiplier",
-                                        2.5f,
+                                        2f,
                                         "Higher the number the faster days go, day speed auto adjusts with players");
 
             ConfigVariables.seekerDelay = configSeekerDelay.Value;

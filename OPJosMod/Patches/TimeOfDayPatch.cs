@@ -1,6 +1,7 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.HideNSeek.Config;
+using System.Linq;
 using UnityEngine;
 
 namespace OPJosMode.HideNSeek.Patches
@@ -19,8 +20,8 @@ namespace OPJosMode.HideNSeek.Patches
         private static void updatePatch(TimeOfDay __instance)
         {
             //set time speed, more players => longer days
-            var playerCount = RoundManager.Instance.playersManager.allPlayerScripts.Length;
-            var daySpeedIncrease = ConfigVariables.daySpeedMultiplier * 10f;
+            var playerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => !x.playerUsername.Contains("Player #")).ToArray().Length;
+            var daySpeedIncrease = ConfigVariables.daySpeedMultiplier;
             __instance.globalTimeSpeedMultiplier = (daySpeedIncrease * 4) / playerCount;
         }
     }
