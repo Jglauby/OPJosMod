@@ -58,11 +58,6 @@ namespace OPJosMode.HideNSeek.Patches
                 var spawnLocation = __instance.playersManager.playerSpawnPositions[0].position;
                 GeneralUtil.spawnItemAtLocation(BuyableItems.Shovel, spawnLocation);
                 GeneralUtil.spawnItemAtLocation(BuyableItems.Flashlight, spawnLocation);
-
-                //set time speed, more players => longer days
-                var playerCount = __instance.playersManager.allPlayerScripts.Length;
-                var daySpeedIncrease = 2.5f; //2.5f
-                TimeOfDay.Instance.globalTimeSpeedMultiplier = (daySpeedIncrease * 4) / playerCount;
             }
         }
     }

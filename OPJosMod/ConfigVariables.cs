@@ -14,5 +14,6 @@ namespace OPJosMod.HideNSeek.Config
         public static int smallFlashlightPower; //5-> 1/5th the power
         public static float seekerSprintMultiplier;
         public static float seekerMaxSprintSpeed;
+        public static float daySpeedMultiplier;
     }
 }

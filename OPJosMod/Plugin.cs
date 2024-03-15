@@ -43,6 +43,7 @@ namespace OPJosMod.HideNSeek
             GeneralUtil.SetLogSource(mls);
             FlashlightItemPatch.SetLogSource(mls);
             TurretPatch.SetLogSource(mls);
+            TimeOfDayPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
@@ -74,11 +75,17 @@ namespace OPJosMod.HideNSeek
                                         3f,
                                         "The fastest the seeker can move");
 
+            var configDaySpeedMultiplier = Config.Bind("Day Speed Multiplier",
+                                        "DaySpeedMultiplier",
+                                        3f,
+                                        "Higher the number the faster days go, day speed auto adjusts with players");
+
             ConfigVariables.seekerDelay = configSeekerDelay.Value;
             ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
             ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
             ConfigVariables.seekerSprintMultiplier = configSeekerSprintMultiplier.Value;
             ConfigVariables.seekerMaxSprintSpeed = configSeekerSprintTopSpeed.Value;
+            ConfigVariables.daySpeedMultiplier = configDaySpeedMultiplier.Value;
         }
     }
 }

@@ -123,7 +123,10 @@ namespace OPJosMode.HideNSeek.Patches
 
             if (totalPlayerCount < lastCheckedAliveCount && lastCheckedAliveCount != -1)
             {
-                HUDManagerPatch.CustomDisplayTip("Someone has Died!", $"{totalPlayerCount} players remain");
+                if (isSeeker)
+                    HUDManagerPatch.CustomDisplayTip("Someone has Died!", $"{totalPlayerCount} players remain", false);
+                else if (isHider)
+                    HUDManagerPatch.CustomDisplayBigMessage($"Someone Died! {totalPlayerCount} players remain");
             }
             lastCheckedAliveCount = totalPlayerCount;
 
