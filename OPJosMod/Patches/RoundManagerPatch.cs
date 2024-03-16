@@ -45,7 +45,8 @@ namespace OPJosMode.HideNSeek.Patches
                 __instance.currentLevel.maxOutsideEnemyPowerCount = 0;
 
                 //make no scrap spawn
-                __instance.scrapAmountMultiplier = 0;
+                if (!ConfigVariables.shouldSpawnItems)
+                    __instance.scrapAmountMultiplier = 0;
 
                 //destroy all shovels
                 //var shovels = Object.FindObjectsOfType<Shovel>();

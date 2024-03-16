@@ -57,7 +57,7 @@ namespace OPJosMod.HideNSeek
             
             var configSeekerAbilityCooldown = Config.Bind("Seeker Ability CD",
                                         "SeekerAbilityCD",
-                                        30f,
+                                        45f,
                                         "Cooldown for seekers ability");
 
             var configFlashlightPower = Config.Bind("Small Flashlight Power",
@@ -80,12 +80,18 @@ namespace OPJosMod.HideNSeek
                                         2f,
                                         "Higher the number the faster days go, day speed auto adjusts with players");
 
+            var configSpawnScrap = Config.Bind("Spawn Scrap",
+                                        "SpawnScrap",
+                                        true,
+                                        "should items scrap?");
+
             ConfigVariables.seekerDelay = configSeekerDelay.Value;
             ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
             ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
             ConfigVariables.seekerSprintMultiplier = configSeekerSprintMultiplier.Value;
             ConfigVariables.seekerMaxSprintSpeed = configSeekerSprintTopSpeed.Value;
             ConfigVariables.daySpeedMultiplier = configDaySpeedMultiplier.Value;
+            ConfigVariables.shouldSpawnScrap = configSpawnScrap.Value;
         }
     }
 }

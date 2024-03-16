@@ -15,5 +15,6 @@ namespace OPJosMod.HideNSeek.Config
         public static float seekerSprintMultiplier;
         public static float seekerMaxSprintSpeed;
         public static float daySpeedMultiplier;
+        public static bool shouldSpawnScrap;
     }
 }
