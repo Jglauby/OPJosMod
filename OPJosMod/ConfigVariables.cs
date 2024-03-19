@@ -21,5 +21,7 @@ namespace OPJosMod.HideNSeek.Config
         public static BuyableItems seekerItem2;
         public static BuyableItems seekerItem3;
         public static BuyableItems seekerItem4;
+
+        public static BuyableItems hiderItem;
     }
 }

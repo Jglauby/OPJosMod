@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
+using OPJosMod.HideNSeek.Config;
 using OPJosMode.HideNSeek.Patches;
 using System;
 using System.Collections.Generic;
@@ -18,12 +19,17 @@ namespace OPJosMod.HideNSeek.CustomRpc
             mls = logSource;
         }
 
-        public static void SeekingStarted()
+        public static void SeekingStarted(string playerIdString)
         {
             if (PlayerControllerBPatch.isHider)
             {
-                HUDManagerPatch.CustomDisplayTip("Careful!", "Seeker is on their way!");
+                if (ConfigVariables.hiderItem == BuyableItems.None)
+                    HUDManagerPatch.CustomDisplayTip("Careful!", "Seeker is on their way!");
+                else
+                    HUDManagerPatch.CustomDisplayTip("Seeker is on their way!", "an item dropped at your feet");
             }
+
+            GeneralUtil.spawnHiderItem(int.Parse(playerIdString));
         }
 
         public static void MakePlayerWhistle(string playerIdString)

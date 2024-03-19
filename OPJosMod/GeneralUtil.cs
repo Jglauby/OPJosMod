@@ -1,5 +1,8 @@
 ﻿using BepInEx.Logging;
+using GameNetcodeStuff;
+using OPJosMod.HideNSeek.Config;
 using OPJosMod.HideNSeek.Utils;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -29,6 +32,25 @@ namespace OPJosMod
             else
             {
                 mls.LogError($"tried to spawn item: {item} but can't as this is not the host");
+            }
+        }
+
+        public static void spawnHiderItem(int seekerId)
+        {
+            if (GameNetworkManager.Instance.isHostingGame)
+            {
+                var allPlayers = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => !x.playerUsername.Contains("Player #")).ToArray(); //properlly grabs connected players even if you have more company on
+
+                foreach (PlayerControllerB player in allPlayers)
+                {
+                    if ((int)player.playerClientId != seekerId)
+                    {
+                        mls.LogMessage($"spawn hider item at {player.transform.position}");
+                        spawnItemAtLocation(ConfigVariables.hiderItem, player.transform.position);
+                    }
+                    else
+                        mls.LogMessage($"dont spawn hider item at this players position,{player.playerClientId} they are seeker");
+                }
             }
         }
     }

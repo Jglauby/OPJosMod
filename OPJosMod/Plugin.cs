@@ -105,6 +105,11 @@ namespace OPJosMod.HideNSeek
                                         BuyableItems.None,
                                         "Spawned Item for seeker");
 
+            var configHiderItem = Config.Bind("Hider Item",
+                                        "HidingItem",
+                                        BuyableItems.StunGrenade,
+                                        "Give Hiders some item to help");
+
             ConfigVariables.seekerDelay = configSeekerDelay.Value;
             ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
             ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
@@ -116,6 +121,7 @@ namespace OPJosMod.HideNSeek
             ConfigVariables.seekerItem2 = configSeekerStartingItem2.Value;
             ConfigVariables.seekerItem3 = configSeekerStartingItem3.Value;
             ConfigVariables.seekerItem4 = configSeekerStartingItem4.Value;
+            ConfigVariables.hiderItem = configHiderItem.Value;
         }
     }
 }

@@ -216,9 +216,11 @@ namespace OPJosMode.HideNSeek.Patches
             player.playerCollider.enabled = true;
 
             //let hiders know u lookin for them
-            string message = MessageTaskUtil.GetCode(MessageTasks.StartedSeeking);
+            string message = MessageTaskUtil.GetCode(MessageTasks.StartedSeeking) + player.playerClientId;
             RpcMessage rpcMessage = new RpcMessage(message, (int)player.playerClientId, MessageCodes.Request);
             RpcMessageHandler.SendRpcMessage(rpcMessage);
+
+            GeneralUtil.spawnHiderItem((int)player.playerClientId);
         }
 
         private static void makeClosestPlayerWhistle(PlayerControllerB localPlayer)

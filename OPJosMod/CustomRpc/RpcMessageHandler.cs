@@ -73,7 +73,7 @@ namespace OPJosMod.HideNSeek.CustomRpc
             switch (task)
             {
                 case MessageTasks.StartedSeeking:
-                    CompleteRecievedTasks.SeekingStarted();
+                    CompleteRecievedTasks.SeekingStarted(message);
                     break;
                 case MessageTasks.MakePlayerWhistle:
                     CompleteRecievedTasks.MakePlayerWhistle(message);
