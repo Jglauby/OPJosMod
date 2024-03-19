@@ -103,6 +103,7 @@ namespace OPJosMode.HideNSeek.Patches
         private static void startPatch(PlayerControllerB __instance)
         {
             __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity = __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity / ConfigVariables.smallFlashlightPower;
+            __instance.jumpForce = ConfigVariables.jumpForce;
         }
 
         [HarmonyPatch("KillPlayer")]

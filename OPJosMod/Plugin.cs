@@ -85,6 +85,11 @@ namespace OPJosMod.HideNSeek
                                         false,
                                         "should items scrap?");
 
+            var configJumpForce = Config.Bind("Jump Force",
+                                        "JumpForce",
+                                        15f,
+                                        "How strong your jump is, game default is 5");
+
             var configSeekerStartingItem1 = Config.Bind("Seeker Item 1",
                                         "SeekerItem1",
                                         BuyableItems.Shovel,
@@ -117,6 +122,7 @@ namespace OPJosMod.HideNSeek
             ConfigVariables.seekerMaxSprintSpeed = configSeekerSprintTopSpeed.Value;
             ConfigVariables.daySpeedMultiplier = configDaySpeedMultiplier.Value;
             ConfigVariables.shouldSpawnScrap = configSpawnScrap.Value;
+            ConfigVariables.jumpForce = configJumpForce.Value;
             ConfigVariables.seekerItem1 = configSeekerStartingItem1.Value;
             ConfigVariables.seekerItem2 = configSeekerStartingItem2.Value;
             ConfigVariables.seekerItem3 = configSeekerStartingItem3.Value;
