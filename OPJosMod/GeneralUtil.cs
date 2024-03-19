@@ -17,11 +17,14 @@ namespace OPJosMod
         {
             if (GameNetworkManager.Instance.isHostingGame)
             {
-                Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
-                GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)item].spawnPrefab, location, Quaternion.identity, StartOfRound.Instance.localPlayerController.playersManager.propsContainer);
+                if (item != BuyableItems.None)
+                {
+                    Terminal terminal = ReflectionUtils.GetFieldValue<Terminal>(HUDManager.Instance, "terminalScript");
+                    GameObject obj = Object.Instantiate(terminal.buyableItemsList[(int)item].spawnPrefab, location, Quaternion.identity, StartOfRound.Instance.localPlayerController.playersManager.propsContainer);
 
-                obj.GetComponent<GrabbableObject>().fallTime = 0f;
-                obj.GetComponent<NetworkObject>().Spawn();
+                    obj.GetComponent<GrabbableObject>().fallTime = 0f;
+                    obj.GetComponent<NetworkObject>().Spawn();
+                }
             }
             else
             {

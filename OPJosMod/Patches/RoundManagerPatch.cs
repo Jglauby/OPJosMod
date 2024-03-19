@@ -55,10 +55,12 @@ namespace OPJosMode.HideNSeek.Patches
                 //    Object.Destroy(shovels[k].gameObject);
                 //}
 
-                //create and drop shovel and flashlight
+                //create and drop shovel and flashlight and spray paint
                 var spawnLocation = __instance.playersManager.playerSpawnPositions[0].position;
-                GeneralUtil.spawnItemAtLocation(BuyableItems.Shovel, spawnLocation);
-                GeneralUtil.spawnItemAtLocation(BuyableItems.Flashlight, spawnLocation);
+                GeneralUtil.spawnItemAtLocation(ConfigVariables.seekerItem1, spawnLocation);
+                GeneralUtil.spawnItemAtLocation(ConfigVariables.seekerItem2, spawnLocation);
+                GeneralUtil.spawnItemAtLocation(ConfigVariables.seekerItem3, spawnLocation);
+                GeneralUtil.spawnItemAtLocation(ConfigVariables.seekerItem4, spawnLocation);
             }
         }
     }

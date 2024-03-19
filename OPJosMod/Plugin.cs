@@ -12,7 +12,7 @@ namespace OPJosMod.HideNSeek
     {
         private const string modGUID = "OpJosMod.HideNSeek";
         private const string modName = "HideNSeek";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.1.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -62,7 +62,7 @@ namespace OPJosMod.HideNSeek
 
             var configFlashlightPower = Config.Bind("Small Flashlight Power",
                                         "SmallFlashlightPower",
-                                        3,
+                                        2,
                                         "Fraction of brightness, ex) 5 = 1/5th power");
 
             var configSeekerSprintMultiplier = Config.Bind("Seeking Sprint Multiplier",
@@ -85,6 +85,26 @@ namespace OPJosMod.HideNSeek
                                         false,
                                         "should items scrap?");
 
+            var configSeekerStartingItem1 = Config.Bind("Seeker Item 1",
+                                        "SeekerItem1",
+                                        BuyableItems.Shovel,
+                                        "Spawned Item for seeker");
+
+            var configSeekerStartingItem2 = Config.Bind("Seeker Item 2",
+                                        "SeekerItem2",
+                                        BuyableItems.Flashlight,
+                                        "Spawned Item for seeker");
+
+            var configSeekerStartingItem3 = Config.Bind("Seeker Item 3",
+                                        "SeekerItem3",
+                                        BuyableItems.SprayPaint,
+                                        "Spawned Item for seeker");
+
+            var configSeekerStartingItem4 = Config.Bind("Seeker Item 4",
+                                        "SeekerItem4",
+                                        BuyableItems.None,
+                                        "Spawned Item for seeker");
+
             ConfigVariables.seekerDelay = configSeekerDelay.Value;
             ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
             ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
@@ -92,6 +112,10 @@ namespace OPJosMod.HideNSeek
             ConfigVariables.seekerMaxSprintSpeed = configSeekerSprintTopSpeed.Value;
             ConfigVariables.daySpeedMultiplier = configDaySpeedMultiplier.Value;
             ConfigVariables.shouldSpawnScrap = configSpawnScrap.Value;
+            ConfigVariables.seekerItem1 = configSeekerStartingItem1.Value;
+            ConfigVariables.seekerItem2 = configSeekerStartingItem2.Value;
+            ConfigVariables.seekerItem3 = configSeekerStartingItem3.Value;
+            ConfigVariables.seekerItem4 = configSeekerStartingItem4.Value;
         }
     }
 }
