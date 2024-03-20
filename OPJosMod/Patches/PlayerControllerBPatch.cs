@@ -104,6 +104,15 @@ namespace OPJosMode.HideNSeek.Patches
         {
             __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity = __instance.allHelmetLights[(int)FlashlightTypes.NormalFlashlight].intensity / ConfigVariables.smallFlashlightPower;
             __instance.jumpForce = ConfigVariables.jumpForce;
+
+            //allow spectating text to appear while alive
+            HUDManager.Instance.spectatingPlayerText.text = "";
+            HUDManager.Instance.holdButtonToEndGameEarlyMeter.gameObject.SetActive(false);
+            HUDManager.Instance.holdButtonToEndGameEarlyVotesText.text = "";
+            HUDManager.Instance.holdButtonToEndGameEarlyText.text = "";
+            HUDManager.Instance.spectatorTipText.text = "";
+
+            HUDManager.Instance.gameOverAnimator.SetTrigger("gameOver");
         }
 
         [HarmonyPatch("KillPlayer")]
@@ -119,6 +128,7 @@ namespace OPJosMode.HideNSeek.Patches
 
         private static void checkIfShouldEndRound(PlayerControllerB __instance)
         {
+            var allPlayersCount = GeneralUtil.getTotalPlayersCount();
             var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
             var shipLocation = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
             
@@ -130,6 +140,9 @@ namespace OPJosMode.HideNSeek.Patches
                     HUDManagerPatch.CustomDisplayBigMessage($"Someone Died! \n {totalPlayerCount} players remain");
             }
             lastCheckedAliveCount = totalPlayerCount;
+
+            //update UI to show alive players
+            HUDManager.Instance.spectatingPlayerText.text = $"|{totalPlayerCount}/{allPlayersCount} players remain|";
 
             //one person alive
             if (totalPlayerCount == 1)

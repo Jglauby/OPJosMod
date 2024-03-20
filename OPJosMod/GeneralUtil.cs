@@ -39,7 +39,7 @@ namespace OPJosMod
         {
             if (GameNetworkManager.Instance.isHostingGame)
             {
-                var allPlayers = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => !x.playerUsername.Contains("Player #")).ToArray(); //properlly grabs connected players even if you have more company on
+                var allPlayers = getAllPlayersConneced();
 
                 foreach (PlayerControllerB player in allPlayers)
                 {
@@ -52,6 +52,21 @@ namespace OPJosMod
                         mls.LogMessage($"dont spawn hider item at this players position,{player.playerClientId} they are seeker");
                 }
             }
+        }
+
+        //properlly grabs connected players even if you have more company on
+        public static int getTotalPlayersCount()
+        {
+            var allPlayers = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => !x.playerUsername.Contains("Player #")).ToArray(); 
+            
+            return allPlayers.Length;
+        }
+
+        public static PlayerControllerB[] getAllPlayersConneced()
+        {
+            var allPlayers = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => !x.playerUsername.Contains("Player #")).ToArray();
+
+            return allPlayers;
         }
     }
 }
