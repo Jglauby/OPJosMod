@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod.Utils
+namespace OPJosMod.SupahNinja.Utils
 {
     public class ReflectionUtils
     {

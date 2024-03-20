@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace OPJosMod.Utils
+namespace OPJosMod.SupahNinja.Utils
 {
     public class GeneralUtils
     {
@@ -37,6 +37,16 @@ namespace OPJosMod.Utils
                 objectName = objectName.Substring(0, index).Trim();
 
             return objectName;
+        }
+
+        public static bool playerIsCrouching()
+        {
+            var player = StartOfRound.Instance.localPlayerController;
+
+            if (player.isCrouching || ConfigVariables.alwaysSneak)
+                return true;
+
+            return false;
         }
     }
 }

@@ -115,8 +115,8 @@
     <Compile Include="Patches\EnemyPatches\ForestGiantAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\MouthDogAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\CentipededAIPatch.cs" />
-    <Compile Include="GeneralUtils.cs" />
-    <Compile Include="ReflectionUtil.cs" />
+    <Compile Include="Utils\GeneralUtils.cs" />
+    <Compile Include="Utils\ReflectionUtil.cs" />
     <Compile Include="Patches\HUDManagerPatch.cs" />
     <Compile Include="Patches\EnemyAIPatch.cs" />
     <Compile Include="Patches\StartOfRoundPatch.cs" />

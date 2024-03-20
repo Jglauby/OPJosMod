@@ -1,7 +1,7 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.SupahNinja.Patches
 {
     [HarmonyPatch(typeof(StartMatchLever))]
     internal class StartMatchLeverPatch

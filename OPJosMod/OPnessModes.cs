@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod
+namespace OPJosMod.SupahNinja.Enums
 {
     public enum OPnessModes
     {

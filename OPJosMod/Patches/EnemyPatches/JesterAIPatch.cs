@@ -22,7 +22,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
-namespace OPJosMod.GhostMode.Enemy.Patches
+namespace OPJosMod.SupahNinja.Enemy.Patches
 {
     [HarmonyPatch(typeof(JesterAI))]
     internal class JesterAIPatch

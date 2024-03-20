@@ -21,7 +21,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
 
-namespace OPJosMod.GhostMode.Enemy.Patches
+namespace OPJosMod.SupahNinja.Enemy.Patches
 {
     [HarmonyPatch(typeof(MaskedPlayerEnemy))]
     internal class MaskedPlayerEnemyPatch

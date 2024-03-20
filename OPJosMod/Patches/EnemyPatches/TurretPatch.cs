@@ -22,7 +22,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.Rendering;
 
-namespace OPJosMod.GhostMode.Enemy.Patches
+namespace OPJosMod.SupahNinja.Enemy.Patches
 {
     [HarmonyPatch(typeof(Turret))]
     internal class TurretPatch

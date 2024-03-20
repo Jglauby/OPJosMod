@@ -1,8 +1,8 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.GhostMode.Patches;
+using OPJosMod.SupahNinja.Patches;
 
-namespace OPJosMod.GhostMode.Enemy.Patches
+namespace OPJosMod.SupahNinja.Enemy.Patches
 {
     [HarmonyPatch(typeof(CentipedeAI))]
     internal class CentipedeAIPatch

@@ -23,7 +23,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 using static UnityEngine.InputSystem.DefaultInputActions;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.SupahNinja.Patches
 {
     [HarmonyPatch(typeof(HUDManager))]
     internal class HUDManagerPatch

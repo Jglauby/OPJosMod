@@ -3,7 +3,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.GhostMode.Patches;
 
-namespace OPJosMod.GhostMode.Enemy.Patches
+namespace OPJosMod.SupahNinja.Enemy.Patches
 {
     [HarmonyPatch(typeof(CrawlerAI))]
     internal class CrawlerAIPatch

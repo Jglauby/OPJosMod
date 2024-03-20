@@ -2,26 +2,15 @@
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.Utils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.Rendering;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.SupahNinja.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch

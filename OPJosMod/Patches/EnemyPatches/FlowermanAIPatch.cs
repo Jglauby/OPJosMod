@@ -1,9 +1,9 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.GhostMode.Patches;
+using OPJosMod.SupahNinja.Patches;
 
-namespace OPJosMod.GhostMode.Enemy.Patches
+namespace OPJosMod.SupahNinja.Enemy.Patches
 {
     [HarmonyPatch(typeof(FlowermanAI))]
     internal class FlowermanAIPatch
