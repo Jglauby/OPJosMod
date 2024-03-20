@@ -65,6 +65,16 @@ namespace OPJosMod.HideNSeek
                                         2,
                                         "Fraction of brightness, ex) 5 = 1/5th power");
 
+            var configFlashlightWeight = Config.Bind("Pro Flashlight Weight",
+                                        "ProFlashlightWeight",
+                                        1.25f,
+                                        "Weight Increase multiplier, higher number greater the weight.");
+
+            var configFlashlightBatteryUsage = Config.Bind("Pro Flashlight Battery Usage",
+                                        "ProFlashlightBatteryUsage",
+                                        0.5f,
+                                        "Influences how fast the battery depletes on the pro flashlight, 1 = games default speed");
+
             var configSeekerSprintMultiplier = Config.Bind("Seeking Sprint Multiplier",
                                         "SeekingSprintMultiplier",
                                         1.01f,
@@ -118,6 +128,8 @@ namespace OPJosMod.HideNSeek
             ConfigVariables.seekerDelay = configSeekerDelay.Value;
             ConfigVariables.seekerAbilityCD = configSeekerAbilityCooldown.Value;
             ConfigVariables.smallFlashlightPower = configFlashlightPower.Value;
+            ConfigVariables.proFlashlightWeightMultiplier = configFlashlightWeight.Value;
+            ConfigVariables.proFlashlightBatteryUsageMultiplier = configFlashlightBatteryUsage.Value;
             ConfigVariables.seekerSprintMultiplier = configSeekerSprintMultiplier.Value;
             ConfigVariables.seekerMaxSprintSpeed = configSeekerSprintTopSpeed.Value;
             ConfigVariables.daySpeedMultiplier = configDaySpeedMultiplier.Value;

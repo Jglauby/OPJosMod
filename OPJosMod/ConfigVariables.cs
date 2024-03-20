@@ -11,7 +11,11 @@ namespace OPJosMod.HideNSeek.Config
     {
         public static float seekerDelay;
         public static float seekerAbilityCD;
-        public static int smallFlashlightPower; 
+
+        public static int smallFlashlightPower;
+        public static float proFlashlightWeightMultiplier;
+        public static float proFlashlightBatteryUsageMultiplier;
+
         public static float seekerSprintMultiplier;
         public static float seekerMaxSprintSpeed;
         public static float daySpeedMultiplier;
