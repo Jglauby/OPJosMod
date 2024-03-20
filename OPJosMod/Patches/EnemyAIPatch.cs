@@ -36,7 +36,7 @@ namespace OPJosMod.SupahNinja.Patches
 
         [HarmonyPatch("PlayerIsTargetable")]
         [HarmonyPrefix]
-        static void playerIsTargetablePatch(ref bool cannotBeInShip, ref PlayerControllerB playerScript)
+        static bool playerIsTargetablePatch(ref bool cannotBeInShip, ref PlayerControllerB playerScript)
         {
             //a way to make current player always return not tragetable in the enemy ai
             if (GeneralUtils.playerIsCrouching())
@@ -44,7 +44,10 @@ namespace OPJosMod.SupahNinja.Patches
                 //mls.LogMessage("set local player to not targetable");
                 playerScript.isInHangarShipRoom = true;
                 cannotBeInShip = true;
+                return false;
             }
+
+            return true;
         }
 
         [HarmonyPatch("GetAllPlayersInLineOfSight")]
