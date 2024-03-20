@@ -1,6 +1,7 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.SupahNinja.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -19,7 +20,7 @@ namespace OPJosMod.SupahNinja.Patches
         [HarmonyPrefix]
         static bool onCollideWithPlayerPatch(EnemyAI __instance, ref Collider other)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (GeneralUtils.playerIsCrouching())
             {
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
 
@@ -38,7 +39,7 @@ namespace OPJosMod.SupahNinja.Patches
         static void playerIsTargetablePatch(ref bool cannotBeInShip, ref PlayerControllerB playerScript)
         {
             //a way to make current player always return not tragetable in the enemy ai
-            if (PlayerControllerBPatch.isGhostMode && playerScript.IsOwner && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 //mls.LogMessage("set local player to not targetable");
                 playerScript.isInHangarShipRoom = true;
@@ -50,7 +51,7 @@ namespace OPJosMod.SupahNinja.Patches
         [HarmonyPostfix]
         static void getAllPlayersInLineOfSightPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;
@@ -95,7 +96,7 @@ namespace OPJosMod.SupahNinja.Patches
         static bool killEnemyPatch(EnemyAI __instance)
         {
             mls.LogMessage("enemy ai tried hit killEnemyPatch");
-            if (PlayerControllerBPatch.isGhostMode && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            if (GeneralUtils.playerIsCrouching() && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 mls.LogMessage("enemy ai tried to direclty kill player");
                 return false;
@@ -108,7 +109,7 @@ namespace OPJosMod.SupahNinja.Patches
         [HarmonyPrefix]
         static bool checkLineOfSightForClosestPlayerPatch(EnemyAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
                 {

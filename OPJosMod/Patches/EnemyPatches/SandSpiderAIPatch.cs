@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
 {
@@ -18,7 +19,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         static bool triggerChaseWithPlayerPatch(ref PlayerControllerB playerScript)
         {
-            if (PlayerControllerBPatch.isGhostMode && StartOfRound.Instance.localPlayerController.playerClientId == playerScript.playerClientId && !ConfigVariables.enemiesDetectYou)
+            if (StartOfRound.Instance.localPlayerController.playerClientId == playerScript.playerClientId && GeneralUtils.playerIsCrouching())
             {
                 mls.LogMessage("spider supposed to trigger chase with player");
                 return false;

@@ -102,14 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
-    <Compile Include="OPnessModes.cs" />
     <Compile Include="Patches\EnemyPatches\CrawlerAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\FlowermanAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\LandminePatch.cs" />
     <Compile Include="Patches\EnemyPatches\MaskedPlayerEnemyPatch.cs" />
     <Compile Include="Patches\EnemyPatches\JesterAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\TurretPatch.cs" />
-    <Compile Include="Patches\StartMatchLeverPatch.cs" />
     <Compile Include="Patches\EnemyPatches\NutcrackerEnemyAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\SandSpiderAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\ForestGiantAIPatch.cs" />
@@ -117,9 +115,7 @@
     <Compile Include="Patches\EnemyPatches\CentipededAIPatch.cs" />
     <Compile Include="Utils\GeneralUtils.cs" />
     <Compile Include="Utils\ReflectionUtil.cs" />
-    <Compile Include="Patches\HUDManagerPatch.cs" />
     <Compile Include="Patches\EnemyAIPatch.cs" />
-    <Compile Include="Patches\StartOfRoundPatch.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

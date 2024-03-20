@@ -1,6 +1,7 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
 {
@@ -12,13 +13,12 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         {
             mls = logSource;
         }
-        SupahNinja
 
         [HarmonyPatch("SwitchTargetToPlayer")]
         [HarmonyPrefix]
         private static bool switchTargetToPlayerPatch(NutcrackerEnemyAI __instance, ref int playerId)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 if ((int)StartOfRound.Instance.localPlayerController.playerClientId == playerId)
                 {

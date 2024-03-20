@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
 {
@@ -18,7 +19,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static bool avoidClosestPlayerPatch(FlowermanAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
                 {
@@ -33,7 +34,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static bool addToAngerMeterPatch(FlowermanAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 bool hasPlayerInside = false;
                 foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)

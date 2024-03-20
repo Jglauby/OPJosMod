@@ -31,15 +31,12 @@ namespace OPJosMod.SupahNinja
             setupConfig();
 
             PlayerControllerBPatch.SetLogSource(mls);
-            StartOfRoundPatch.SetLogSource(mls);
             EnemyAIPatch.SetLogSource(mls);
-            HUDManagerPatch.SetLogSource(mls);
             CentipedeAIPatch.SetLogSource(mls);
             MouthDogAIPatch.SetLogSource(mls);
             ForestGiantAIPatch.SetLogSource(mls);
             SandSpiderAIPatch.SetLogSource(mls);
             NutcrackerEnemyAIPatch.SetLogSource(mls);
-            StartMatchLeverPatch.SetLogSource(mls);
             LandminePatch.SetLogSource(mls);
             FlowermanAIPatch.SetLogSource(mls);
             CrawlerAIPatch.SetLogSource(mls);

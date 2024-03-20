@@ -1,26 +1,8 @@
 ﻿using BepInEx.Logging;
-using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.GhostMode.Patches;
-using OPJosMod.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
+using OPJosMod.SupahNinja.Utils;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.Rendering;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
 {
@@ -40,7 +22,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static bool checkForPlayersInLineOfSightPatch(Turret __instance, ref float radius, ref bool angleRangeCheck)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 var enteringBerserkMode = ReflectionUtils.GetFieldValue<bool>(__instance, "enteringBerserkMode");
 

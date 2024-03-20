@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 using UnityEngine;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
@@ -19,7 +20,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static bool onTriggerEnterPatch(ref Collider other)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 if (other.CompareTag("Player"))
                 {
@@ -39,7 +40,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static bool onTriggerExitPatch(ref Collider other)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 if (other.CompareTag("Player"))
                 {

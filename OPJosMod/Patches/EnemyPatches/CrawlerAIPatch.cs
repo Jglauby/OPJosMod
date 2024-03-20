@@ -1,7 +1,7 @@
 ﻿using BepInEx.Logging;
-using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.GhostMode.Patches;
+using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
 {
@@ -18,7 +18,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static void updatePatch(CrawlerAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou 
+            if (GeneralUtils.playerIsCrouching()
                 && EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 __instance.currentBehaviourStateIndex = 0;

@@ -1,26 +1,7 @@
 ﻿using BepInEx.Logging;
-using DunGen;
-using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.GhostMode.Patches;
-using OPJosMod.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.Rendering;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
+using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
 {
@@ -37,7 +18,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static void updatePatch(JesterAI __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 if (__instance.currentBehaviourStateIndex == 2 || __instance.currentBehaviourStateIndex == 1)//if currently chasing a player/ or winding
                 {

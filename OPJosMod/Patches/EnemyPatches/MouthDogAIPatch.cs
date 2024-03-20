@@ -19,7 +19,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         private static bool detectNoisePatch(ref Vector3 noisePosition)
         {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
+            if (GeneralUtils.playerIsCrouching())
             {
                 var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
                 var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;

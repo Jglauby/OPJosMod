@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.SupahNinja.Patches;
+using OPJosMod.SupahNinja.Utils;
 using UnityEngine;
 
 namespace OPJosMod.SupahNinja.Enemy.Patches
@@ -19,7 +20,7 @@ namespace OPJosMod.SupahNinja.Enemy.Patches
         [HarmonyPrefix]
         static bool onCollideWithPlayerPatch(ref Collider other)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (GeneralUtils.playerIsCrouching())
             {
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
