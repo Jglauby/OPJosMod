@@ -112,7 +112,7 @@ namespace OPJosMod.HideNSeek
 
             var configSeekerStartingItem3 = Config.Bind("Seeker Item 3",
                                         "SeekerItem3",
-                                        BuyableItems.SprayPaint,
+                                        BuyableItems.None,
                                         "Spawned Item for seeker");
 
             var configSeekerStartingItem4 = Config.Bind("Seeker Item 4",
