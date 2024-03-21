@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace OPJosMod.LagJutsu.Patches
 {
-    [HarmonyPatch(typeof(ForestGiantAI))]
-    internal class ForestGiantAIPatch
+    [HarmonyPatch(typeof(FlowermanAI))]
+    internal class FlowermanAIPatch
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
@@ -23,7 +23,7 @@ namespace OPJosMod.LagJutsu.Patches
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
                 {
-                    //mls.LogMessage("forest giant collide with player patch hit");
+                    //mls.LogMessage("flowerman collide with player patch hit");
                     return false;
                 }
             }

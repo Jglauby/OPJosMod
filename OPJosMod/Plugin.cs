@@ -11,7 +11,7 @@ namespace OPJosMod.LagJutsu
     {
         private const string modGUID = "OpJosMod.LagJutsu";
         private const string modName = "LagJutsu";
-        private const string modVersion = "1.0.0.0"; 
+        private const string modVersion = "1.0.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -32,6 +32,7 @@ namespace OPJosMod.LagJutsu
             PlayerControllerBPatch.SetLogSource(mls);
             EnemyAIPatch.SetLogSource(mls);
             ForestGiantAIPatch.SetLogSource(mls);
+            FlowermanAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
