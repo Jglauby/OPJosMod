@@ -16,9 +16,9 @@ namespace OPJosMod.LagJutsu.Patches
 
         [HarmonyPatch("OnCollideWithPlayer")]
         [HarmonyPrefix]
-        static bool onCollideWithPlayerPatch(ref Collider other)
+        static bool onCollideWithPlayerPatch(CentipedeAI __instance, ref Collider other)
         {
-            if (PlayerControllerBPatch.godMode)
+            if (PlayerControllerBPatch.godMode && !__instance.isEnemyDead)
             {
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)

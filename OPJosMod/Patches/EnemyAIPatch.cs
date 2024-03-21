@@ -18,7 +18,7 @@ namespace OPJosMod.LagJutsu.Patches
         [HarmonyPrefix]
         static bool onCollideWithPlayerPatch(EnemyAI __instance, ref Collider other)
         {
-            if (PlayerControllerBPatch.godMode)
+            if (PlayerControllerBPatch.godMode && !__instance.isEnemyDead)
             {
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
 

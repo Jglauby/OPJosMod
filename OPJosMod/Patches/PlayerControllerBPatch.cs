@@ -91,7 +91,7 @@ namespace OPJosMod.LagJutsu.Patches
                 Vector3 newLocation = lastSafeLocations[0];
                 for (int i = lastSafeLocations.Count - 1; i >= 0; i--)
                 {
-                    if (!GeneralUtil.AreVectorsClose(lastSafeLocations[i], StartOfRound.Instance.localPlayerController.transform.position, 0.5f))
+                    if (!GeneralUtil.AreVectorsClose(lastSafeLocations[i], StartOfRound.Instance.localPlayerController.transform.position, 1f))
                     {
                         newLocation = lastSafeLocations[i];
                     }
