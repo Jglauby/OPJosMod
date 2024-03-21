@@ -48,7 +48,7 @@ namespace OPJosMod.LagJutsu.Patches
                 handleGodModeToggle();
 
                 //handle saving last locations you were safe at
-                if (Time.time - lastTimeDied > 0.5 && Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
+                if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
                 {
                     //mls.LogMessage($"time.time:{Time.time} lastTimeDied:{lastTimeDied} rwindBackTimeSeconds:{ConfigVariables.RewindBackTimeSeconds}");
                     lastTimeAddedLocation = Time.time;
