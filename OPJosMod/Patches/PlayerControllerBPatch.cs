@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod.Patches//OPJosMod.MODNameHere.Patches
+namespace OPJosMod.LagJutsu.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch

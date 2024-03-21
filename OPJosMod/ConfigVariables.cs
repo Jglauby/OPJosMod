@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod
+namespace OPJosMod.LagJutsu
 {
     public static class ConfigVariables //example config variables class
     {
