@@ -27,7 +27,6 @@ namespace OPJosMod.LagJutsu.Patches
         private static float lastToggledTime = Time.time;
         private static float toggleDelay = 0.2f;
 
-        private static float lastTimeDied = Time.time;
         private static float lastTimeAddedLocation = Time.time;
         private static List<Vector3> lastSafeLocations = new List<Vector3>();
         private static int rewindBackTimeSeconds = 2;
@@ -50,7 +49,6 @@ namespace OPJosMod.LagJutsu.Patches
                 //handle saving last locations you were safe at
                 if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
                 {
-                    //mls.LogMessage($"time.time:{Time.time} lastTimeDied:{lastTimeDied} rwindBackTimeSeconds:{ConfigVariables.RewindBackTimeSeconds}");
                     lastTimeAddedLocation = Time.time;
 
                     //remove earliest in list if listsize is at max
@@ -79,7 +77,6 @@ namespace OPJosMod.LagJutsu.Patches
                 {
                     //mls.LogMessage("cant kill");
                     teleportPlayerBack();
-                    lastTimeDied = Time.time;
                     return false;
                 }
             }
