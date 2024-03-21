@@ -24,6 +24,7 @@ namespace OPJosMod.LagJutsu.Patches
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
                 {
                     //mls.LogMessage("forest giant collide with player patch hit");
+                    PlayerControllerBPatch.teleportPlayerBack();
                     return false;
                 }
             }
