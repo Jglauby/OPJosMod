@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace OPJosMod.LagJutsu.Patches
 {
-    [HarmonyPatch(typeof(EnemyAI))]
-    internal class EnemyAIPatch
+    [HarmonyPatch(typeof(CrawlerAI))]
+    internal class CrawlerAIPatch
     {
         private static ManualLogSource mls;
         public static void SetLogSource(ManualLogSource logSource)
@@ -16,15 +16,14 @@ namespace OPJosMod.LagJutsu.Patches
 
         [HarmonyPatch("OnCollideWithPlayer")]
         [HarmonyPrefix]
-        static bool onCollideWithPlayerPatch(EnemyAI __instance, ref Collider other)
+        static bool onCollideWithPlayerPatch(ref Collider other)
         {
             if (PlayerControllerBPatch.godMode)
             {
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
-
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
                 {
-                    //mls.LogMessage("enemy collide with player patch hit");
+                    //mls.LogMessage("crawler collided with player patch hit");
                     PlayerControllerBPatch.teleportPlayerBack();
                     return false;
                 }

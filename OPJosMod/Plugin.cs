@@ -34,6 +34,7 @@ namespace OPJosMod.LagJutsu
             ForestGiantAIPatch.SetLogSource(mls);
             FlowermanAIPatch.SetLogSource(mls);
             CentipedeAIPatch.SetLogSource(mls);
+            CrawlerAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
