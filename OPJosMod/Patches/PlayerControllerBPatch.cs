@@ -89,20 +89,16 @@ namespace OPJosMod.LagJutsu.Patches
             if (lastSafeLocations.Count > 0)
             {
                 Vector3 newLocation = lastSafeLocations[0];
-                var teleportingIndex = 0;
                 for (int i = lastSafeLocations.Count - 1; i >= 0; i--)
                 {
                     if (!GeneralUtil.AreVectorsClose(lastSafeLocations[i], StartOfRound.Instance.localPlayerController.transform.position, 0.5f))
                     {
                         newLocation = lastSafeLocations[i];
-                        teleportingIndex = i;
                     }
                 }
 
                 StartOfRound.Instance.localPlayerController.transform.position = newLocation;
                 mls.LogMessage($"teleport player to: {newLocation}");
-
-                lastSafeLocations.RemoveAt(teleportingIndex);
             }
         }
 
