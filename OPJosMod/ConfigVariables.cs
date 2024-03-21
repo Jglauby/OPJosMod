@@ -10,6 +10,5 @@ namespace OPJosMod.LagJutsu
     public static class ConfigVariables //example config variables class
     {
         public static Key DeathToggleButton;
-        public static int RewindBackTimeSeconds;
     }
 }

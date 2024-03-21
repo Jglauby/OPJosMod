@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="GeneralUtil.cs" />
+    <Compile Include="Patches\CentipedeAIPatch.cs" />
     <Compile Include="Patches\FlowermanAIPatch.cs" />
     <Compile Include="Patches\ForestGiantAIPatch.cs" />
     <Compile Include="Patches\EnemyAIPatch.cs" />

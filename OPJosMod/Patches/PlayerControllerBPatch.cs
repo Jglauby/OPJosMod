@@ -30,6 +30,7 @@ namespace OPJosMod.LagJutsu.Patches
         private static float lastTimeDied = Time.time;
         private static float lastTimeAddedLocation = Time.time;
         private static List<Vector3> lastSafeLocations = new List<Vector3>();
+        private static int rewindBackTimeSeconds = 2;
 
         [HarmonyPatch("Start")]
         [HarmonyPrefix]
@@ -47,13 +48,13 @@ namespace OPJosMod.LagJutsu.Patches
                 handleGodModeToggle();
 
                 //handle saving last locations you were safe at
-                if (Time.time - lastTimeDied > 1 && Time.time - lastTimeAddedLocation > 1 && __instance.thisController.isGrounded)
+                if (Time.time - lastTimeDied > 0.5 && Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
                 {
                     //mls.LogMessage($"time.time:{Time.time} lastTimeDied:{lastTimeDied} rwindBackTimeSeconds:{ConfigVariables.RewindBackTimeSeconds}");
                     lastTimeAddedLocation = Time.time;
 
                     //remove earliest in list if listsize is at max
-                    if (lastSafeLocations.Count >= ConfigVariables.RewindBackTimeSeconds * 10)
+                    if (lastSafeLocations.Count >= rewindBackTimeSeconds * 10)
                         lastSafeLocations.RemoveAt(0);
 
                     //dont save the last safe location if it is basically the same spot as the last one that was saved
@@ -90,24 +91,21 @@ namespace OPJosMod.LagJutsu.Patches
         {
             if (lastSafeLocations.Count > 0)
             {
-                Vector3 newLocation = new Vector3();
-                if (lastSafeLocations.Count > ConfigVariables.RewindBackTimeSeconds)
+                Vector3 newLocation = lastSafeLocations[0];
+                var teleportingIndex = 0;
+                for (int i = lastSafeLocations.Count - 1; i >= 0; i--)
                 {
-                    newLocation = lastSafeLocations[lastSafeLocations.Count - ConfigVariables.RewindBackTimeSeconds];
-                    lastSafeLocations.RemoveAt(lastSafeLocations.Count - ConfigVariables.RewindBackTimeSeconds);
-                }
-                else if (lastSafeLocations.Count > 0)
-                {
-                    newLocation = lastSafeLocations[lastSafeLocations.Count - 1];
-                    lastSafeLocations.RemoveAt(lastSafeLocations.Count - 1);
-                }
-                else
-                {
-                    newLocation = lastSafeLocations[0];
+                    if (!GeneralUtil.AreVectorsClose(lastSafeLocations[i], StartOfRound.Instance.localPlayerController.transform.position, 0.5f))
+                    {
+                        newLocation = lastSafeLocations[i];
+                        teleportingIndex = i;
+                    }
                 }
 
                 StartOfRound.Instance.localPlayerController.transform.position = newLocation;
                 mls.LogMessage($"teleport player to: {newLocation}");
+
+                lastSafeLocations.RemoveAt(teleportingIndex);
             }
         }
 

@@ -33,6 +33,7 @@ namespace OPJosMod.LagJutsu
             EnemyAIPatch.SetLogSource(mls);
             ForestGiantAIPatch.SetLogSource(mls);
             FlowermanAIPatch.SetLogSource(mls);
+            CentipedeAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
@@ -44,13 +45,7 @@ namespace OPJosMod.LagJutsu
                                         Key.K, // The default value
                                         "Button used to toggle God Mode"); // Description of the option to show in the config file
 
-            var configRewindBackTimeSeconds = Config.Bind("Seconds to go back",
-                                        "SecondsToGoBack",
-                                        3,
-                                        "How many seconds back in time to you want to go when you would have died?");
-
             ConfigVariables.DeathToggleButton = configDeathToggleButton.Value;
-            ConfigVariables.RewindBackTimeSeconds = configRewindBackTimeSeconds.Value;
         }
     }
 }
