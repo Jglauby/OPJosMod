@@ -31,6 +31,7 @@ namespace OPJosMod.LagJutsu
 
             PlayerControllerBPatch.SetLogSource(mls);
             EnemyAIPatch.SetLogSource(mls);
+            ForestGiantAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
