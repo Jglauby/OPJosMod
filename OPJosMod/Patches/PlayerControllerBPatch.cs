@@ -52,5 +52,17 @@ namespace OPJosMod.LagJutsu.Patches
                 }
             }          
         }
+
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPostfix]
+        static bool killPlayerPatch(PlayerControllerB __instance)
+        {
+            if (godMode)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -1,11 +1,7 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OPJosMod.LagJutsu.Patches
 {
@@ -18,11 +14,22 @@ namespace OPJosMod.LagJutsu.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void patchUpdate(EnemyAIPatch __instance)
+        [HarmonyPatch("OnCollideWithPlayer")]
+        [HarmonyPrefix]
+        static bool onCollideWithPlayerPatch(EnemyAI __instance, ref Collider other)
         {
-            
+            if (PlayerControllerBPatch.godMode)
+            {
+                PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
+
+                if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
+                {
+                    //mls.LogMessage("enemy collide with player patch hit");
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
