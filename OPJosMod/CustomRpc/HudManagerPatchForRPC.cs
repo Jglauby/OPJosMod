@@ -14,7 +14,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         }
 
         private static float lastRecieved = Time.time;
-        private static float messageWaitTime = 1f;
+        private static float messageWaitTime = 0.1f;
 
         [HarmonyPatch("AddPlayerChatMessageClientRpc")]
         [HarmonyPrefix]

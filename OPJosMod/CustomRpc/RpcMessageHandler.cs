@@ -13,7 +13,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         }
 
         private static float lastSentTime = Time.time;
-        private static float messageWaitTime = 1f;
+        private static float messageWaitTime = 0.5f;
 
         public static void SendRpcMessage(RpcMessage message)
         {
@@ -44,19 +44,21 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
 
         public static void ReceiveRpcMessage(string message, int user) 
         {
-            if (user == (int)StartOfRound.Instance.localPlayerController.playerClientId)
-                return;
-
-            var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
-            if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
-            {               
-                mls.LogMessage(decodedMessage + $" user {user}");
-
-                SendRpcResponse(decodedMessage);
-            }
-            else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
+            if (user != (int)StartOfRound.Instance.localPlayerController.playerClientId)
             {
-                mls.LogMessage("got the response that the other clients recieved this message");
+                var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
+                if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
+                {
+                    MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
+                    string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
+                    handleTask(task, taskMessage);
+
+                    SendRpcResponse(decodedMessage);
+                }
+                else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
+                {
+                    mls.LogMessage("got the response that the other clients recieved this message");
+                }
             }
         }
 
@@ -64,6 +66,22 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         {
             var responseMessage = new RpcMessage(message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
             SendRpcMessage(responseMessage);
+        }
+
+        private static void handleTask(MessageTasks task, string message)
+        {
+            switch (task)
+            {
+                case MessageTasks.StartedSeeking:
+                    CompleteRecievedTasks.SeekingStarted(message);
+                    break;
+                case MessageTasks.MakePlayerWhistle:
+                    CompleteRecievedTasks.MakePlayerWhistle(message);
+                    break;
+                case MessageTasks.ErrorNoTask:
+                    mls.LogError("got an error task");
+                    break;
+            }
         }
     }
 }
