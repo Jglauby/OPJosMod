@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.LagJutsu.Patches;
+using UnityEngine.InputSystem;
 
 namespace OPJosMod.LagJutsu
 {
@@ -16,7 +17,6 @@ namespace OPJosMod.LagJutsu
         private static OpJosMod Instance;
 
         internal ManualLogSource mls;
-        //update namespaces, and the strings for names
         void Awake()
         {
             if (Instance == null)
@@ -30,24 +30,25 @@ namespace OPJosMod.LagJutsu
             setupConfig();
 
             PlayerControllerBPatch.SetLogSource(mls);
+            EnemyAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
 
         private void setupConfig()//example config setup
         {
-            var configSprintMultiplier = Config.Bind("Sprint Multiplier", // The section under which the option is shown
-                                        "SprintMultiplier",  // The key of the configuration option in the configuration file
-                                        1.04f, // The default value
-                                        "How fast your speed rams up when sprinting"); // Description of the option to show in the config file
+            var configDeathToggleButton = Config.Bind("God Mode Toggle", // The section under which the option is shown
+                                        "GodModeToggle",  // The key of the configuration option in the configuration file
+                                        Key.K, // The default value
+                                        "Button used to toggle God Mode"); // Description of the option to show in the config file
 
-            var configFlashTimeButton = Config.Bind("Flash Time Button",
-                                        "FlashTimeButton",
-                                        "R",
-                                        "Button used to toggle flash time");
+            var configRewindBackTimeSeconds = Config.Bind("Seconds to go back",
+                                        "SecondsToGoBack",
+                                        3,
+                                        "How many seconds back in time to you want to go when you would have died?");
 
-            ConfigVariables.defaultSprintMultiplier = configSprintMultiplier.Value;
-            ConfigVariables.flashTimeButton = configFlashTimeButton.Value;
+            ConfigVariables.DeathToggleButton = configDeathToggleButton.Value;
+            ConfigVariables.RewindBackTimeSeconds = configRewindBackTimeSeconds.Value;
         }
     }
 }
