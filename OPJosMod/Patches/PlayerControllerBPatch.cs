@@ -54,11 +54,12 @@ namespace OPJosMod.LagJutsu.Patches
         }
 
         [HarmonyPatch("KillPlayer")]
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         static bool killPlayerPatch(PlayerControllerB __instance)
         {
             if (godMode)
             {
+                mls.LogMessage("cant kill");
                 return false;
             }
 
