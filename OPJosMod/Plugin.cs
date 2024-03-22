@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.4.3";
+        private const string modVersion = "2.5.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -61,7 +61,7 @@ namespace OPJosMod.GhostMode
         {
             var configOPness = Config.Bind("OP-Ness",
                                         "OPness",
-                                        "balanced",
+                                        OPnessModes.Balanced,
                                         "(limited, balanced, unrestricted) The three modes of ghost mode. (limited -> almost no interactions allowed.) (balanced -> delays on lots of interactions. completly restricted from a few.) (unrestricted -> no restrictions on what you can interact with at all)");
 
             var configWaitTimeBetweenInteractions = Config.Bind("GhostMode interaction delay", // The section under which the option is shown
@@ -71,37 +71,37 @@ namespace OPJosMod.GhostMode
 
             var configStartGhostModeButton = Config.Bind("Start Ghost Mode Button",
                                         "StartGhostModeButton",
-                                        "P",
+                                        Key.P,
                                         "Button to turn into ghost");
 
             var configTeleportBodyButton = Config.Bind("Teleport to Dead Body Button",
                                         "TeleportToDeadBodyButton",
-                                        "Backspace",
+                                        Key.Backspace,
                                         "Button to teleport to your dead body");
 
             var configToggleBrightModeButton = Config.Bind("Toggle Bright Mode Button",
                                         "ToggleBrightModeButton",
-                                        "B",
+                                        Key.B,
                                         "Button to toggle on bright mode");
 
             var configTeleportFrontDoorButton = Config.Bind("Teleport to Front Door Button",
                                         "TeleportToFrontDoorButton",
-                                        "UpArrow",
+                                        Key.UpArrow,
                                         "Button to teleport to the front door");
 
             var configTeleportShipButton = Config.Bind("Teleport to Ship Button",
                                         "TeleportToShipButton",
-                                        "DownArrow",
+                                        Key.DownArrow,
                                         "Button to teleport you to the ship");
 
             var configSwitchToSpectateButton = Config.Bind("Switch to Spectate Mode Button",
                                         "SwitchToSpectateModeButton",
-                                        "O",
+                                        Key.O,
                                         "Button to switch back to specate mode");
 
             var configToggleNoClipButton = Config.Bind("Toggle NoClip Mode Button",
                                         "ToggleNoClipModeButton",
-                                        "Z",
+                                        Key.Z,
                                         "Button to enter/leave no clip mode");
 
             var configNoClipFlySpeed = Config.Bind("NoClip Flight Speed",
@@ -111,74 +111,24 @@ namespace OPJosMod.GhostMode
 
             var configEnemyDetection = Config.Bind("Enemies Detect Ghost",
                                         "EnemiesDetectGhost",
-                                        "false",
+                                        false,
                                         "Enemies are able to detect you as a ghost, true or false");
 
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
 
-            ConfigVariables.startGhostModeButton = ValidateAndAssignButton(configStartGhostModeButton, "P");
-            ConfigVariables.teleportBodyButton = ValidateAndAssignButton(configTeleportBodyButton, "Backspace");
-            ConfigVariables.toggleBrightModeButton = ValidateAndAssignButton(configToggleBrightModeButton, "B");
-            ConfigVariables.teleportFrontDoorButton = ValidateAndAssignButton(configTeleportFrontDoorButton, "UpArrow");
-            ConfigVariables.switchToSpectateButton = ValidateAndAssignButton(configSwitchToSpectateButton, "O");
-            ConfigVariables.toggleNoClipButton = ValidateAndAssignButton(configToggleNoClipButton, "Z");
-            ConfigVariables.teleportShipButton = ValidateAndAssignButton(configTeleportShipButton, "DownArrow");
+            ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
+            ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;
+            ConfigVariables.toggleBrightModeButton = configToggleBrightModeButton.Value;
+            ConfigVariables.teleportFrontDoorButton = configTeleportFrontDoorButton.Value;
+            ConfigVariables.switchToSpectateButton = configSwitchToSpectateButton.Value;
+            ConfigVariables.toggleNoClipButton = configToggleNoClipButton.Value;
+            ConfigVariables.teleportShipButton = configTeleportShipButton.Value;
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
-            ConfigVariables.OPness = ValidateAndAssignOPness(configOPness);
-            ConfigVariables.enemiesDetectYou = ValidateAndAssignBool(configEnemyDetection, false);
+            ConfigVariables.OPness = configOPness.Value;
+            ConfigVariables.enemiesDetectYou = configEnemyDetection.Value;
 
             Config.Save();
-        }
-
-        private string ValidateAndAssignButton(ConfigEntry<string> configEntry, string defaultButton)
-        {
-            if (Enum.IsDefined(typeof(Key), configEntry.Value))
-            {
-                return configEntry.Value;
-            }
-            else
-            {
-                mls.LogError($"{configEntry.Value} is not a valid mapped button!");
-
-                configEntry.Value = defaultButton;
-                return defaultButton;
-            }
-        }
-
-        private bool ValidateAndAssignBool(ConfigEntry<string> configEntry, bool defaultValue)
-        {
-            string boolName = configEntry.Value.ToLower();
-            if (string.Equals(boolName, "true", StringComparison.OrdinalIgnoreCase))
-            {
-                configEntry.Value = "true";
-                return true;
-            }
-            else if (string.Equals(boolName, "false", StringComparison.OrdinalIgnoreCase))
-            {
-                configEntry.Value = "false";
-                return false;
-            }
-            else
-            {
-                configEntry.Value = defaultValue.ToString();
-                return defaultValue;
-            }
-        }
-
-        private string ValidateAndAssignOPness(ConfigEntry<string> configEntry)
-        {
-            string[] modes = new string[] { "limited", "balanced", "unrestricted" };
-            
-            if (modes.Contains(configEntry.Value?.ToLower()))
-            {
-                return configEntry.Value;
-            }
-            else
-            {
-                configEntry.Value = "balanced";
-                return "balanced";
-            }
         }
     }
 }

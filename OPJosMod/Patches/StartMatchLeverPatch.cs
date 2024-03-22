@@ -16,7 +16,7 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         private static void updatePatch(StartMatchLever __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode && ConfigVariables.getOPness() != OPnessModes.Unrestricted)
+            if (PlayerControllerBPatch.isGhostMode && ConfigVariables.OPness != OPnessModes.Unrestricted)
             {
                 __instance.triggerScript.hoverTip = "Can't use this as ghost!";
                 __instance.triggerScript.interactable = false;

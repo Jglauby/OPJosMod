@@ -8,36 +8,15 @@ namespace OPJosMod
     public static class ConfigVariables
     {
         public static float waitTimeBetweenInteractions;
-        public static string startGhostModeButton;
-        public static string teleportBodyButton;
-        public static string toggleBrightModeButton;
-        public static string teleportFrontDoorButton;
-        public static string switchToSpectateButton;
-        public static string toggleNoClipButton;
+        public static Key startGhostModeButton;
+        public static Key teleportBodyButton;
+        public static Key toggleBrightModeButton;
+        public static Key teleportFrontDoorButton;
+        public static Key switchToSpectateButton;
+        public static Key toggleNoClipButton;
         public static float noClipSpeed;
-        public static string OPness;
-        public static string teleportShipButton;
+        public static OPnessModes OPness;
+        public static Key teleportShipButton;
         public static bool enemiesDetectYou;
-
-        public static Key getButton(string buttonName)
-        {
-            Key key = (Key)Enum.Parse(typeof(Key), buttonName);
-            return key;
-        }
-
-        public static OPnessModes getOPness()
-        {
-            switch (OPness.ToLower())
-            {
-                case "limited":
-                    return OPnessModes.Limited;
-                case "balanced":
-                    return OPnessModes.Balanced;
-                case "unrestricted":
-                    return OPnessModes.Unrestricted;
-                default:
-                    return OPnessModes.Balanced;
-            }
-        }
     }
 }

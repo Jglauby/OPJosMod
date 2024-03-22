@@ -305,10 +305,17 @@ namespace OPJosMod.GhostMode.Patches
 
                 if (!isGhostMode)
                 {
-                    if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.startGhostModeButton)]).wasPressedThisFrame)//P was pressed
+                    try
                     {
-                        mls.LogMessage("attempting to revive");
-                        reviveDeadPlayer(__instance);                        
+                        if (((ButtonControl)Keyboard.current[ConfigVariables.startGhostModeButton]).wasPressedThisFrame)//P was pressed
+                        {
+                            mls.LogMessage("attempting to revive");
+                            reviveDeadPlayer(__instance);
+                        }
+                    }
+                    catch
+                    {
+                        //dont fail if no button is selected
                     }
                 }
                 else //is a ghost
@@ -348,42 +355,62 @@ namespace OPJosMod.GhostMode.Patches
                     handleNoClipControls(__instance);
                 }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleNoClipButton)]).wasPressedThisFrame)//Z was pressed
+                try
                 {
-                    //toggle collisions
-                    if (!isTogglingCollisions)
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.toggleNoClipButton]).wasPressedThisFrame)//Z was pressed
                     {
-                        isTogglingCollisions = true;
-                        togglingCollisionsCoroutine = __instance.StartCoroutine(toggleCollisions(__instance));
+                        //toggle collisions
+                        if (!isTogglingCollisions)
+                        {
+                            isTogglingCollisions = true;
+                            togglingCollisionsCoroutine = __instance.StartCoroutine(toggleCollisions(__instance));
+                        }
                     }
                 }
+                catch { }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportBodyButton)]).wasPressedThisFrame)//backspace was pressed
+                try
                 {
-                    mls.LogMessage("attempt to tp to dead body");
-                    var tpMessage = "(Teleported to: your dead body)";
-                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.teleportBodyButton]).wasPressedThisFrame)//backspace was pressed
+                    {
+                        mls.LogMessage("attempt to tp to dead body");
+                        var tpMessage = "(Teleported to: your dead body)";
+                        tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.deadBody.transform.position, tpMessage));
+                    }
                 }
+                catch { }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportFrontDoorButton)]).wasPressedThisFrame)//up arrow was pressed
+                try
                 {
-                    mls.LogMessage("attempt to tp to front door");
-                    var tpMessage = "(Teleported to: Front Door)";
-                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.teleportFrontDoorButton]).wasPressedThisFrame)//up arrow was pressed
+                    {
+                        mls.LogMessage("attempt to tp to front door");
+                        var tpMessage = "(Teleported to: Front Door)";
+                        tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.FindMainEntrancePosition(true, true), tpMessage));
+                    }
                 }
+                catch { }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.teleportShipButton)]).wasPressedThisFrame)//down arrow was pressed
+                try
                 {
-                    mls.LogMessage("attempt to tp to ship");
-                    var tpMessage = "(Teleported to: Ship)";
-                    tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.Instance.playersManager.playerSpawnPositions[0].position, tpMessage));
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.teleportShipButton]).wasPressedThisFrame)//down arrow was pressed
+                    {
+                        mls.LogMessage("attempt to tp to ship");
+                        var tpMessage = "(Teleported to: Ship)";
+                        tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.Instance.playersManager.playerSpawnPositions[0].position, tpMessage));
+                    }
                 }
+                catch { }
 
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.switchToSpectateButton)]).wasPressedThisFrame)//O was pressed
+                try
                 {
-                    mls.LogMessage("attempt to switch back to spectate mode");
-                    setToSpectatemode(__instance);
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.switchToSpectateButton]).wasPressedThisFrame)//O was pressed
+                    {
+                        mls.LogMessage("attempt to switch back to spectate mode");
+                        setToSpectatemode(__instance);
+                    }
                 }
+                catch { }
 
                 if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame)//left was clicked
                 {
@@ -432,14 +459,18 @@ namespace OPJosMod.GhostMode.Patches
                 }
 
                 //toggle night vision
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getButton(ConfigVariables.toggleBrightModeButton)]).wasPressedThisFrame)
+                try
                 {
-                    if (!isTogglingBrightMode)
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.toggleBrightModeButton]).wasPressedThisFrame)
                     {
-                        isTogglingBrightMode = true;
-                        togglingBrightModeCoroutine = __instance.StartCoroutine(toggleBrightMode(__instance));
+                        if (!isTogglingBrightMode)
+                        {
+                            isTogglingBrightMode = true;
+                            togglingBrightModeCoroutine = __instance.StartCoroutine(toggleBrightMode(__instance));
+                        }
                     }
                 }
+                catch { }
             }
         }
 
@@ -473,7 +504,7 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
         {
-            if (!isGhostMode || ConfigVariables.getOPness() == OPnessModes.Unrestricted)
+            if (!isGhostMode || ConfigVariables.OPness == OPnessModes.Unrestricted)
                 return false;
 
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
@@ -512,10 +543,10 @@ namespace OPJosMod.GhostMode.Patches
 
         private static bool canUse(PlayerControllerB __instance)
         {
-            if (!isGhostMode || ConfigVariables.getOPness() == OPnessModes.Unrestricted)
+            if (!isGhostMode || ConfigVariables.OPness == OPnessModes.Unrestricted)
                 return true;
 
-            if (ConfigVariables.getOPness() == OPnessModes.Limited)
+            if (ConfigVariables.OPness == OPnessModes.Limited)
                 return false;
 
             string[] nonoObjects = {
