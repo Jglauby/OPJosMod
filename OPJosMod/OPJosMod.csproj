@@ -71,6 +71,7 @@
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="GeneralUtil.cs" />
     <Compile Include="Patches\CentipedeAIPatch.cs" />
+    <Compile Include="Patches\MouthDogAIPatch.cs" />
     <Compile Include="Patches\FlowermanAIPatch.cs" />
     <Compile Include="Patches\CrawlerAIPatch.cs" />
     <Compile Include="Patches\ForestGiantAIPatch.cs" />
