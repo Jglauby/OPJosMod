@@ -51,6 +51,7 @@ namespace OPJosMod.LagJutsu.Patches
             if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 handleGodModeToggle();
+                handleTerminateButton();
                 updateKnownEnemies();
 
                 //handle saving last locations you were safe at
@@ -116,26 +117,59 @@ namespace OPJosMod.LagJutsu.Patches
 
         private static void handleGodModeToggle()
         {
-            if (((ButtonControl)Keyboard.current[ConfigVariables.DeathToggleButton]).wasPressedThisFrame)
+            try
             {
-                if (Time.time - lastToggledTime > toggleDelay)
+                if (((ButtonControl)Keyboard.current[ConfigVariables.DeathToggleButton]).wasPressedThisFrame)
                 {
-                    string statusText = "";
-                    switch (godMode)
+                    if (Time.time - lastToggledTime > toggleDelay)
                     {
-                        case (true):
-                            godMode = false;
-                            statusText = "OFF";
-                            break;
-                        case (false):
-                            godMode = true;
-                            statusText = "ON";
-                            break;
+                        string statusText = "";
+                        switch (godMode)
+                        {
+                            case (true):
+                                godMode = false;
+                                statusText = "OFF";
+                                break;
+                            case (false):
+                                godMode = true;
+                                statusText = "ON";
+                                break;
+                        }
+                        lastToggledTime = Time.time;
+                        HUDManager.Instance.DisplayTip("God Mode", $"turned {statusText}");
+                        mls.LogMessage($"god mode turned {statusText}");
                     }
-                    lastToggledTime = Time.time;
-                    HUDManager.Instance.DisplayTip("God Mode", $"turned {statusText}");
-                    mls.LogMessage($"god mode turned {statusText}");
                 }
+            }
+            catch
+            {
+                //none was mapped for the button
+            }
+        }
+
+        private static void handleTerminateButton()
+        {
+            try
+            {
+                if (((ButtonControl)Keyboard.current[ConfigVariables.KillSelfButton]).wasPressedThisFrame)
+                {
+                    var player = StartOfRound.Instance.localPlayerController;
+                    if (!player.isPlayerDead)
+                    {
+                        if (godMode)
+                        {
+                            HUDManager.Instance.DisplayTip("Can't Die", "God Mode On");
+                        }
+                        else
+                        {
+                            player.KillPlayer(new Vector3(0, 0, 0));
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                //none was mapped for the control
             }
         }
 

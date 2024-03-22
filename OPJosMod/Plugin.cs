@@ -47,7 +47,13 @@ namespace OPJosMod.LagJutsu
                                         Key.K, // The default value
                                         "Button used to toggle God Mode"); // Description of the option to show in the config file
 
+            var configKillSelfButton = Config.Bind("Kill Self Button", 
+                                        "KillSelfButton",  
+                                        Key.L,
+                                        "Button used to off yourself"); 
+
             ConfigVariables.DeathToggleButton = configDeathToggleButton.Value;
+            ConfigVariables.KillSelfButton = configKillSelfButton.Value;
         }
     }
 }
