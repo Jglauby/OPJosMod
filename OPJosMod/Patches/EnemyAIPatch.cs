@@ -14,6 +14,8 @@ namespace OPJosMod.LagJutsu.Patches
             mls = logSource;
         }
 
+        public static EnemyAI[] allEnemies;
+
         [HarmonyPatch("OnCollideWithPlayer")]
         [HarmonyPrefix]
         static bool onCollideWithPlayerPatch(EnemyAI __instance, ref Collider other)
@@ -25,7 +27,7 @@ namespace OPJosMod.LagJutsu.Patches
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
                 {
                     //mls.LogMessage("enemy collide with player patch hit");
-                    PlayerControllerBPatch.teleportPlayerBack();
+                    //PlayerControllerBPatch.teleportPlayerBack();
                     return false;
                 }
             }

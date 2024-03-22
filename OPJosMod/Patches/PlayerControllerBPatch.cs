@@ -10,6 +10,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using OPJosMod.LagJutsu.Utils;
+using Object = UnityEngine.Object;
 
 namespace OPJosMod.LagJutsu.Patches
 {
@@ -29,40 +30,50 @@ namespace OPJosMod.LagJutsu.Patches
 
         private static float lastTimeAddedLocation = Time.time;
         private static List<Vector3> lastSafeLocations = new List<Vector3>();
-        private static int rewindBackTimeSeconds = 2;
+
+        private static float lastUpdatedKnownEnemies = Time.time;
 
         [HarmonyPatch("Start")]
         [HarmonyPrefix]
         static void startPatch(PlayerControllerB __instance)
         {
             lastSafeLocations.Add(RoundManager.Instance.playersManager.playerSpawnPositions[0].transform.position);
+            EnemyAIPatch.allEnemies = Object.FindObjectsOfType<EnemyAI>();
         }
 
         [HarmonyPatch("Update")]
         [HarmonyPrefix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            if (StartOfRound.Instance.localPlayerController == null || __instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            if (StartOfRound.Instance.localPlayerController == null)
+                return;
+
+            if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 handleGodModeToggle();
+                updateKnownEnemies();
 
                 //handle saving last locations you were safe at
-                if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
+                if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded && !GeneralUtil.ExistsCloseEnemy(__instance.transform.position))
                 {
-                    lastTimeAddedLocation = Time.time;
-
                     //remove earliest in list if listsize is at max
-                    if (lastSafeLocations.Count >= rewindBackTimeSeconds * 10)
+                    if (lastSafeLocations.Count >= 600)
                         lastSafeLocations.RemoveAt(0);
 
                     //dont save the last safe location if it is basically the same spot as the last one that was saved
                     if (lastSafeLocations.Count > 0)
                     {
-                        if (!GeneralUtil.AreVectorsClose(__instance.transform.position, lastSafeLocations[lastSafeLocations.Count - 1], 0.1f))
+                        if (!GeneralUtil.AreVectorsClose(__instance.transform.position, lastSafeLocations[lastSafeLocations.Count - 1], 0.5f))
+                        {
                             lastSafeLocations.Add(__instance.transform.position);
+                            lastTimeAddedLocation = Time.time;
+                        }
                     }
                     else
+                    {
                         lastSafeLocations.Add(__instance.transform.position);
+                        lastTimeAddedLocation = Time.time;
+                    }
                 }
             }
         }
@@ -88,17 +99,18 @@ namespace OPJosMod.LagJutsu.Patches
         {
             if (lastSafeLocations.Count > 0)
             {
-                Vector3 newLocation = lastSafeLocations[0];
                 for (int i = lastSafeLocations.Count - 1; i >= 0; i--)
                 {
-                    if (!GeneralUtil.AreVectorsClose(lastSafeLocations[i], StartOfRound.Instance.localPlayerController.transform.position, 1f))
+                    var playerLocation = StartOfRound.Instance.localPlayerController.transform.position;
+                    if (!GeneralUtil.ExistsCloseEnemy(lastSafeLocations[i]) && !GeneralUtil.AreVectorsClose(lastSafeLocations[i], playerLocation, 1f))
                     {
-                        newLocation = lastSafeLocations[i];
+                        //lastSafeLocations.RemoveAt(i);
+                        StartOfRound.Instance.localPlayerController.transform.position = lastSafeLocations[i];
+                        mls.LogMessage($"teleport player to: {lastSafeLocations[i]}");
+
+                        return;
                     }
                 }
-
-                StartOfRound.Instance.localPlayerController.transform.position = newLocation;
-                mls.LogMessage($"teleport player to: {newLocation}");
             }
         }
 
@@ -124,6 +136,15 @@ namespace OPJosMod.LagJutsu.Patches
                     HUDManager.Instance.DisplayTip("God Mode", $"turned {statusText}");
                     mls.LogMessage($"god mode turned {statusText}");
                 }
+            }
+        }
+
+        private static void updateKnownEnemies()
+        {
+            if (Time.time - lastUpdatedKnownEnemies > 15)
+            {
+                EnemyAIPatch.allEnemies = Object.FindObjectsOfType<EnemyAI>();
+                lastUpdatedKnownEnemies = Time.time;
             }
         }
     }
