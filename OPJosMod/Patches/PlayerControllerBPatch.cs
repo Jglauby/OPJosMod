@@ -54,7 +54,7 @@ namespace OPJosMod.LagJutsu.Patches
                 updateKnownEnemies();
 
                 //handle saving last locations you were safe at
-                if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded && !GeneralUtil.ExistsCloseEnemy(__instance.transform.position))
+                if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
                 {
                     //remove earliest in list if listsize is at max
                     if (lastSafeLocations.Count >= 600)

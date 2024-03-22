@@ -28,7 +28,7 @@ namespace OPJosMod.LagJutsu.Utils
 
             foreach (EnemyAI enemy in EnemyAIPatch.allEnemies)
             {
-                if (AreVectorsClose(enemy.transform.position, location, 3f))
+                if (AreVectorsClose(enemy.transform.position, location, 2f))
                     result = true;
             }
 
