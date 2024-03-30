@@ -53,6 +53,7 @@ namespace OPJosMod.GhostMode
             TurretPatch.SetLogSource(mls);
             MaskedPlayerEnemyPatch.SetLogSource(mls);
             JesterAIPatch.SetLogSource(mls);
+            ShovelPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }

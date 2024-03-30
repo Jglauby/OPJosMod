@@ -109,6 +109,7 @@
     <Compile Include="Patches\EnemyPatches\MaskedPlayerEnemyPatch.cs" />
     <Compile Include="Patches\EnemyPatches\JesterAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\TurretPatch.cs" />
+    <Compile Include="Patches\ShovelPatch.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />
     <Compile Include="Patches\EnemyPatches\NutcrackerEnemyAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\SandSpiderAIPatch.cs" />
