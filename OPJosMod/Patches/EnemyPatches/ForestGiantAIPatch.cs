@@ -41,7 +41,7 @@ namespace OPJosMod.GhostMode.Enemy.Patches
                 PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
                 if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
                 {
-                    mls.LogMessage("forest giant collide with player patch hit");
+                    //mls.LogMessage("forest giant collide with player patch hit");
                     return false;
                 }
             }

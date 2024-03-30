@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.GhostMode.Patches;
+using UnityEngine;
 
 namespace OPJosMod.GhostMode.Enemy.Patches
 {
@@ -49,6 +50,23 @@ namespace OPJosMod.GhostMode.Enemy.Patches
             }
 
             return true; 
+        }
+
+        [HarmonyPatch("OnCollideWithPlayer")]
+        [HarmonyPrefix]
+        static bool onCollideWithPlayerPatch(ref Collider other)
+        {
+            if (PlayerControllerBPatch.isGhostMode)
+            {
+                PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
+                if (StartOfRound.Instance.localPlayerController.playerClientId == component.playerClientId)
+                {
+                    //mls.LogMessage("flowerman collide with player patch hit");
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
