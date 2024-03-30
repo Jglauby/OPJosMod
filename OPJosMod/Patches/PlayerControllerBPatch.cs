@@ -217,6 +217,7 @@ namespace OPJosMod.GhostMode.Patches
                     consecutiveDeathExceptions = 0;
 
                     mls.LogMessage("called kill player");
+                    savePostGameNotes();
                 }
                 else
                 {
@@ -243,6 +244,32 @@ namespace OPJosMod.GhostMode.Patches
 
             mls.LogMessage("called kill player as __instance.playerClientId != StartOfRoundLocalPlayerClientID");
             return true;
+        }
+
+        private static void savePostGameNotes()
+        {
+            ////save regualr stats
+            //for (int i = 0; i < RoundManager.Instance.playersManager.allPlayerScripts.Length; i++)
+            //{
+            //    if (RoundManager.Instance.playersManager.allPlayerScripts[i].playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            //    {
+            //        HUDManagerPatch.playerNotes = StartOfRound.Instance.gameStats.allPlayerStats[i]./;
+            //        mls.LogMessage($"saved player notes: {HUDManagerPatch.playerNotes.Count}");
+            //    }
+            //}
+            //
+            ////save stats for more company
+            //for (int i = 0; i < HUDManager.Instance.statsUIElements.playerNotesText.Length; i++)
+            //{
+            //    var player = RoundManager.Instance.playersManager.allPlayerScripts[i];
+            //    if (player.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            //    {
+            //        var text = HUDManager.Instance.statsUIElements.playerNotesText[i];
+            //
+            //        HUDManagerPatch.mcPlayerNotes = text;
+            //        mls.LogMessage($"saved MCplayer notes: {HUDManagerPatch.mcPlayerNotes.text}");
+            //    }
+            //}
         }
 
         [HarmonyPatch("Update")]

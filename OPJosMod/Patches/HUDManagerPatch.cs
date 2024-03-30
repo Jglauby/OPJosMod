@@ -1,4 +1,5 @@
-﻿using BepInEx.Logging;
+﻿using BepInEx;
+using BepInEx.Logging;
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -35,6 +36,9 @@ namespace OPJosMod.GhostMode.Patches
         }
 
         public static int livingPlayersCount = 0;
+
+        public static List<string> playerNotes = new List<string>();
+        public static TextMeshProUGUI mcPlayerNotes;
 
         [HarmonyPatch("Update")]
         [HarmonyPrefix]
@@ -135,6 +139,44 @@ namespace OPJosMod.GhostMode.Patches
 
                 mls.LogMessage($"boxes count:{spectatingPlayerBoxes.Count}");
             }
+        }
+
+        [HarmonyPatch("FillEndGameStats")]
+        [HarmonyPrefix]
+        private static void fillEndGameStatsPatchPre(HUDManager __instance, ref EndOfGameStats stats)
+        {
+            ////populate stats normally
+            //for (int i = 0; i < RoundManager.Instance.playersManager.allPlayerScripts.Length; i++)
+            //{
+            //    if (RoundManager.Instance.playersManager.allPlayerScripts[i].playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            //    {
+            //        StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Clear();
+            //
+            //        foreach (string note in playerNotes)
+            //        {
+            //            StartOfRound.Instance.gameStats.allPlayerStats[i].playerNotes.Add(note);
+            //        }
+            //    }
+            //}
+            //
+            ////populate stats if you have more company
+            //for (int i = 0; i < __instance.statsUIElements.playerNotesText.Length; i++)
+            //{
+            //    var player = RoundManager.Instance.playersManager.allPlayerScripts[i];
+            //    if (player.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            //    {
+            //        var text = __instance.statsUIElements.playerNotesText[i];
+            //
+            //        if (!player.playerUsername.Contains("Player #"))
+            //        {
+            //            text.text = mcPlayerNotes.text;
+            //        }
+            //        else
+            //        {
+            //            mls.LogMessage($"dont put stats for player {i}");
+            //        }
+            //    }
+            //}
         }
     }
 }
