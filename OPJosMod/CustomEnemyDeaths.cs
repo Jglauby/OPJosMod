@@ -134,8 +134,11 @@ namespace OPJosMod.OneHitShovel
                 mls.LogMessage("no enemy to kill");
 
             //send message to update death for other players with mod
-            var rpcMessage = new RpcMessage($"EnemyDied:{gameObject.transform.position}", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
-            RpcMessageHandler.SendRpcMessage(rpcMessage);
+            if (ConfigVariables.syncDeathAnimations)
+            {
+                var rpcMessage = new RpcMessage($"EnemyDied:{gameObject.transform.position}", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
+                RpcMessageHandler.SendRpcMessage(rpcMessage);
+            }
 
             //handle case where other players don't have mod
         }
