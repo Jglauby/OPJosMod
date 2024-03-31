@@ -11,12 +11,6 @@ namespace OPJosMod
         public static float defaultMaxSprintSpeed;
         public static float walkMultiplier;
         public static float maxWalkSpeed;
-        public static string flashTimeButton;
-
-        public static Key getFlashTimeButton()
-        {
-            Key key = (Key)Enum.Parse(typeof(Key), flashTimeButton);
-            return key;
-        }
+        public static Key flashTimeButton;
     }
 }

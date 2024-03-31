@@ -5,6 +5,7 @@ using HarmonyLib;
 using OPJosMod.TheFlash.Patches;
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace OPJosMod.TheFlash
 {
@@ -13,7 +14,7 @@ namespace OPJosMod.TheFlash
     {
         private const string modGUID = "OpJosMod.TheFlash";
         private const string modName = "TheFlash";
-        private const string modVersion = "1.2.0";
+        private const string modVersion = "1.3.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -73,7 +74,7 @@ namespace OPJosMod.TheFlash
 
             var configFlashTimeButton = Config.Bind("Flash Time Button",
                                         "FlashTimeButton",
-                                        "R",
+                                        Key.R,
                                         "Button used to toggle flash time");
 
             ConfigVariables.defaultSprintMultiplier = configSprintMultiplier.Value;

@@ -67,14 +67,17 @@ namespace OPJosMod.TheFlash.Patches
 
             if (__instance.IsOwner && !__instance.inTerminalMenu && !__instance.isTypingChat)//can toggle
             {
-                if (((ButtonControl)Keyboard.current[ConfigVariables.getFlashTimeButton()]).wasPressedThisFrame)//R was pressed, default
+                try
                 {
-                    if (adjustingSpeed == false)
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.flashTimeButton]).wasPressedThisFrame)//R was pressed, default
                     {
-                        adjustingSpeed = true;
-                        __instance.StartCoroutine(toggleSpeed(__instance));
+                        if (adjustingSpeed == false)
+                        {
+                            adjustingSpeed = true;
+                            __instance.StartCoroutine(toggleSpeed(__instance));
+                        }
                     }
-                }
+                } catch { }
             }
 
             //vibrate player
