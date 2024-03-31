@@ -45,7 +45,7 @@ namespace OPJosMod.OneHitShovel
             var configSyncDeathAnimations = Config.Bind("Sync Death Animations",
                                         "SyncDeathAnimations",
                                         true,
-                                        "Setting for attempting to sync death animations for enemies that can't normally die. turn off if you plan on being the only one in the lobby who is using the mod.");
+                                        "Setting for attempting to sync death animations for enemies that can't normally die. This only works if everyone has the mod. If its just you turn this off and the enemies will just despawn instead.");
             
             ConfigVariables.syncDeathAnimations = configSyncDeathAnimations.Value;
         }
