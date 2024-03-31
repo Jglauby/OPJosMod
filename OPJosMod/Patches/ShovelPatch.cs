@@ -51,7 +51,7 @@ namespace OPJosMod.OneHitShovel.Patches
                     }
                 }
 
-                if (hitObject != null)
+                if (hitObject != null && !hitObject.name.Contains("Player"))
                 {
                     CustomEnemyDeaths.KillGameObjectEnemy(hitObject);
                     CustomEnemyDeaths.updateLocationOnServer(hitObject);

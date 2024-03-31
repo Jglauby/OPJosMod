@@ -139,6 +139,10 @@ namespace OPJosMod.OneHitShovel
                 var rpcMessage = new RpcMessage($"EnemyDied:{gameObject.transform.position}", (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
                 RpcMessageHandler.SendRpcMessage(rpcMessage);
             }
+            else
+            {
+                enemyAi.KillEnemyServerRpc(true);
+            }
 
             //handle case where other players don't have mod
         }

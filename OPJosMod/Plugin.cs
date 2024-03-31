@@ -12,7 +12,7 @@ namespace OPJosMod.OneHitShovel
     {
         private const string modGUID = "OpJosMod.OneHitShovel";
         private const string modName = "OneHitShovel";
-        private const string modVersion = "1.1.0"; 
+        private const string modVersion = "1.2.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;

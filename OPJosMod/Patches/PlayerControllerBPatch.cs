@@ -14,12 +14,12 @@ namespace OPJosMod.OneHitShovel.Patches
             mls = logSource;
         }
 
-        //[HarmonyPatch("KillPlayer")]
-        //[HarmonyPrefix]
-        //private static bool killPlayerPatch(PlayerControllerB __instance)
-        //{
-        //    mls.LogMessage("dont kill player, testing");
-        //    return false;
-        //}
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPrefix]
+        private static bool killPlayerPatch(PlayerControllerB __instance)
+        {
+            mls.LogMessage("dont kill player, testing");
+            return false;
+        }
     }
 }
