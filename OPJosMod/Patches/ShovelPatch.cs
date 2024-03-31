@@ -22,6 +22,9 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         private static bool hitShovelPatch(Shovel __instance)
         {
+            if (!PlayerControllerBPatch.isGhostMode)
+                return true;
+
             if (ConfigVariables.OPness == OPnessModes.Unrestricted)
                 return true;
 
