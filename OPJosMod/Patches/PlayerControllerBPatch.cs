@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using Random = UnityEngine.Random;
@@ -36,10 +37,12 @@ namespace OPJosMod.TheFlash.Patches
         private static bool adjustingSpeed = false;
         private static int speedMode = 0; //0 -> default, 1 -> super fast
 
+        private static bool hasInitialized = false;
+
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
-        {
+        {            
             FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
             var isWalking = ReflectionUtils.GetFieldValue<bool>(__instance, "isWalking");
 
@@ -79,6 +82,8 @@ namespace OPJosMod.TheFlash.Patches
                     }
                 } catch { }
             }
+
+            AutoWalk(__instance);
 
             //vibrate player
             //__instance.StartCoroutine(vibratePlayer(__instance));
@@ -124,5 +129,77 @@ namespace OPJosMod.TheFlash.Patches
             __instance.thisController.Move(-randomVibration);
             yield return new WaitForSeconds(0.005f);
         }
+
+
+
+
+        #region smartMovement
+
+        private static NavMeshPath path1;
+        private static NavMeshAgent agent;
+        private static bool moveTowardsDestination = false;
+        private static Vector3 destination;
+
+        private static void AutoWalk(PlayerControllerB __instance)
+        {
+            if (!hasInitialized && __instance.gameObject != null)
+            {
+                if (StartOfRound.Instance.localPlayerController.playerClientId == __instance.playerClientId)
+                {
+                    agent = __instance.gameObject.GetComponentInChildren<NavMeshAgent>();
+                    mls.LogMessage($"agent is set to: {agent}");
+                    hasInitialized = true;
+                }
+            }
+
+            if (hasInitialized)
+            {
+                if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
+                {
+                    ((Behaviour)(object)agent).enabled = true;
+                    SetDestinationToPosition(RoundManager.FindMainEntrancePosition(), true);
+                }
+
+                if (((ButtonControl)Keyboard.current[Key.C]).wasPressedThisFrame)
+                {
+                    ((Behaviour)(object)agent).enabled = false;
+                    moveTowardsDestination = false;
+                }
+
+                if (moveTowardsDestination)
+                {
+                    mls.LogMessage("MOVING");
+                    agent.SetDestination(destination);
+                }
+            }
+        }
+
+        private static bool SetDestinationToPosition(Vector3 position, bool checkForPath = false)
+        {
+            if (checkForPath)
+            {
+                mls.LogMessage($"setting desitination to positon: {position}");
+                position = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 1.75f);
+                path1 = new NavMeshPath();
+                if (!agent.CalculatePath(position, path1))
+                {
+                    mls.LogMessage($"cancel as no path to position from path1: {path1}");
+                    return false;
+                }
+
+                if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 1.55f)
+                {
+                    mls.LogMessage("canceling as too far?");
+                    return false;
+                }
+            }
+
+            moveTowardsDestination = true;
+            destination = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, -1f);
+            mls.LogMessage($"destination is: {destination}");
+            return true;
+        }
+
+        #endregion
     }
 }
