@@ -144,25 +144,14 @@ namespace OPJosMod.TheFlash.Patches
         {
             if (!hasInitialized && __instance.gameObject != null && Time.time > 50)
             {
-                Debug.Log("Initializing NavMeshAgent for player with client ID: " + __instance.playerClientId);
-                if (__instance == null || __instance.gameObject == null)
-                {
-                    Debug.LogError("PlayerControllerB instance or its GameObject is null.");
-                    return;
-                }
-
-                agent = __instance.gameObject.AddComponent<NavMeshAgent>();
-
-                agent.speed = 3.5f;
-
-                hasInitialized = true;
+                initializeAgent(__instance);
             }
 
             if (hasInitialized)
             {
                 if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
                 {
-                    agent = __instance.gameObject.AddComponent<NavMeshAgent>();
+                    initializeAgent(__instance);
                     ((Behaviour)(object)agent).enabled = true;
                     SetDestinationToPosition(RoundManager.FindMainEntrancePosition(), true);
                 }
@@ -175,10 +164,25 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (moveTowardsDestination)
                 {
-                    mls.LogMessage("MOVING");
                     agent.SetDestination(destination);
                 }
             }
+        }
+
+        private static void initializeAgent(PlayerControllerB __instance)
+        {
+            Debug.Log("Initializing NavMeshAgent for player with client ID: " + __instance.playerClientId);
+            if (__instance == null || __instance.gameObject == null)
+            {
+                Debug.LogError("PlayerControllerB instance or its GameObject is null.");
+                return;
+            }
+
+            agent = __instance.gameObject.AddComponent<NavMeshAgent>();
+
+            agent.speed = 3.5f;
+
+            hasInitialized = true;
         }
 
         private static bool SetDestinationToPosition(Vector3 position, bool checkForPath = false)
