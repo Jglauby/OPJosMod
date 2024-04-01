@@ -597,7 +597,7 @@ namespace OPJosMod.GhostMode.Patches
             {
                 var objectName = GeneralUtils.simplifyObjectNames(currentlyGrabbingObject.name);
 
-                if (nonoObjects.Contains(objectName))
+                if (nonoObjects.Contains(objectName) || ConfigVariables.canPickupScrap == false)
                     return false;
             }
 

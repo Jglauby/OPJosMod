@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.5.1";
+        private const string modVersion = "2.5.5";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -75,6 +75,11 @@ namespace OPJosMod.GhostMode
                                         Key.P,
                                         "Button to turn into ghost");
 
+            var configCanGrabScrap = Config.Bind("Can Grab Scrap",
+                                        "CanGrabScrap",
+                                        true,
+                                        "this setting only has an effect if you are in balanced mode");
+
             var configTeleportBodyButton = Config.Bind("Teleport to Dead Body Button",
                                         "TeleportToDeadBodyButton",
                                         Key.Backspace,
@@ -116,6 +121,7 @@ namespace OPJosMod.GhostMode
                                         "Enemies are able to detect you as a ghost, true or false");
 
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
+            ConfigVariables.canPickupScrap = configCanGrabScrap.Value;
 
             ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
             ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;

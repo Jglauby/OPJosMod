@@ -18,5 +18,6 @@ namespace OPJosMod
         public static OPnessModes OPness;
         public static Key teleportShipButton;
         public static bool enemiesDetectYou;
+        public static bool canPickupScrap;
     }
 }
