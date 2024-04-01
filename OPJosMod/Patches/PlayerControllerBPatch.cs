@@ -205,12 +205,16 @@ namespace OPJosMod.TheFlash.Patches
                     if (!agent.CalculatePath(position, path1))
                     {
                         mls.LogMessage($"cancel as no path to position from path1: {path1}");
+                        ((Behaviour)(object)agent).enabled = false;
+                        moveTowardsDestination = false;
                         return false;
                     }
 
                     if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 1.55f)
                     {
-                        mls.LogMessage("canceling as too far?");
+                        mls.LogMessage("canceling as too far");
+                        ((Behaviour)(object)agent).enabled = false;
+                        moveTowardsDestination = false;
                         return false;
                     }
                 }
