@@ -146,8 +146,8 @@ namespace OPJosMod.TheFlash.Patches
             {
                 if (StartOfRound.Instance.localPlayerController.playerClientId == __instance.playerClientId)
                 {
-                    agent = __instance.gameObject.GetComponentInChildren<NavMeshAgent>();
-                    mls.LogMessage($"agent is set to: {agent}");
+                    agent = __instance.gameObject.AddComponent<NavMeshAgent>();
+
                     hasInitialized = true;
                 }
             }
