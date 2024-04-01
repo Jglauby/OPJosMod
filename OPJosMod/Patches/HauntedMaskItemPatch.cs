@@ -15,18 +15,18 @@ namespace OPJosMod.LagJutsu.Patches
             mls = logSource;
         }
 
-        [HarmonyPatch("BeginAttachment")]
-        [HarmonyPrefix]
-        static bool beginAttachmentPatch(HauntedMaskItem __instance)
-        {
-            if (PlayerControllerBPatch.godMode)
-            {
-                __instance.AttachServerRpc();
-                UnityEngine.Object.Destroy(__instance.gameObject);
-                return false;
-            }
-
-            return true;
-        }
+        //[HarmonyPatch("BeginAttachment")]
+        //[HarmonyPrefix]
+        //static bool beginAttachmentPatch(HauntedMaskItem __instance)
+        //{
+        //    if (PlayerControllerBPatch.godMode)
+        //    {
+        //        __instance.AttachServerRpc();
+        //        UnityEngine.Object.Destroy(__instance.gameObject);
+        //        return false;
+        //    }
+        //
+        //    return true;
+        //}
     }
 }

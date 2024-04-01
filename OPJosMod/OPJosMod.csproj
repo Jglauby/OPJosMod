@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="GeneralUtil.cs" />
+    <Compile Include="Patches\MaskedPlayerEnemyPatch.cs" />
     <Compile Include="Patches\HauntedMaskItemPatch.cs" />
     <Compile Include="Patches\CentipedeAIPatch.cs" />
     <Compile Include="Patches\MouthDogAIPatch.cs" />
