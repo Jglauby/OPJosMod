@@ -142,20 +142,27 @@ namespace OPJosMod.TheFlash.Patches
 
         private static void AutoWalk(PlayerControllerB __instance)
         {
-            if (!hasInitialized && __instance.gameObject != null)
+            if (!hasInitialized && __instance.gameObject != null && Time.time > 50)
             {
-                if (StartOfRound.Instance.localPlayerController.playerClientId == __instance.playerClientId)
+                Debug.Log("Initializing NavMeshAgent for player with client ID: " + __instance.playerClientId);
+                if (__instance == null || __instance.gameObject == null)
                 {
-                    agent = __instance.gameObject.AddComponent<NavMeshAgent>();
-
-                    hasInitialized = true;
+                    Debug.LogError("PlayerControllerB instance or its GameObject is null.");
+                    return;
                 }
+
+                agent = __instance.gameObject.AddComponent<NavMeshAgent>();
+
+                agent.speed = 3.5f;
+
+                hasInitialized = true;
             }
 
             if (hasInitialized)
             {
                 if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
                 {
+                    agent = __instance.gameObject.AddComponent<NavMeshAgent>();
                     ((Behaviour)(object)agent).enabled = true;
                     SetDestinationToPosition(RoundManager.FindMainEntrancePosition(), true);
                 }
