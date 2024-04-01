@@ -37,8 +37,6 @@ namespace OPJosMod.TheFlash.Patches
         private static bool adjustingSpeed = false;
         private static int speedMode = 0; //0 -> default, 1 -> super fast
 
-        private static bool hasInitialized = false;
-
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
@@ -139,19 +137,14 @@ namespace OPJosMod.TheFlash.Patches
         private static NavMeshAgent agent;
         private static bool moveTowardsDestination = false;
         private static Vector3 destination;
+        public static bool hasInitialized = false;
 
         private static void AutoWalk(PlayerControllerB __instance)
         {
-            if (!hasInitialized && __instance.gameObject != null && Time.time > 50)
-            {
-                initializeAgent(__instance);
-            }
-
             if (hasInitialized)
             {
                 if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
                 {
-                    initializeAgent(__instance);
                     ((Behaviour)(object)agent).enabled = true;
                     SetDestinationToPosition(RoundManager.FindMainEntrancePosition(), true);
                 }
@@ -169,46 +162,70 @@ namespace OPJosMod.TheFlash.Patches
             }
         }
 
-        private static void initializeAgent(PlayerControllerB __instance)
+        public static void InitializeNaveMeshForPlayer()
         {
-            Debug.Log("Initializing NavMeshAgent for player with client ID: " + __instance.playerClientId);
-            if (__instance == null || __instance.gameObject == null)
+            try
             {
-                Debug.LogError("PlayerControllerB instance or its GameObject is null.");
-                return;
+                var player = StartOfRound.Instance.localPlayerController;
+                if (player == null || player.gameObject == null)
+                {
+                    Debug.LogError("PlayerControllerB instance or its GameObject is null.");
+                    return;
+                }
+                Debug.Log("Initializing NavMeshAgent for player with client ID: " + player.playerClientId);
+
+                if (player.gameObject.GetComponent<NavMeshAgent>() == null)
+                {
+                    agent = player.gameObject.AddComponent<NavMeshAgent>();
+                    agent.speed = 3.5f;
+
+                    hasInitialized = true;
+                }
+                else
+                {
+                    agent = player.gameObject.GetComponent<NavMeshAgent>();
+                    mls.LogMessage("didnt re-add nav mesh as it already existed");
+                }
             }
-
-            agent = __instance.gameObject.AddComponent<NavMeshAgent>();
-
-            agent.speed = 3.5f;
-
-            hasInitialized = true;
+            catch (Exception e)
+            {
+                mls.LogError(e);
+            }
         }
 
         private static bool SetDestinationToPosition(Vector3 position, bool checkForPath = false)
         {
-            if (checkForPath)
+            try
             {
-                mls.LogMessage($"setting desitination to positon: {position}");
-                position = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 1.75f);
-                path1 = new NavMeshPath();
-                if (!agent.CalculatePath(position, path1))
+                if (checkForPath)
                 {
-                    mls.LogMessage($"cancel as no path to position from path1: {path1}");
-                    return false;
+                    mls.LogMessage($"setting desitination to positon: {position}");
+                    position = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 1.75f);
+                    path1 = new NavMeshPath();
+                    if (!agent.CalculatePath(position, path1))
+                    {
+                        mls.LogMessage($"cancel as no path to position from path1: {path1}");
+                        return false;
+                    }
+
+                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 1.55f)
+                    {
+                        mls.LogMessage("canceling as too far?");
+                        return false;
+                    }
                 }
 
-                if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 1.55f)
-                {
-                    mls.LogMessage("canceling as too far?");
-                    return false;
-                }
+                moveTowardsDestination = true;
+                destination = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, -1f);
+                mls.LogMessage($"destination is: {destination}");
+                return true;
+            }
+            catch (Exception e)
+            {
+                mls.LogError(e);
             }
 
-            moveTowardsDestination = true;
-            destination = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, -1f);
-            mls.LogMessage($"destination is: {destination}");
-            return true;
+            return false;
         }
 
         #endregion

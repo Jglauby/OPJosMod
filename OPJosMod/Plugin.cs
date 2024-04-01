@@ -44,10 +44,10 @@ namespace OPJosMod.TheFlash
 
         private void patch()
         {
-            harmony.PatchAll(typeof(OpJosMod));
-
             Patches.PlayerControllerBPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
+            EntranceTeleportPatch.SetLogSource(mls);
+
+            harmony.PatchAll();
         }
 
         private void setupConfig()
