@@ -177,16 +177,16 @@ namespace OPJosMod.TheFlash.Patches
                 if (player.gameObject.GetComponent<NavMeshAgent>() == null)
                 {
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
-                    agent.speed = 5f;
-                    agent.acceleration = 8f; 
-                    agent.angularSpeed = 120f; 
-                    agent.stoppingDistance = 1.5f; 
-                    agent.autoBraking = true; 
-                    agent.autoTraverseOffMeshLink = true; 
-                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; 
-                    agent.radius = 0.5f; 
-                    agent.height = 2.0f; 
-                    agent.avoidancePriority = 50; 
+                    agent.speed = 350f;
+                    agent.acceleration = 70000f;
+                    agent.angularSpeed = 900000f;
+                    agent.stoppingDistance = 0.5f;
+                    agent.autoBraking = true;
+                    agent.autoTraverseOffMeshLink = true;
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
+                    agent.radius = 0.2f;
+                    agent.height = 1.8f;
+                    agent.avoidancePriority = 99;
 
                     hasInitialized = true;
                 }
