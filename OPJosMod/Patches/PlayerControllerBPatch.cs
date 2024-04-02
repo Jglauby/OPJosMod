@@ -146,7 +146,7 @@ namespace OPJosMod.TheFlash.Patches
             {
                 if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
                 {
-                    startRunToNewPosition();                   
+                    startRunToNewPosition(__instance);                   
                 }
 
                 if (((ButtonControl)Keyboard.current[Key.C]).wasPressedThisFrame)
@@ -160,7 +160,7 @@ namespace OPJosMod.TheFlash.Patches
                     if (Vector3.Distance(__instance.transform.position, destination) < 7)
                     {
                         mls.LogMessage("reached destination!");
-                        startRunToNewPosition();
+                        startRunToNewPosition(__instance);
                     }
 
                     agent.SetDestination(destination);
@@ -211,12 +211,18 @@ namespace OPJosMod.TheFlash.Patches
             }
         }
 
-        private static void startRunToNewPosition()
+        private static void startRunToNewPosition(PlayerControllerB player)
         {
             ((Behaviour)(object)agent).enabled = true;
 
-            int randomIndex = Random.Range(0, runToLocations.Length);
-            Vector3 randomLocation = runToLocations[randomIndex];
+            //sort runToLocations by distance to player
+            var distances = runToLocations.Select(pos => Vector3.Distance(pos, player.transform.position)).ToArray();
+            var positionDistancePairs = runToLocations.Zip(distances, (pos, dist) => new { Position = pos, Distance = dist });
+            var sortedPositionDistancePairs = positionDistancePairs.OrderByDescending(pair => pair.Distance).ToArray();
+            var sortedPositions = sortedPositionDistancePairs.Select(pair => pair.Position).ToArray();
+
+            int randomIndex = Random.Range(0, sortedPositions.Length/2);
+            Vector3 randomLocation = sortedPositions[randomIndex];
 
             SetDestinationToPosition(randomLocation, true);
         }
@@ -238,7 +244,7 @@ namespace OPJosMod.TheFlash.Patches
                         return false;
                     }
 
-                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 25.0f)
+                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 50.0f)
                     {
                         mls.LogMessage("canceling as too far");
                         ((Behaviour)(object)agent).enabled = false;
