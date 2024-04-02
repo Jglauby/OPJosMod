@@ -157,6 +157,13 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (moveTowardsDestination)
                 {
+                    if (Vector3.Distance(__instance.transform.position, destination) < 1)
+                    {
+                        mls.LogMessage("reached destination!");
+                        ((Behaviour)(object)agent).enabled = false;
+                        moveTowardsDestination = false;
+                    }
+
                     agent.SetDestination(destination);
                 }
             }
