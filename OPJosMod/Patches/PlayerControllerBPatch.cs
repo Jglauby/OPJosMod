@@ -157,7 +157,7 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (moveTowardsDestination)
                 {
-                    if (Vector3.Distance(__instance.transform.position, destination) < 7)
+                    if (Vector3.Distance(__instance.transform.position, destination) < 8)
                     {
                         mls.LogMessage("reached destination!");
                         startRunToNewPosition(__instance);
@@ -187,7 +187,7 @@ namespace OPJosMod.TheFlash.Patches
                     agent.speed = 10f * multiplier;
                     agent.acceleration = 50f * multiplier;
                     agent.angularSpeed = 75f * multiplier;
-                    agent.stoppingDistance = 0.2f;
+                    agent.stoppingDistance = 1f;
                     agent.autoBraking = true;
                     agent.autoTraverseOffMeshLink = true;
                     agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
@@ -244,7 +244,7 @@ namespace OPJosMod.TheFlash.Patches
                         return false;
                     }
 
-                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 50.0f)
+                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 60.0f)
                     {
                         mls.LogMessage("canceling as too far");
                         ((Behaviour)(object)agent).enabled = false;
