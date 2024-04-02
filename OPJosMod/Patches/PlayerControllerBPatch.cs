@@ -138,6 +138,7 @@ namespace OPJosMod.TheFlash.Patches
         private static bool moveTowardsDestination = false;
         private static Vector3 destination;
         public static bool hasInitialized = false;
+        private static Vector3[] runToLocations = null;
 
         private static void AutoWalk(PlayerControllerB __instance)
         {
@@ -145,8 +146,7 @@ namespace OPJosMod.TheFlash.Patches
             {
                 if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
                 {
-                    ((Behaviour)(object)agent).enabled = true;
-                    SetDestinationToPosition(RoundManager.FindMainEntrancePosition(), true);
+                    startRunToNewPosition();                   
                 }
 
                 if (((ButtonControl)Keyboard.current[Key.C]).wasPressedThisFrame)
@@ -157,11 +157,10 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (moveTowardsDestination)
                 {
-                    if (Vector3.Distance(__instance.transform.position, destination) < 1)
+                    if (Vector3.Distance(__instance.transform.position, destination) < 7)
                     {
                         mls.LogMessage("reached destination!");
-                        ((Behaviour)(object)agent).enabled = false;
-                        moveTowardsDestination = false;
+                        startRunToNewPosition();
                     }
 
                     agent.SetDestination(destination);
@@ -183,15 +182,16 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (player.gameObject.GetComponent<NavMeshAgent>() == null)
                 {
+                    int multiplier = 1000;
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
-                    agent.speed = 300f;
-                    agent.acceleration = 70000f;
-                    agent.angularSpeed = 1000000f;
-                    agent.stoppingDistance = 0.75f;
+                    agent.speed = 10f * multiplier;
+                    agent.acceleration = 50f * multiplier;
+                    agent.angularSpeed = 75f * multiplier;
+                    agent.stoppingDistance = 0.2f;
                     agent.autoBraking = true;
                     agent.autoTraverseOffMeshLink = true;
-                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
-                    agent.radius = 0.2f;
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+                    agent.radius = 0.4f;
                     agent.height = 1.8f;
                     agent.avoidancePriority = 99;
 
@@ -202,11 +202,23 @@ namespace OPJosMod.TheFlash.Patches
                     agent = player.gameObject.GetComponent<NavMeshAgent>();
                     mls.LogMessage("didnt re-add nav mesh as it already existed");
                 }
+
+                runToLocations = FindObjectsOfType<EnemyVent>().Select(x => x.transform.position).ToArray();
             }
             catch (Exception e)
             {
                 mls.LogError(e);
             }
+        }
+
+        private static void startRunToNewPosition()
+        {
+            ((Behaviour)(object)agent).enabled = true;
+
+            int randomIndex = Random.Range(0, runToLocations.Length);
+            Vector3 randomLocation = runToLocations[randomIndex];
+
+            SetDestinationToPosition(randomLocation, true);
         }
 
         private static bool SetDestinationToPosition(Vector3 position, bool checkForPath = false)
@@ -226,7 +238,7 @@ namespace OPJosMod.TheFlash.Patches
                         return false;
                     }
 
-                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 1.55f)
+                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 25.0f)
                     {
                         mls.LogMessage("canceling as too far");
                         ((Behaviour)(object)agent).enabled = false;
