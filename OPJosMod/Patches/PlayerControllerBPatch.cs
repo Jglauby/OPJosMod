@@ -253,7 +253,7 @@ namespace OPJosMod.TheFlash.Patches
             if (SetDestinationToPosition(randomLocation) == false)
             {
                 if (sortedPositions.Count > 0)
-                    sortedPositions.ElementAt(sortedPositions.Count/2);
+                    sortedPositions.ElementAt(Random.Range(0, sortedPositions.Count / 2));
             }
         }
 
