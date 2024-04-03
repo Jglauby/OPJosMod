@@ -157,7 +157,7 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (moveTowardsDestination)
                 {
-                    if (Vector3.Distance(__instance.transform.position, destination) < 8)
+                    if (Vector3.Distance(__instance.transform.position, destination) < 3)
                     {
                         mls.LogMessage("reached destination!");
                         startRunToNewPosition(__instance);
@@ -182,18 +182,38 @@ namespace OPJosMod.TheFlash.Patches
 
                 if (player.gameObject.GetComponent<NavMeshAgent>() == null)
                 {
+
                     int multiplier = 1000;
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
-                    agent.speed = 10f * multiplier;
-                    agent.acceleration = 50f * multiplier;
-                    agent.angularSpeed = 75f * multiplier;
-                    agent.stoppingDistance = 1f;
-                    agent.autoBraking = true;
-                    agent.autoTraverseOffMeshLink = true;
-                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
-                    agent.radius = 0.4f;
-                    agent.height = 1.8f;
-                    agent.avoidancePriority = 99;
+
+                    // Basic Settings
+                    agent.speed = 5f * multiplier;
+                    agent.acceleration = 250f * multiplier;
+                    agent.angularSpeed = 1000f * multiplier;
+                    agent.stoppingDistance = 2f; // Reduce stopping distance for precision
+                    agent.autoBraking = false; // Set to false to manually control braking
+                    agent.autoTraverseOffMeshLink = false; // Set to false to manually handle off mesh link traversal
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; // Use high quality obstacle avoidance for better precision
+
+                    // Advanced Settings
+                    agent.radius = 0.4f; // Reduce the radius for better precision around corners and doorways
+                    agent.height = 2.0f; // Increase height for better clearance
+                    agent.avoidancePriority = 50;
+
+                    // Off Mesh Link Settings
+                    agent.autoRepath = true; // Enable auto repathing for off mesh link traversal
+                    agent.autoTraverseOffMeshLink = true; // Allow agent to traverse off mesh links automatically
+                    agent.autoBraking = true; // Set autoBraking back to true for normal path following
+                    
+                    // Turn off auto braking on completion
+                    agent.autoBraking = false;
+
+                    // Always face the next waypoint directly
+                    agent.updateRotation = true;
+                    agent.updatePosition = true;
+
+                    // Force agent to stay on navmesh
+                    agent.updateUpAxis = false;
 
                     hasInitialized = true;
                 }
