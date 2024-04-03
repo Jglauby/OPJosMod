@@ -183,14 +183,14 @@ namespace OPJosMod.TheFlash.Patches
                 if (player.gameObject.GetComponent<NavMeshAgent>() == null)
                 {
 
-                    int multiplier = 10;
+                    int multiplier = 1000;
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
 
                     // Basic Settings
                     agent.speed = 5f * multiplier;
-                    agent.acceleration = 250f * multiplier;
-                    agent.angularSpeed = 1000f * multiplier;
-                    agent.stoppingDistance = 2f; // Reduce stopping distance for precision
+                    agent.acceleration = 250f * (multiplier / 2);
+                    agent.angularSpeed = 1000f * (multiplier / 2);
+                    agent.stoppingDistance = 0.2f; // Reduce stopping distance for precision
                     agent.autoBraking = true; // Set to false to manually control braking
                     agent.autoTraverseOffMeshLink = false; // Set to false to manually handle off mesh link traversal
                     agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance; // Use high quality obstacle avoidance for better precision
