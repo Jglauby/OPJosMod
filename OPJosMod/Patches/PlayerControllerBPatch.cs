@@ -138,7 +138,7 @@ namespace OPJosMod.TheFlash.Patches
         private static bool moveTowardsDestination = false;
         private static Vector3 destination;
         public static bool hasInitialized = false;
-        private static Vector3[] runToLocations = null;
+        private static List<Vector3> runToLocations = null;
 
         private static void AutoWalk(PlayerControllerB __instance)
         {
@@ -183,7 +183,7 @@ namespace OPJosMod.TheFlash.Patches
                 if (player.gameObject.GetComponent<NavMeshAgent>() == null)
                 {
 
-                    int multiplier = 1000;
+                    int multiplier = 10;
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
 
                     // Basic Settings
@@ -191,9 +191,9 @@ namespace OPJosMod.TheFlash.Patches
                     agent.acceleration = 250f * multiplier;
                     agent.angularSpeed = 1000f * multiplier;
                     agent.stoppingDistance = 2f; // Reduce stopping distance for precision
-                    agent.autoBraking = false; // Set to false to manually control braking
+                    agent.autoBraking = true; // Set to false to manually control braking
                     agent.autoTraverseOffMeshLink = false; // Set to false to manually handle off mesh link traversal
-                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; // Use high quality obstacle avoidance for better precision
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance; // Use high quality obstacle avoidance for better precision
 
                     // Advanced Settings
                     agent.radius = 0.4f; // Reduce the radius for better precision around corners and doorways
@@ -223,7 +223,8 @@ namespace OPJosMod.TheFlash.Patches
                     mls.LogMessage("didnt re-add nav mesh as it already existed");
                 }
 
-                runToLocations = FindObjectsOfType<EnemyVent>().Select(x => x.transform.position).ToArray();
+                runToLocations = FindObjectsOfType<EnemyVent>().Select(x => x.transform.position).ToList();
+                runToLocations.Add(RoundManager.FindMainEntrancePosition());
 
                 //start with it off
                 ((Behaviour)(object)agent).enabled = false;
@@ -243,40 +244,25 @@ namespace OPJosMod.TheFlash.Patches
             var distances = runToLocations.Select(pos => Vector3.Distance(pos, player.transform.position)).ToArray();
             var positionDistancePairs = runToLocations.Zip(distances, (pos, dist) => new { Position = pos, Distance = dist });
             var sortedPositionDistancePairs = positionDistancePairs.OrderByDescending(pair => pair.Distance).ToArray();
-            var sortedPositions = sortedPositionDistancePairs.Select(pair => pair.Position).ToArray();
+            var sortedPositions = sortedPositionDistancePairs.Select(pair => pair.Position).ToList();
 
-            int randomIndex = Random.Range(0, sortedPositions.Length/2);
+            int randomIndex = Random.Range(0, sortedPositions.Count/2);
             Vector3 randomLocation = sortedPositions[randomIndex];
 
-            if (SetDestinationToPosition(randomLocation, true) == false)
-                SetDestinationToPosition(randomLocation, true);
+            //set destination to the random location
+            if (SetDestinationToPosition(randomLocation) == false)
+            {
+                if (sortedPositions.Count > 0)
+                    sortedPositions.ElementAt(0);
+            }
         }
 
-        private static bool SetDestinationToPosition(Vector3 position, bool checkForPath = false)
+        private static bool SetDestinationToPosition(Vector3 position)
         {
             try
             {
-                if (checkForPath)
-                {
-                    mls.LogMessage($"setting desitination to positon: {position}");
-                    position = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 1.75f);
-                    path1 = new NavMeshPath();
-                    if (!agent.CalculatePath(position, path1))
-                    {
-                        mls.LogMessage($"cancel as no path to position from path1: {path1}");
-                        ((Behaviour)(object)agent).enabled = false;
-                        moveTowardsDestination = false;
-                        return false;
-                    }
-
-                    if (Vector3.Distance(path1.corners[path1.corners.Length - 1], RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 2.7f)) > 60.0f)
-                    {
-                        mls.LogMessage("canceling as too far");
-                        ((Behaviour)(object)agent).enabled = false;
-                        moveTowardsDestination = false;
-                        return false;
-                    }
-                }
+                mls.LogMessage($"setting desitination to positon: {position}");
+                position = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, 1.75f);
 
                 moveTowardsDestination = true;
                 destination = RoundManager.Instance.GetNavMeshPosition(position, RoundManager.Instance.navHit, -1f);
