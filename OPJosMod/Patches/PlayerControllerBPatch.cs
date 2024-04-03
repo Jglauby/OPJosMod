@@ -190,7 +190,7 @@ namespace OPJosMod.TheFlash.Patches
                     agent.stoppingDistance = 1f;
                     agent.autoBraking = true;
                     agent.autoTraverseOffMeshLink = true;
-                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
                     agent.radius = 0.4f;
                     agent.height = 1.8f;
                     agent.avoidancePriority = 99;
@@ -204,6 +204,10 @@ namespace OPJosMod.TheFlash.Patches
                 }
 
                 runToLocations = FindObjectsOfType<EnemyVent>().Select(x => x.transform.position).ToArray();
+
+                //start with it off
+                ((Behaviour)(object)agent).enabled = false;
+                moveTowardsDestination = false;
             }
             catch (Exception e)
             {
@@ -224,7 +228,8 @@ namespace OPJosMod.TheFlash.Patches
             int randomIndex = Random.Range(0, sortedPositions.Length/2);
             Vector3 randomLocation = sortedPositions[randomIndex];
 
-            SetDestinationToPosition(randomLocation, true);
+            if (SetDestinationToPosition(randomLocation, true) == false)
+                SetDestinationToPosition(randomLocation, true);
         }
 
         private static bool SetDestinationToPosition(Vector3 position, bool checkForPath = false)
@@ -261,6 +266,7 @@ namespace OPJosMod.TheFlash.Patches
             catch (Exception e)
             {
                 mls.LogError(e);
+                InitializeNaveMeshForPlayer();
             }
 
             return false;
