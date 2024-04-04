@@ -7,10 +7,6 @@ namespace OPJosMod.BreadCrumbs
 {
     public static class ConfigVariables
     {
-        public static float defaultSprintMultiplier;
-        public static float defaultMaxSprintSpeed;
-        public static float walkMultiplier;
-        public static float maxWalkSpeed;
-        public static Key flashTimeButton;
+        public static Key retraceButton;
     }
 }
