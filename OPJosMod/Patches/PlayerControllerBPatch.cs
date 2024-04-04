@@ -104,6 +104,8 @@ namespace OPJosMod.BreadCrumbs.Patches
                     if (Vector3.Distance(__instance.transform.position, destination) < 1)
                     {
                         mls.LogMessage("reached destination!");
+                        HUDManager.Instance.DisplayTip("Arrived!", "");
+
                         ((Behaviour)(object)agent).enabled = false;
                         moveTowardsDestination = false;
                     } 
@@ -128,13 +130,11 @@ namespace OPJosMod.BreadCrumbs.Patches
                 if (player.gameObject.GetComponent<NavMeshAgent>() == null)
                 {
 
-                    int multiplier = 10;
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
 
-                    // Basic Settings
-                    agent.speed = 5f * multiplier;
-                    agent.acceleration = 250f * (multiplier / 2);
-                    agent.angularSpeed = 1000f * (multiplier / 2);
+                    agent.speed = 10f;
+                    agent.acceleration = 125f;
+                    agent.angularSpeed = 500f;
                     agent.stoppingDistance = 0.2f; 
                     agent.autoBraking = true;
                     agent.autoTraverseOffMeshLink = false; 
