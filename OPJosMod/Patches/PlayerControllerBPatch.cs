@@ -51,6 +51,10 @@ namespace OPJosMod.TheFlash.Patches
                 {
                     var newForce = (float)currentValue * sprintMultiplier;
 
+                    //make player slow, but should be triggering the super auto sprint thing so its fine
+                    if (__instance.isInsideFactory && speedMode == 1)
+                        maxSprintSpeed = 1;
+
                     if(newForce < maxSprintSpeed)
                         sprintMultiplierField.SetValue(__instance, newForce);
                 }
@@ -151,17 +155,18 @@ namespace OPJosMod.TheFlash.Patches
         private static Vector3 destination;
         public static bool hasInitialized = false;
         private static List<Vector3> runToLocations = null;
+        private static bool customIsSprinting = false;
 
         private static void AutoWalk(PlayerControllerB __instance)
         {
             if (hasInitialized && __instance.gameObject.GetComponent<NavMeshAgent>() != null)
             {
-                if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame && speedMode == 1)
+                if (((ButtonControl)Keyboard.current[Key.W]).isPressed && ((ButtonControl)Keyboard.current[Key.LeftShift]).isPressed && speedMode == 1)
                 {
-                    startRunToNewPosition(__instance);                   
+                    if (moveTowardsDestination == false)
+                        startRunToNewPosition(__instance);                   
                 }
-
-                if (((ButtonControl)Keyboard.current[Key.C]).wasPressedThisFrame)
+                else
                 {
                     ((Behaviour)(object)agent).enabled = false;
                     moveTowardsDestination = false;
