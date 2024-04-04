@@ -93,10 +93,7 @@ namespace OPJosMod.TheFlash.Patches
         {
             if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
-                if (__instance.gameObject.GetComponent<NavMeshAgent>() != null)
-                {
-                    Destroy(__instance.gameObject.GetComponent<NavMeshAgent>());
-                }
+                RemoveMeshForPlayer();
             }
         }
 
@@ -112,6 +109,7 @@ namespace OPJosMod.TheFlash.Patches
                 speedMode = 1;
                 sprintMultiplier = increasedSprintMultiplier;
                 maxSprintSpeed = increasedMaxSprintSpeed;
+                InitializeNaveMeshForPlayer();
             }
             else if (speedMode == 1)
             {
@@ -121,6 +119,7 @@ namespace OPJosMod.TheFlash.Patches
                 speedMode = 0;
                 sprintMultiplier = ConfigVariables.defaultSprintMultiplier;
                 maxSprintSpeed = ConfigVariables.defaultMaxSprintSpeed;
+                RemoveMeshForPlayer();
             }
 
             adjustingSpeed = false;
@@ -155,9 +154,9 @@ namespace OPJosMod.TheFlash.Patches
 
         private static void AutoWalk(PlayerControllerB __instance)
         {
-            if (hasInitialized)
+            if (hasInitialized && __instance.gameObject.GetComponent<NavMeshAgent>() != null)
             {
-                if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame)
+                if (((ButtonControl)Keyboard.current[Key.B]).wasPressedThisFrame && speedMode == 1)
                 {
                     startRunToNewPosition(__instance);                   
                 }
@@ -168,13 +167,13 @@ namespace OPJosMod.TheFlash.Patches
                     moveTowardsDestination = false;
                 }
 
-                if (moveTowardsDestination)
+                if (moveTowardsDestination && __instance.isInsideFactory)
                 {
                     if (Vector3.Distance(__instance.transform.position, destination) < 3)
                     {
                         mls.LogMessage("reached destination!");
                         startRunToNewPosition(__instance);
-                    }
+                    } 
 
                     agent.SetDestination(destination);
                 }
@@ -186,9 +185,9 @@ namespace OPJosMod.TheFlash.Patches
             try
             {
                 var player = StartOfRound.Instance.localPlayerController;
-                if (player == null || player.gameObject == null)
+                if (player == null || player.gameObject == null || player.isInsideFactory == false)
                 {
-                    Debug.LogError("PlayerControllerB instance or its GameObject is null.");
+                    Debug.LogError("PlayerControllerB instance or its GameObject is null. or they are outside");
                     return;
                 }
                 Debug.Log("Initializing NavMeshAgent for player with client ID: " + player.playerClientId);
@@ -246,6 +245,15 @@ namespace OPJosMod.TheFlash.Patches
             catch (Exception e)
             {
                 mls.LogError(e);
+            }
+        }
+
+        public static void RemoveMeshForPlayer()
+        {
+            var player = StartOfRound.Instance.localPlayerController;
+            if (player.gameObject.GetComponent<NavMeshAgent>() != null)
+            {
+                Destroy(player.gameObject.GetComponent<NavMeshAgent>());
             }
         }
 

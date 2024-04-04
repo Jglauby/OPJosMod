@@ -46,6 +46,7 @@ namespace OPJosMod.TheFlash
         {
             Patches.PlayerControllerBPatch.SetLogSource(mls);
             EntranceTeleportPatch.SetLogSource(mls);
+            ShipTeleporterPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
