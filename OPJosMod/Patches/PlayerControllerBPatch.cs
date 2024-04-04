@@ -54,8 +54,12 @@ namespace OPJosMod.TheFlash.Patches
                     //make player slow, but should be triggering the super auto sprint thing so its fine
                     if (__instance.isInsideFactory && speedMode == 1)
                         maxSprintSpeed = 1;
+                    else if (speedMode == 1)
+                        maxSprintSpeed = increasedMaxSprintSpeed;
+                    else if (speedMode == 0)
+                        maxSprintSpeed = ConfigVariables.defaultMaxSprintSpeed;
 
-                    if(newForce < maxSprintSpeed)
+                    if (newForce < maxSprintSpeed)
                         sprintMultiplierField.SetValue(__instance, newForce);
                 }
                 else
@@ -161,10 +165,10 @@ namespace OPJosMod.TheFlash.Patches
         {
             if (hasInitialized && __instance.gameObject.GetComponent<NavMeshAgent>() != null)
             {
-                if (((ButtonControl)Keyboard.current[Key.W]).isPressed && ((ButtonControl)Keyboard.current[Key.LeftShift]).isPressed && speedMode == 1)
+                if (__instance.isSprinting && speedMode == 1)
                 {
                     if (moveTowardsDestination == false)
-                        startRunToNewPosition(__instance);                   
+                        startRunToNewPosition(__instance);
                 }
                 else
                 {
