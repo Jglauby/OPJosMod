@@ -87,6 +87,19 @@ namespace OPJosMod.TheFlash.Patches
             //__instance.StartCoroutine(vibratePlayer(__instance));
         }
 
+        [HarmonyPatch("KillPlayer")]
+        [HarmonyPrefix]
+        private static void killPlayerPatch(PlayerControllerB __instance)
+        {
+            if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            {
+                if (__instance.gameObject.GetComponent<NavMeshAgent>() != null)
+                {
+                    Destroy(__instance.gameObject.GetComponent<NavMeshAgent>());
+                }
+            }
+        }
+
         private static IEnumerator toggleSpeed(PlayerControllerB __instance)
         {
             yield return new WaitForSeconds(1f);
