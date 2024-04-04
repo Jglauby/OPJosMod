@@ -32,7 +32,7 @@ namespace OPJosMod.BreadCrumbs.Patches
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            if (__instance.IsOwner && !__instance.inTerminalMenu && !__instance.isTypingChat)//can toggle
+            if (__instance.IsOwner && !__instance.inTerminalMenu && !__instance.isTypingChat && __instance.isInsideFactory)//can toggle
             {
                 try
                 {
@@ -132,18 +132,17 @@ namespace OPJosMod.BreadCrumbs.Patches
 
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
 
-                    agent.speed = 10f;
-                    agent.acceleration = 125f;
-                    agent.angularSpeed = 500f;
-                    agent.stoppingDistance = 0.2f; 
-                    agent.autoBraking = true;
+                    agent.speed = 4f;
+                    agent.acceleration = 25f;
+                    agent.angularSpeed = 125f;
+                    agent.stoppingDistance = 0.5f; 
+                    agent.autoBraking = false;
                     agent.autoTraverseOffMeshLink = false; 
                     agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; 
                     agent.radius = 0.4f; 
                     agent.height = 2.0f; 
                     agent.avoidancePriority = 99;
-                    agent.autoRepath = true; 
-                    agent.autoTraverseOffMeshLink = true;
+                    agent.autoRepath = true;
 
                     hasInitialized = true;
                 }
