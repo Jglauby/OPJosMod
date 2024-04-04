@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 using UnityEngine.InputSystem;
 
-namespace OPJosMod
+namespace OPJosMod.BreadCrumbs
 {
     public static class ConfigVariables
     {

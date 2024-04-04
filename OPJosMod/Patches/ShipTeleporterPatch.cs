@@ -1,7 +1,7 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.TheFlash.Utils;
+using OPJosMod.BreadCrumbs.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using Random = UnityEngine.Random;
 
-namespace OPJosMod.TheFlash.Patches
+namespace OPJosMod.BreadCrumbs.Patches
 {
     [HarmonyPatch(typeof(ShipTeleporter))]
     internal class ShipTeleporterPatch : MonoBehaviour

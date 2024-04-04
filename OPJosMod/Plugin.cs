@@ -1,20 +1,17 @@
 ﻿using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.TheFlash.Patches;
-using System;
-using UnityEngine;
+using OPJosMod.BreadCrumbs.Patches;
 using UnityEngine.InputSystem;
 
-namespace OPJosMod.TheFlash
+namespace OPJosMod.BreadCrumbs
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "OpJosMod.TheFlash";
-        private const string modName = "TheFlash";
-        private const string modVersion = "1.3.0";
+        private const string modGUID = "OpJosMod.BreadCrumbs";
+        private const string modName = "BreadCrumbs";
+        private const string modVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod.TheFlash.Utils
+namespace OPJosMod.BreadCrumbs.Utils
 {
     public class ReflectionUtils
     {
