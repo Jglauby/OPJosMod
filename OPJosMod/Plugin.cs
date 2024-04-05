@@ -12,7 +12,7 @@ namespace OPJosMod.OneHitShovel
     {
         private const string modGUID = "OpJosMod.OneHitShovel";
         private const string modName = "OneHitShovel";
-        private const string modVersion = "1.2.0"; 
+        private const string modVersion = "1.3.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -31,8 +31,8 @@ namespace OPJosMod.OneHitShovel
             mls.LogInfo("mod has started");
             setupConfig();
 
-            PlayerControllerBPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
+            PlayerControllerBPatch.SetLogSource(mls);
             CustomEnemyDeaths.SetLogSource(mls);
             HUDManagerPatchForRPC.SetLogSource(mls);
             RpcMessageHandler.SetLogSource(mls);

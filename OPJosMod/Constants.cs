@@ -16,8 +16,8 @@ namespace OPJosMod.OneHitShovel
         //BoneEast -> blob
         //Bone.003 -> earth worm
         //MeshContainer -> jester
-        public static string[] humanoidNames = new string[] { "SpringManModel", "FGiantModelContainer", "DressGirlModel", "MeshContainer", 
-            "SpringMan(Clone)", "ForestGiant(Clone)", "DressGirl(Clone)", "JesterEnemy(Clone)" };
+        public static List<string> humanoidNames = new List<string> { "SpringManModel", "DressGirlModel", "MeshContainer", 
+            "SpringMan(Clone)", "DressGirl(Clone)", "JesterEnemy(Clone)" };
         
         public static string[] fourLeggedNames = new string[] { "PufferModel", "PufferEnemy(Clone)" };
         

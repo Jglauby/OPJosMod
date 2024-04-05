@@ -22,5 +22,34 @@ namespace OPJosMod.OneHitShovel
             // Create a new Vector3
             return new Vector3(x, y, z);
         }
+
+        public static int GetGameVersion()
+        {
+            try
+            {
+                var version = GameNetworkManager.Instance.gameVersionNum;
+                return version;
+            }
+            catch { }
+            
+            return 0;
+        }
+
+        private static bool hasSetupVersion = false;
+        public static void SetupForVersion()
+        {
+            if (hasSetupVersion)
+                return;
+
+            var version = GetGameVersion();
+
+            if (version < 50)
+            {
+                Constants.humanoidNames.Add("FGiantModelContainer");
+                Constants.humanoidNames.Add("ForestGiant(Clone)");
+            }
+
+            hasSetupVersion = true;
+        }
     }
 }
