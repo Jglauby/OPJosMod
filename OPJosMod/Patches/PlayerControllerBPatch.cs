@@ -107,7 +107,7 @@ namespace OPJosMod.LagJutsu.Patches
                     {
                         //lastSafeLocations.RemoveAt(i);
                         StartOfRound.Instance.localPlayerController.transform.position = lastSafeLocations[i];
-                        mls.LogMessage($"teleport player to: {lastSafeLocations[i]}");
+                        //mls.LogMessage($"teleport player to: {lastSafeLocations[i]}");
 
                         return;
                     }
