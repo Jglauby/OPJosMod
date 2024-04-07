@@ -11,7 +11,7 @@ namespace OPJosMod.LagJutsu
     {
         private const string modGUID = "OpJosMod.LagJutsu";
         private const string modName = "LagJutsu";
-        private const string modVersion = "1.2.0"; 
+        private const string modVersion = "1.3.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
