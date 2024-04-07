@@ -48,6 +48,11 @@ namespace OPJosMod.OneHitShovel
                 Constants.humanoidNames.Add("FGiantModelContainer");
                 Constants.humanoidNames.Add("ForestGiant(Clone)");
             }
+            else
+            {
+                //Constants.humanoidNames.Add("ClawTrigger");
+                //Constants.humanoidNames.Add("RadMechEnemy(Clone)");
+            }
 
             hasSetupVersion = true;
         }

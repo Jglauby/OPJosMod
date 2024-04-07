@@ -55,7 +55,7 @@ namespace OPJosMod.OneHitShovel.CustomRpc
                     handleKillEnemyMessage(decodedMessage);
                 }
 
-                SendRpcResponse(decodedMessage);
+                //SendRpcResponse(decodedMessage);
             }
             else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
             {

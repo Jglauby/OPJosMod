@@ -1,7 +1,9 @@
 ﻿using BepInEx.Logging;
+using GameNetcodeStuff;
 using OPJosMod.OneHitShovel.CustomRpc;
 using OPJosMod.OneHitShovel.Utils;
 using System;
+using System.Collections;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -44,6 +46,34 @@ namespace OPJosMod.OneHitShovel
             {
                 mls.LogMessage("enemy ai is null");
             }          
+        }
+
+        public static IEnumerator KillMech(Vector3 hitLocation, bool updateOnServer = false)
+        {
+            var enemyAI = findClosestEnemyAI(hitLocation);
+            try//try catch so it doesnt crash in older versions taht dont have radMechs
+            {
+                mls.LogMessage("trying to kill mech");
+                if (enemyAI is RadMechAI)
+                {
+                    RadMechAI radMech = (RadMechAI)enemyAI;
+                    radMech.StopAllCoroutines();
+                    killHumanoid(radMech.gameObject);
+                    
+                    if (updateOnServer)
+                        updateLocationOnServer(radMech.gameObject);
+
+                    radMech.DisableSpotlight();
+                    radMech.DisableBlowtorch();             
+                    radMech.DisableThrusterSmoke();
+                    radMech.enemyHP = 0;
+                    radMech.engineSFX.enabled = false;                   
+                }
+            }
+            catch { }
+
+            yield return new WaitForSeconds(0.2f);
+            killHumanoid(enemyAI.gameObject);
         }
 
         public static void killInPlace(GameObject gameObject)
@@ -244,6 +274,11 @@ namespace OPJosMod.OneHitShovel
                 if (Constants.slimeNames.Contains(gameObject.name))
                 {
                     CustomEnemyDeaths.killSlime(gameObject);
+                }
+
+                if (gameObject.name == "RadMechEnemy(Clone)")
+                {
+                    StartOfRound.Instance.localPlayerController.StartCoroutine(KillMech(gameObject.transform.position));
                 }
 
                 if (gameObject.name != null)
