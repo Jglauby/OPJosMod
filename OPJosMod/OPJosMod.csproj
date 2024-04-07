@@ -73,6 +73,7 @@
     <Compile Include="Patches\MaskedPlayerEnemyPatch.cs" />
     <Compile Include="Patches\HauntedMaskItemPatch.cs" />
     <Compile Include="Patches\CentipedeAIPatch.cs" />
+    <Compile Include="Patches\RadMechAIPatch.cs" />
     <Compile Include="Patches\MouthDogAIPatch.cs" />
     <Compile Include="Patches\FlowermanAIPatch.cs" />
     <Compile Include="Patches\CrawlerAIPatch.cs" />

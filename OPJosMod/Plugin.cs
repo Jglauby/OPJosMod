@@ -38,6 +38,7 @@ namespace OPJosMod.LagJutsu
             MouthDogAIPatch.SetLogSource(mls);
             HauntedMaskItemPatch.SetLogSource(mls);
             MaskedPlayerEnemyPatch.SetLogSource(mls);
+            RadMechAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
