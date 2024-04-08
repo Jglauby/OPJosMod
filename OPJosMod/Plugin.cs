@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.LagJutsu.Patches;
+using OPJosMod.LagJutsu.Utils;
 using UnityEngine.InputSystem;
 
 namespace OPJosMod.LagJutsu
@@ -30,17 +31,33 @@ namespace OPJosMod.LagJutsu
             setupConfig();
 
             PlayerControllerBPatch.SetLogSource(mls);
-            EnemyAIPatch.SetLogSource(mls);
-            ForestGiantAIPatch.SetLogSource(mls);
-            FlowermanAIPatch.SetLogSource(mls);
-            CentipedeAIPatch.SetLogSource(mls);
-            CrawlerAIPatch.SetLogSource(mls);
-            MouthDogAIPatch.SetLogSource(mls);
-            HauntedMaskItemPatch.SetLogSource(mls);
-            MaskedPlayerEnemyPatch.SetLogSource(mls);
-            RadMechAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(PlayerControllerBPatch));
 
-            harmony.PatchAll();
+            EnemyAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(EnemyAIPatch));
+
+            ForestGiantAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(ForestGiantAIPatch));
+
+            FlowermanAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(FlowermanAIPatch));
+
+            CentipedeAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(CentipedeAIPatch));
+
+            CrawlerAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(CrawlerAIPatch));
+
+            MouthDogAIPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(MouthDogAIPatch));
+
+            HauntedMaskItemPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(HauntedMaskItemPatch));
+
+            MaskedPlayerEnemyPatch.SetLogSource(mls);
+            harmony.PatchAll(typeof(MaskedPlayerEnemyPatch));
+
+            PlayerControllerBPatch.SetupVersion(Instance, harmony);
         }
 
         private void setupConfig()//example config setup

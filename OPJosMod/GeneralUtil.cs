@@ -1,4 +1,6 @@
-﻿using OPJosMod.LagJutsu.Patches;
+﻿using DunGen;
+using HarmonyLib;
+using OPJosMod.LagJutsu.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +35,39 @@ namespace OPJosMod.LagJutsu.Utils
             }
 
             return result;
+        }
+
+        public static int GetGameVersion()
+        {
+            try
+            {
+                var version = GameNetworkManager.Instance.gameVersionNum;
+                return version;
+            }
+            catch { }
+
+            return 0;
+        }
+
+        private static bool hasSetupVersion = false;
+        public static void SetupForVersion(OpJosMod instance, Harmony harmony)
+        {
+            if (hasSetupVersion)
+                return;
+
+            var version = GetGameVersion();
+
+            if (version == 0)
+                return;
+
+            if (version >= 50)
+            {
+                instance.mls.LogMessage("version is >= 50");
+                RadMechAIPatch.SetLogSource(instance.mls);
+                harmony.PatchAll(typeof(RadMechAIPatch));
+            }
+
+            hasSetupVersion = true;
         }
     }
 }

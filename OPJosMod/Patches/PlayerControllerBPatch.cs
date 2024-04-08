@@ -33,6 +33,18 @@ namespace OPJosMod.LagJutsu.Patches
 
         private static float lastUpdatedKnownEnemies = Time.time;
 
+        private static OpJosMod modInstance = null;
+        private static Harmony harmonyInstance = null;
+        public static void SetupVersion(OpJosMod instance, Harmony harmony)
+        {
+            if (instance == null || harmony == null)
+                return;
+
+            modInstance = instance;
+            harmonyInstance = harmony;
+            GeneralUtil.SetupForVersion(instance, harmony);
+        }
+
         [HarmonyPatch("Start")]
         [HarmonyPrefix]
         static void startPatch(PlayerControllerB __instance)
@@ -45,6 +57,8 @@ namespace OPJosMod.LagJutsu.Patches
         [HarmonyPrefix]
         static void patchUpdate(PlayerControllerB __instance)
         {
+            SetupVersion(modInstance, harmonyInstance);
+
             if (StartOfRound.Instance.localPlayerController == null)
                 return;
 
