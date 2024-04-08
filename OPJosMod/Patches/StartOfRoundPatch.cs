@@ -76,7 +76,7 @@ namespace OPJosMode.HideNSeek.Patches
         {
             if (GameNetworkManager.Instance.isHostingGame)
             {
-                int[] array = new int[4] { 1, 2, 3, 24 };
+                int[] array = new int[6] { 1, 2, 3, 24, 25, 26 };
                 foreach (int num in array)
                 {
                     ReflectionUtils.InvokeMethod(StartOfRound.Instance, "SpawnUnlockable", new object[] { num });
