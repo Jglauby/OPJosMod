@@ -439,51 +439,58 @@ namespace OPJosMod.GhostMode.Patches
                 }
                 catch { }
 
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)61]).wasPressedThisFrame)//left was clicked
+                try
                 {
-                    if (isTeleporting)
-                        return;
-
-                    isTeleporting = true;
-                    var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                    for (int i = 0; i < allPlayers.Length; i++)
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.teleportToPlayerBackwardButton]).wasPressedThisFrame)//left was clicked
                     {
-                        tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
-                        mls.LogMessage($"tp index:{tpPlayerIndex}");
-                        if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
-                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
-                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
-                        {
-                            var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
-                            mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
-                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                        if (isTeleporting)
                             return;
+
+                        isTeleporting = true;
+                        var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                        for (int i = 0; i < allPlayers.Length; i++)
+                        {
+                            tpPlayerIndex = (tpPlayerIndex - 1 + allPlayers.Length) % allPlayers.Length;
+                            mls.LogMessage($"tp index:{tpPlayerIndex}");
+                            if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
+                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
+                            {
+                                var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                                mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
+                                tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                                return;
+                            }
+                        }
+                    }
+                } catch { }
+
+                try
+                {
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.teleportToPlayerForwardButton]).wasPressedThisFrame)//right was clicked
+                    {
+                        if (isTeleporting)
+                            return;
+
+                        isTeleporting = true;
+                        var allPlayers = StartOfRound.Instance.allPlayerScripts;
+                        for (int i = 0; i < allPlayers.Length; i++)
+                        {
+                            tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
+                            mls.LogMessage($"tp index:{tpPlayerIndex}");
+                            if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
+                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
+                                && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
+                            {
+                                var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
+                                mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
+                                tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
+                                return;
+                            }
                         }
                     }
                 }
-
-                if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)62]).wasPressedThisFrame)//right was clicked
-                {
-                    if (isTeleporting)
-                        return;
-
-                    isTeleporting = true;
-                    var allPlayers = StartOfRound.Instance.allPlayerScripts;
-                    for (int i = 0; i < allPlayers.Length; i++)
-                    {
-                        tpPlayerIndex = (tpPlayerIndex + 1) % allPlayers.Length;
-                        mls.LogMessage($"tp index:{tpPlayerIndex}");
-                        if (!__instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerDead
-                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].isPlayerControlled
-                            && __instance.playersManager.allPlayerScripts[tpPlayerIndex].playerClientId != StartOfRound.Instance.localPlayerController.playerClientId)
-                        {
-                            var tpMessage = $"(Teleported to:{__instance.playersManager.allPlayerScripts[tpPlayerIndex].playerUsername})";
-                            mls.LogMessage($"tp index:{tpPlayerIndex} playerName:{tpMessage}");
-                            tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, __instance.playersManager.allPlayerScripts[tpPlayerIndex].transform.position, tpMessage));
-                            return;
-                        }
-                    }
-                }
+                catch { }
 
                 //toggle night vision
                 try

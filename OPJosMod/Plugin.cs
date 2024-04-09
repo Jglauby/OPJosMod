@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.5.5";
+        private const string modVersion = "2.5.6";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -120,6 +120,16 @@ namespace OPJosMod.GhostMode
                                         false,
                                         "Enemies are able to detect you as a ghost, true or false");
 
+            var configTeleportPlayerToPlayer1 = Config.Bind("Teleport to Player 1",
+                                        "TeleportToPlayerForward",
+                                        Key.RightArrow,
+                                        "Button to other players forward in the list of players");
+
+            var configTeleportPlayerToPlayer2 = Config.Bind("Teleport to Player 2",
+                                        "TeleportToPlayerBackward",
+                                        Key.LeftArrow,
+                                        "Button to teleport you to other players backwards in the list of players");
+
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
             ConfigVariables.canPickupScrap = configCanGrabScrap.Value;
 
@@ -130,6 +140,8 @@ namespace OPJosMod.GhostMode
             ConfigVariables.switchToSpectateButton = configSwitchToSpectateButton.Value;
             ConfigVariables.toggleNoClipButton = configToggleNoClipButton.Value;
             ConfigVariables.teleportShipButton = configTeleportShipButton.Value;
+            ConfigVariables.teleportToPlayerForwardButton = configTeleportPlayerToPlayer1.Value;
+            ConfigVariables.teleportToPlayerBackwardButton = configTeleportPlayerToPlayer2.Value;
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
             ConfigVariables.OPness = configOPness.Value;

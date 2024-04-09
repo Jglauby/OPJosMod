@@ -19,5 +19,7 @@ namespace OPJosMod
         public static Key teleportShipButton;
         public static bool enemiesDetectYou;
         public static bool canPickupScrap;
+        public static Key teleportToPlayerForwardButton;
+        public static Key teleportToPlayerBackwardButton;
     }
 }
