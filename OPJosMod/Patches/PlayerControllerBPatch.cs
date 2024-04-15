@@ -211,29 +211,18 @@ namespace OPJosMod.TheFlash.Patches
                     agent.speed = 5f * multiplier;
                     agent.acceleration = 250f * (multiplier / 2);
                     agent.angularSpeed = 1000f * (multiplier / 2);
-                    agent.stoppingDistance = 0.2f; // Reduce stopping distance for precision
-                    agent.autoBraking = true; // Set to false to manually control braking
-                    agent.autoTraverseOffMeshLink = false; // Set to false to manually handle off mesh link traversal
-                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance; // Use high quality obstacle avoidance for better precision
+                    agent.stoppingDistance = 0.2f; 
+                    agent.autoBraking = false; 
+                    agent.autoTraverseOffMeshLink = true; 
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance; 
 
                     // Advanced Settings
-                    agent.radius = 0.4f; // Reduce the radius for better precision around corners and doorways
-                    agent.height = 2.0f; // Increase height for better clearance
+                    agent.radius = 0.4f;
+                    agent.height = 2.0f; 
                     agent.avoidancePriority = 50;
-
-                    // Off Mesh Link Settings
-                    agent.autoRepath = true; // Enable auto repathing for off mesh link traversal
-                    agent.autoTraverseOffMeshLink = true; // Allow agent to traverse off mesh links automatically
-                    agent.autoBraking = true; // Set autoBraking back to true for normal path following
-                    
-                    // Turn off auto braking on completion
-                    agent.autoBraking = false;
-
-                    // Always face the next waypoint directly
+                    agent.autoRepath = true; 
                     agent.updateRotation = true;
                     agent.updatePosition = true;
-
-                    // Force agent to stay on navmesh
                     agent.updateUpAxis = false;
 
                     hasInitialized = true;
