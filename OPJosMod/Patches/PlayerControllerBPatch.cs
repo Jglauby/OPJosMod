@@ -778,62 +778,84 @@ namespace OPJosMod.GhostMode.Patches
 
         private static void handleNoClipControls(PlayerControllerB __instance)
         {
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)37]).isPressed)//W is pressed
+            try
             {
-                var currentRotation = __instance.transform.rotation;
+                if (((ButtonControl)Keyboard.current[ConfigVariables.noClipForwardButton]).isPressed)//W is pressed
+                {
+                    var currentRotation = __instance.transform.rotation;
 
-                Vector3 moveDirection = currentRotation * Vector3.forward;
-                moveDirection.Normalize();
+                    Vector3 moveDirection = currentRotation * Vector3.forward;
+                    moveDirection.Normalize();
 
-                __instance.transform.position += moveDirection * ConfigVariables.noClipSpeed;
-            }
+                    __instance.transform.position += moveDirection * ConfigVariables.noClipSpeed;
+                }
+            } catch { }
 
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)0xF]).isPressed)//A is pressed
+            try
             {
-                var currentRotation = __instance.transform.rotation;
+                if (((ButtonControl)Keyboard.current[ConfigVariables.noClipLeftButton]).isPressed)//A is pressed
+                {
+                    var currentRotation = __instance.transform.rotation;
 
-                Quaternion leftRotation = Quaternion.AngleAxis(-90f, Vector3.up);
-                Vector3 leftDirection = leftRotation * currentRotation * Vector3.forward;
-                leftDirection.Normalize();
+                    Quaternion leftRotation = Quaternion.AngleAxis(-90f, Vector3.up);
+                    Vector3 leftDirection = leftRotation * currentRotation * Vector3.forward;
+                    leftDirection.Normalize();
 
-                __instance.transform.position += leftDirection * ConfigVariables.noClipSpeed;
+                    __instance.transform.position += leftDirection * ConfigVariables.noClipSpeed;
+                }
             }
+            catch { }
 
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)18]).isPressed)//D is pressed
+            try
             {
-                var currentRotation = __instance.transform.rotation;
+                if (((ButtonControl)Keyboard.current[ConfigVariables.noClipRightButton]).isPressed)//D is pressed
+                {
+                    var currentRotation = __instance.transform.rotation;
 
-                Quaternion rightRotation = Quaternion.AngleAxis(90f, Vector3.up);
-                Vector3 rightDirection = rightRotation * currentRotation * Vector3.forward;
-                rightDirection.Normalize();
+                    Quaternion rightRotation = Quaternion.AngleAxis(90f, Vector3.up);
+                    Vector3 rightDirection = rightRotation * currentRotation * Vector3.forward;
+                    rightDirection.Normalize();
 
-                __instance.transform.position += rightDirection * ConfigVariables.noClipSpeed;
+                    __instance.transform.position += rightDirection * ConfigVariables.noClipSpeed;
+                }
             }
+            catch { }
 
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)33]).isPressed)//S is pressed
+            try
             {
-                var currentRotation = __instance.transform.rotation;
+                if (((ButtonControl)Keyboard.current[ConfigVariables.noClipBackwardButton]).isPressed)//S is pressed
+                {
+                    var currentRotation = __instance.transform.rotation;
 
-                Vector3 backwardDirection = currentRotation * Vector3.back;
-                backwardDirection.Normalize();
+                    Vector3 backwardDirection = currentRotation * Vector3.back;
+                    backwardDirection.Normalize();
 
-                __instance.transform.position += backwardDirection * ConfigVariables.noClipSpeed;
+                    __instance.transform.position += backwardDirection * ConfigVariables.noClipSpeed;
+                }
             }
+            catch { }
 
-
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)1]).isPressed)//space is pressed
+            try
             {
-                Vector3 upDirection = Vector3.up;
+                if (((ButtonControl)Keyboard.current[ConfigVariables.noClipUpButton]).isPressed)//space is pressed
+                {
+                    Vector3 upDirection = Vector3.up;
 
-                __instance.transform.position += upDirection * ConfigVariables.noClipSpeed;
+                    __instance.transform.position += upDirection * ConfigVariables.noClipSpeed;
+                }
             }
+            catch { }
 
-            if (((ButtonControl)Keyboard.current[(UnityEngine.InputSystem.Key)51]).isPressed)//left shift is pressed
+            try
             {
-                Vector3 upDirection = -Vector3.up;
+                if (((ButtonControl)Keyboard.current[ConfigVariables.noClipDownButton]).isPressed)//left shift is pressed
+                {
+                    Vector3 upDirection = -Vector3.up;
 
-                __instance.transform.position += upDirection * ConfigVariables.noClipSpeed;
+                    __instance.transform.position += upDirection * ConfigVariables.noClipSpeed;
+                }
             }
+            catch { }
         }
 
         private static void reviveDeadPlayer(PlayerControllerB __instance)

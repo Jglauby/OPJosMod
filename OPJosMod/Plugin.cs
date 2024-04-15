@@ -18,7 +18,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.5.6";
+        private const string modVersion = "2.5.7";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -105,16 +105,6 @@ namespace OPJosMod.GhostMode
                                         Key.O,
                                         "Button to switch back to specate mode");
 
-            var configToggleNoClipButton = Config.Bind("Toggle NoClip Mode Button",
-                                        "ToggleNoClipModeButton",
-                                        Key.Z,
-                                        "Button to enter/leave no clip mode");
-
-            var configNoClipFlySpeed = Config.Bind("NoClip Flight Speed",
-                                        "NoClipFlightSpeed",
-                                        0.27f,
-                                        "How fast you move while in no clip");
-
             var configEnemyDetection = Config.Bind("Enemies Detect Ghost",
                                         "EnemiesDetectGhost",
                                         false,
@@ -129,6 +119,46 @@ namespace OPJosMod.GhostMode
                                         "TeleportToPlayerBackward",
                                         Key.LeftArrow,
                                         "Button to teleport you to other players backwards in the list of players");
+
+            var configToggleNoClipButton = Config.Bind("Toggle NoClip Mode Button",
+                            "ToggleNoClipModeButton",
+                            Key.Z,
+                            "Button to enter/leave no clip mode");
+
+            var configNoClipFlySpeed = Config.Bind("NoClip Flight Speed",
+                                        "NoClipFlightSpeed",
+                                        0.27f,
+                                        "How fast you move while in no clip");
+
+            var configNoClipFlyForwardButton = Config.Bind("NoClip Forward Button",
+                            "NoClipForwardButton",
+                            Key.W,
+                            "Button to move forward in no clip mode");
+
+            var configNoClipFlyBackwardButton = Config.Bind("NoClip Backward Button",
+                            "NoClipBackwardButton",
+                            Key.S,
+                            "Button to move backwards in no clip mode");
+
+            var configNoClipFlyLeftButton = Config.Bind("NoClip Left Button",
+                            "NoClipLeftButton",
+                            Key.A,
+                            "Button to move left in no clip mode");
+
+            var configNoClipFlyRightButton = Config.Bind("NoClip Right Button",
+                            "NoClipRightButton",
+                            Key.D,
+                            "Button to move right in no clip mode");
+
+            var configNoClipFlyUpButton = Config.Bind("NoClip Up Button",
+                            "NoClipUpButton",
+                            Key.Space,
+                            "Button to move up in no clip mode");
+
+            var configNoClipFlyDownButton = Config.Bind("NoClip Down Button",
+                            "NoClipDownButton",
+                            Key.LeftShift,
+                            "Button to move down in no clip mode");
 
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
             ConfigVariables.canPickupScrap = configCanGrabScrap.Value;
@@ -146,6 +176,13 @@ namespace OPJosMod.GhostMode
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
             ConfigVariables.OPness = configOPness.Value;
             ConfigVariables.enemiesDetectYou = configEnemyDetection.Value;
+
+            ConfigVariables.noClipForwardButton = configNoClipFlyForwardButton.Value;
+            ConfigVariables.noClipBackwardButton = configNoClipFlyBackwardButton.Value;
+            ConfigVariables.noClipLeftButton = configNoClipFlyLeftButton.Value;
+            ConfigVariables.noClipRightButton = configNoClipFlyRightButton.Value;
+            ConfigVariables.noClipUpButton = configNoClipFlyUpButton.Value;
+            ConfigVariables.noClipDownButton = configNoClipFlyDownButton.Value;
 
             Config.Save();
         }

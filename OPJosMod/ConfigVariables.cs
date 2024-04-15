@@ -21,5 +21,11 @@ namespace OPJosMod
         public static bool canPickupScrap;
         public static Key teleportToPlayerForwardButton;
         public static Key teleportToPlayerBackwardButton;
+        public static Key noClipForwardButton;
+        public static Key noClipBackwardButton;
+        public static Key noClipLeftButton;
+        public static Key noClipRightButton;
+        public static Key noClipUpButton;
+        public static Key noClipDownButton;
     }
 }
