@@ -55,6 +55,7 @@ namespace OPJosMod.LagJutsu.Patches
                 updateKnownEnemies();
 
                 //handle saving last locations you were safe at
+                var spawnLocation = RoundManager.Instance.playersManager.playerSpawnPositions[0].position;
                 if (Time.time - lastTimeAddedLocation > 0.1 && __instance.thisController.isGrounded)
                 {
                     //remove earliest in list if listsize is at max
@@ -64,7 +65,8 @@ namespace OPJosMod.LagJutsu.Patches
                     //dont save the last safe location if it is basically the same spot as the last one that was saved
                     if (lastSafeLocations.Count > 0)
                     {
-                        if (!GeneralUtil.AreVectorsClose(__instance.transform.position, lastSafeLocations[lastSafeLocations.Count - 1], 0.5f))
+                        if (!GeneralUtil.AreVectorsClose(__instance.transform.position, lastSafeLocations[lastSafeLocations.Count - 1], 0.5f)
+                            && Vector3.Distance(spawnLocation, __instance.transform.position) > 10)
                         {
                             lastSafeLocations.Add(__instance.transform.position);
                             lastTimeAddedLocation = Time.time;
@@ -72,7 +74,7 @@ namespace OPJosMod.LagJutsu.Patches
                     }
                     else
                     {
-                        lastSafeLocations.Add(__instance.transform.position);
+                        lastSafeLocations.Add(spawnLocation);
                         lastTimeAddedLocation = Time.time;
                     }
                 }
