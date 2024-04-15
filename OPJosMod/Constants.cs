@@ -25,5 +25,7 @@ namespace OPJosMod.OneHitShovel
         
         public static string[] slimeNames = new string[] { "BoneEast", "BoneNorth", "BoneSouth", "BoneWest",
                 "BoneNorthWest", "BoneNorthEast", "BoneSouthEast", "BoneSouthWest", "Center", "Blob(Clone)"};
+
+        public static string[] mechNames = new string[] { "ClawTrigger", "RadMechEnemy(Clone)" };
     }
 }

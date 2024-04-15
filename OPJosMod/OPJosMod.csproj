@@ -80,7 +80,6 @@
     <Compile Include="CustomRpc\RpcMessageHandler.cs" />
     <Compile Include="CustomRpc\HudManagerPatchForRPC.cs" />
     <Compile Include="GeneralUtil.cs" />
-    <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Patches\ShovelPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

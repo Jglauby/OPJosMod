@@ -5,6 +5,7 @@ using OPJosMod.OneHitShovel.Utils;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading;
 using Unity.Netcode;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -67,7 +68,16 @@ namespace OPJosMod.OneHitShovel
                     radMech.DisableBlowtorch();             
                     radMech.DisableThrusterSmoke();
                     radMech.enemyHP = 0;
-                    radMech.engineSFX.enabled = false;                   
+                    radMech.engineSFX.enabled = false;
+
+                    //mute
+                    radMech.chargeForwardAudio.volume = 0f;
+                    radMech.engineSFX.volume = 0f;
+                    radMech.flyingDistantAudio.volume = 0f;
+                    radMech.spotlightOnAudio.volume = 0f;
+                    radMech.LocalLRADAudio.volume = 0f;
+                    radMech.LocalLRADAudio2.volume = 0f;
+                    radMech.blowtorchAudio.volume = 0f;
                 }
             }
             catch { }
@@ -276,7 +286,7 @@ namespace OPJosMod.OneHitShovel
                     CustomEnemyDeaths.killSlime(gameObject);
                 }
 
-                if (gameObject.name == "RadMechEnemy(Clone)")
+                if (Constants.mechNames.Contains(gameObject.name))
                 {
                     StartOfRound.Instance.localPlayerController.StartCoroutine(KillMech(gameObject.transform.position));
                 }

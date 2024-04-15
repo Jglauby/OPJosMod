@@ -34,27 +34,5 @@ namespace OPJosMod.OneHitShovel
             
             return 0;
         }
-
-        private static bool hasSetupVersion = false;
-        public static void SetupForVersion()
-        {
-            if (hasSetupVersion)
-                return;
-
-            var version = GetGameVersion();
-
-            if (version < 50)
-            {
-                Constants.humanoidNames.Add("FGiantModelContainer");
-                Constants.humanoidNames.Add("ForestGiant(Clone)");
-            }
-            else
-            {
-                //Constants.humanoidNames.Add("ClawTrigger");
-                //Constants.humanoidNames.Add("RadMechEnemy(Clone)");
-            }
-
-            hasSetupVersion = true;
-        }
     }
 }
