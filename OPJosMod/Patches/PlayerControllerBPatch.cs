@@ -33,18 +33,6 @@ namespace OPJosMod.LagJutsu.Patches
 
         private static float lastUpdatedKnownEnemies = Time.time;
 
-        private static OpJosMod modInstance = null;
-        private static Harmony harmonyInstance = null;
-        public static void SetupVersion(OpJosMod instance, Harmony harmony)
-        {
-            if (instance == null || harmony == null)
-                return;
-
-            modInstance = instance;
-            harmonyInstance = harmony;
-            GeneralUtil.SetupForVersion(instance, harmony);
-        }
-
         [HarmonyPatch("Start")]
         [HarmonyPrefix]
         static void startPatch(PlayerControllerB __instance)
@@ -57,8 +45,6 @@ namespace OPJosMod.LagJutsu.Patches
         [HarmonyPrefix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            SetupVersion(modInstance, harmonyInstance);
-
             if (StartOfRound.Instance.localPlayerController == null)
                 return;
 
@@ -117,7 +103,7 @@ namespace OPJosMod.LagJutsu.Patches
                 for (int i = lastSafeLocations.Count - 1; i >= 0; i--)
                 {
                     var playerLocation = StartOfRound.Instance.localPlayerController.transform.position;
-                    if (!GeneralUtil.ExistsCloseEnemy(lastSafeLocations[i]) && !GeneralUtil.AreVectorsClose(lastSafeLocations[i], playerLocation, 1f))
+                    if (!GeneralUtil.ExistsCloseEnemy(lastSafeLocations[i]) && !GeneralUtil.AreVectorsClose(lastSafeLocations[i], playerLocation, 1.5f))
                     {
                         //lastSafeLocations.RemoveAt(i);
                         StartOfRound.Instance.localPlayerController.transform.position = lastSafeLocations[i];

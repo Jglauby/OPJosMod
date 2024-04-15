@@ -48,26 +48,5 @@ namespace OPJosMod.LagJutsu.Utils
 
             return 0;
         }
-
-        private static bool hasSetupVersion = false;
-        public static void SetupForVersion(OpJosMod instance, Harmony harmony)
-        {
-            if (hasSetupVersion)
-                return;
-
-            var version = GetGameVersion();
-
-            if (version == 0)
-                return;
-
-            if (version >= 50)
-            {
-                instance.mls.LogMessage("version is >= 50");
-                RadMechAIPatch.SetLogSource(instance.mls);
-                harmony.PatchAll(typeof(RadMechAIPatch));
-            }
-
-            hasSetupVersion = true;
-        }
     }
 }

@@ -12,7 +12,7 @@ namespace OPJosMod.LagJutsu
     {
         private const string modGUID = "OpJosMod.LagJutsu";
         private const string modName = "LagJutsu";
-        private const string modVersion = "1.3.0"; 
+        private const string modVersion = "1.4.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -31,33 +31,17 @@ namespace OPJosMod.LagJutsu
             setupConfig();
 
             PlayerControllerBPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
-
             EnemyAIPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(EnemyAIPatch));
-
             ForestGiantAIPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(ForestGiantAIPatch));
-
             FlowermanAIPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(FlowermanAIPatch));
-
             CentipedeAIPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(CentipedeAIPatch));
-
             CrawlerAIPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(CrawlerAIPatch));
-
             MouthDogAIPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(MouthDogAIPatch));
-
             HauntedMaskItemPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(HauntedMaskItemPatch));
-
             MaskedPlayerEnemyPatch.SetLogSource(mls);
-            harmony.PatchAll(typeof(MaskedPlayerEnemyPatch));
+            RadMechAIPatch.SetLogSource(mls);
 
-            PlayerControllerBPatch.SetupVersion(Instance, harmony);
+            harmony.PatchAll();
         }
 
         private void setupConfig()//example config setup
