@@ -11,7 +11,7 @@ namespace OPJosMod.BreadCrumbs
     {
         private const string modGUID = "OpJosMod.BreadCrumbs";
         private const string modName = "BreadCrumbs";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.1.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;

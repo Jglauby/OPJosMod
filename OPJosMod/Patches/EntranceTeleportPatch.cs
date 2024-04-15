@@ -30,6 +30,7 @@ namespace OPJosMod.BreadCrumbs.Patches
         [HarmonyPostfix]
         static void TeleportPlayerPatch()
         {
+            PlayerControllerBPatch.RemoveMeshForPlayer();
             PlayerControllerBPatch.InitializeNaveMeshForPlayer();
         }      
     }

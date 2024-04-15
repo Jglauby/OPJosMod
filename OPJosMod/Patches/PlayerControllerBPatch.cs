@@ -49,6 +49,16 @@ namespace OPJosMod.BreadCrumbs.Patches
             }
 
             AutoWalk(__instance);
+
+            //prevents manual camera movement while auto walking is on
+            //if (((Behaviour)(object)agent).enabled == true)
+            //{
+            //    __instance.playerActions.Movement.Disable();
+            //}
+            //else
+            //{
+            //    __instance.playerActions.Movement.Enable();
+            //}
         }
 
         [HarmonyPatch("KillPlayer")]
@@ -132,9 +142,9 @@ namespace OPJosMod.BreadCrumbs.Patches
 
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
 
-                    agent.speed = 1f;
+                    agent.speed = 2f;
                     agent.acceleration = 25f;
-                    agent.angularSpeed = 125f;
+                    agent.angularSpeed = 225f;
                     agent.stoppingDistance = 0.5f; 
                     agent.autoBraking = false;
                     agent.autoTraverseOffMeshLink = false; 
