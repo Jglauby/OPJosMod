@@ -55,6 +55,7 @@ namespace OPJosMod.GhostMode
             JesterAIPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
             RadMechAIPatch.SetLogSource(mls);
+            ButlerEnemyAIPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }

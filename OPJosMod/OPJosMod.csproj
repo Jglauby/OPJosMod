@@ -105,6 +105,7 @@
     <Compile Include="OPnessModes.cs" />
     <Compile Include="Patches\EnemyPatches\CrawlerAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\FlowermanAIPatch.cs" />
+    <Compile Include="Patches\EnemyPatches\ButlerEnemyAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\RadMechAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\LandminePatch.cs" />
     <Compile Include="Patches\EnemyPatches\MaskedPlayerEnemyPatch.cs" />
