@@ -28,7 +28,7 @@ namespace OPJosMod.HealthRegen.Patches
         {
             if (__instance.health < 100 && !isHealing)
             {
-                __instance.StartCoroutine(HealPlayer(__instance, 10f));
+                __instance.StartCoroutine(HealPlayer(__instance, ConfigVariables.healFrequency));
             }
         }
 
@@ -40,7 +40,7 @@ namespace OPJosMod.HealthRegen.Patches
             if (player.health < 100 && !player.isPlayerDead)
             {
                 int healthToAddCritical = 1;
-                int healthToAdd = 4;
+                int healthToAdd = ConfigVariables.healAmount;
 
                 if (player.criticallyInjured || player.health <= 10)
                 {

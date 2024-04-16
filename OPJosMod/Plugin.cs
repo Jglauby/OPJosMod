@@ -15,7 +15,7 @@ namespace OPJosMod.HealthRegen
     {
         private const string modGUID = "OpJosMod.HealthRegen";
         private const string modName = "Health Regen";
-        private const string modVersion = "1.0.0.0";
+        private const string modVersion = "1.1.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -30,13 +30,28 @@ namespace OPJosMod.HealthRegen
             }
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-
             mls.LogInfo("mod has started");
+            setupConfig();
 
             harmony.PatchAll(typeof(OpJosMod));
 
             Patches.PlayerControllerBPatch.SetLogSource(mls);
             harmony.PatchAll(typeof(PlayerControllerBPatch));
+        }
+
+        private void setupConfig()//example config setup
+        {
+            var configHealFrequency = Config.Bind("Heal Frequency",
+                                        "HealFrequency",
+                                        10f,
+                                        "How many seconds between each time you heal");
+
+            var configHealthToAdd = Config.Bind("Heal Amount",
+                                        "HealAmount",
+                                        4,
+                                        "How much you heal");
+
+            ConfigVariables.healFrequency = configHealFrequency.Value;
         }
     }
 }

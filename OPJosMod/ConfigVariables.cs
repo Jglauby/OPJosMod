@@ -1,0 +1,15 @@
+﻿using DunGen;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OPJosMod
+{
+    public static class ConfigVariables 
+    {
+        public static float healFrequency;
+        public static int healAmount;
+    }
+}
