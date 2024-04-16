@@ -111,14 +111,14 @@ namespace OPJosMod.GhostMode.Patches
         [HarmonyPrefix]
         static bool killEnemyPatch(EnemyAI __instance)
         {
-            mls.LogMessage("enemy ai tried hit killEnemyPatch");
-            if (PlayerControllerBPatch.isGhostMode && __instance.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
-            {
-                mls.LogMessage("enemy ai tried to direclty kill player");
-                return false;
-            }
+            return stopKill(__instance);
+        }
 
-            return true;
+        [HarmonyPatch("KillEnemyOnOwnerClient")]
+        [HarmonyPrefix]
+        static bool patchKillEnemyOnOwnerClient(EnemyAI __instance)
+        {
+            return stopKill(__instance);
         }
 
         [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
@@ -206,6 +206,18 @@ namespace OPJosMod.GhostMode.Patches
             }
 
             return false;
+        }
+
+        private static bool stopKill(EnemyAI enemy)
+        {
+            mls.LogMessage("enemy ai tried hit killEnemyPatch");
+            if (PlayerControllerBPatch.isGhostMode && enemy.GetClosestPlayer().playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            {
+                mls.LogMessage("enemy ai tried to direclty kill player");
+                return false;
+            }
+
+            return true;
         }
     }
 }
