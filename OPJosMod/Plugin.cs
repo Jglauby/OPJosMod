@@ -15,7 +15,7 @@ namespace OPJosMod.SaferJeptack
     {
         private const string modGUID = "OpJosMod.SaferJetpack";
         private const string modName = "SaferJetpack";
-        private const string modVersion = "1.0.0.0";
+        private const string modVersion = "1.3.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;

@@ -22,69 +22,33 @@ namespace OPJosMod.Patches
 
         [HarmonyPatch("Update")]
         [HarmonyPrefix]
-        static void Update(JetpackItem __instance)
+        static bool Update(JetpackItem __instance)
         {
-            //dont continue if its not being held
-            if (__instance.playerHeldBy == null || !__instance.IsOwner || __instance.playerHeldBy != GameNetworkManager.Instance.localPlayerController)
+            if (__instance.playerHeldBy == null)
             {
-                return;
+                return true;
             }
 
-            //whole goal is to recreate the update funciton but without the killing part
-            if (__instance != null)
+            if (__instance.playerHeldBy == GameNetworkManager.Instance.localPlayerController)
             {
-                FieldInfo rayHitField = typeof(JetpackItem).GetField("rayHit", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo forcesField = typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo jetpackPowerField = typeof(JetpackItem).GetField("jetpackPower", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo jetpackActivatedField = typeof(JetpackItem).GetField("jetpackActivated", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (rayHitField != null && forcesField != null && jetpackPowerField != null && jetpackActivatedField != null)
-                {
-                    RaycastHit rayHit = (RaycastHit)rayHitField.GetValue(__instance);
-                    Vector3 forces = (Vector3)forcesField.GetValue(__instance);
-                    float jetpackPower = (float)jetpackPowerField.GetValue(__instance);
-                    bool jetpackActivated = (bool)jetpackActivatedField.GetValue(__instance);
-
-                    //make player not take fall damage
-                    __instance.playerHeldBy.takingFallDamage = false;
-                    __instance.playerHeldBy.averageVelocity = 0f;//make game think u arent going fast so u dont hurt yourself
-                    __instance.itemProperties.requiresBattery = false; // make it have infinite battery
-
-                    //----------update function---------------
-                    if (jetpackActivated)
-                    {
-                        jetpackPower = Mathf.Clamp(jetpackPower + Time.deltaTime * 10f, 0f, 500f);
-                    }
-                    else
-                    {
-                        jetpackPower = Mathf.Clamp(jetpackPower - Time.deltaTime * 75f, 0f, 1000f);
-                        if (__instance.playerHeldBy.thisController.isGrounded)
-                        {
-                            jetpackPower = 0f;
-                        }
-                    }
-                    forces = Vector3.Lerp(forces, Vector3.ClampMagnitude(__instance.playerHeldBy.transform.up * jetpackPower, 400f), Time.deltaTime);
-
-                    if (!__instance.playerHeldBy.isPlayerDead &&
-                        Physics.Raycast(__instance.playerHeldBy.transform.position, forces, out rayHit, 25f, StartOfRound.Instance.allPlayersCollideWithMask) &&
-                        forces.magnitude - rayHit.distance > 50f &&
-                        rayHit.distance < 4f)
-                    {
-                        //if (mls != null) { mls.LogInfo("SaferJetpack(success): should kill but won't"); }
-                        __instance.playerHeldBy.externalForces += forces;
-                        throw new Exception("SaferJetpack: Cancelling original Update method");
-                    }
-                    //-----update funciton-------
-                }
-                else
-                {
-                    if (mls != null) { mls.LogInfo("SaferJetpack(error): couldn't find a private field"); }
-                }
+                __instance.playerHeldBy.takingFallDamage = false;
+                __instance.playerHeldBy.averageVelocity = 0f;//make game think u arent going fast so u dont hurt yourself
+                __instance.itemProperties.requiresBattery = false; // make it have infinite battery
+                __instance.jetpackBeepsAudio.volume = 0f;
             }
-            else
+
+            FieldInfo rayHitField = typeof(JetpackItem).GetField("rayHit", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo forcesField = typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance);
+            RaycastHit rayHit = (RaycastHit)rayHitField.GetValue(__instance);
+            Vector3 forces = (Vector3)forcesField.GetValue(__instance);
+            if (!__instance.playerHeldBy.isPlayerDead && Physics.Raycast(__instance.playerHeldBy.transform.position, forces, out rayHit, 25f, StartOfRound.Instance.allPlayersCollideWithMask, QueryTriggerInteraction.Ignore) 
+                && forces.magnitude - rayHit.distance > 50f && rayHit.distance < 4f)
             {
-                if (mls != null) { mls.LogInfo("SaferJetpack(error): __instance == null"); }
+                //playerHeldBy.KillPlayer(forces, spawnBody: true, CauseOfDeath.Gravity);
+                return false;
             }
+
+            return true;
         }
     }
 }
