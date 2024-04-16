@@ -8,5 +8,6 @@ namespace OPJosMod.BreadCrumbs
     public static class ConfigVariables
     {
         public static Key retraceButton;
+        public static float walkingSpeed;
     }
 }

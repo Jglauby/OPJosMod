@@ -11,7 +11,7 @@ namespace OPJosMod.BreadCrumbs
     {
         private const string modGUID = "OpJosMod.BreadCrumbs";
         private const string modName = "BreadCrumbs";
-        private const string modVersion = "1.1.0";
+        private const string modVersion = "1.2.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -43,7 +43,13 @@ namespace OPJosMod.BreadCrumbs
                                         Key.H,
                                         "Button used to start walking back to the front door");
 
+            var configWalkSpeed = Config.Bind("Navigation Speed",
+                                        "NavigationSpeed",
+                                        2f,
+                                        "speed that it walks you towards the door");
+
             ConfigVariables.retraceButton = configRetraceButton.Value;
+            ConfigVariables.walkingSpeed = configWalkSpeed.Value;
         }
     }
 }

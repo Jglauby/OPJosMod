@@ -142,7 +142,7 @@ namespace OPJosMod.BreadCrumbs.Patches
 
                     agent = player.gameObject.AddComponent<NavMeshAgent>();
 
-                    agent.speed = 2f;
+                    agent.speed = ConfigVariables.walkingSpeed;
                     agent.acceleration = 25f;
                     agent.angularSpeed = 225f;
                     agent.stoppingDistance = 0.5f; 
