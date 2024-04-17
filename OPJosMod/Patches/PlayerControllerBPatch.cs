@@ -40,7 +40,10 @@ namespace OPJosMod.TheFlash.Patches
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
-        {            
+        {
+            if (!GlobalVariables.ModActivated)
+                return;
+
             FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
             var isWalking = ReflectionUtils.GetFieldValue<bool>(__instance, "isWalking");
 
@@ -99,6 +102,9 @@ namespace OPJosMod.TheFlash.Patches
         [HarmonyPrefix]
         private static void killPlayerPatch(PlayerControllerB __instance)
         {
+            if (!GlobalVariables.ModActivated)
+                return;
+
             if (__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 RemoveMeshForPlayer();
@@ -147,9 +153,6 @@ namespace OPJosMod.TheFlash.Patches
             __instance.thisController.Move(-randomVibration);
             yield return new WaitForSeconds(0.005f);
         }
-
-
-
 
         #region smartMovement
 

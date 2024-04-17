@@ -1,19 +1,6 @@
 ﻿using BepInEx.Logging;
-using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.TheFlash.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using Random = UnityEngine.Random;
 
 namespace OPJosMod.TheFlash.Patches
 {
@@ -30,6 +17,9 @@ namespace OPJosMod.TheFlash.Patches
         [HarmonyPostfix]
         static void TeleportPlayerPatch()
         {
+            if (!GlobalVariables.ModActivated)
+                return;
+
             PlayerControllerBPatch.InitializeNaveMeshForPlayer();
         }      
     }

@@ -30,6 +30,9 @@ namespace OPJosMod.TheFlash.Patches
         [HarmonyPrefix]
         static void beamUpPlayerPatch()
         {
+            if (!GlobalVariables.ModActivated)
+                return;
+
             PlayerControllerB playerToBeamUp = StartOfRound.Instance.mapScreen.targetedPlayer;
             if (playerToBeamUp != null && playerToBeamUp.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
             {
@@ -41,6 +44,9 @@ namespace OPJosMod.TheFlash.Patches
         [HarmonyPostfix]
         static void beamOutPlayerPatch()
         {
+            if (!GlobalVariables.ModActivated)
+                return;
+
             var player = StartOfRound.Instance.localPlayerController;
 
             if (player.isInsideFactory)
