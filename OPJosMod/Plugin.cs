@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.TheFlash.CustomRpc;
 using OPJosMod.TheFlash.Patches;
 using System;
 using UnityEngine;
@@ -29,6 +30,10 @@ namespace OPJosMod.TheFlash
             }
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             setupConfig();
+            CompleteRecievedTasks.SetLogSource(mls);
+            PatchesForRPC.SetLogSource(mls);
+            RpcMessageHandler.SetLogSource(mls);
+            
 
             PlayerControllerBPatch.SetLogSource(mls);
             EntranceTeleportPatch.SetLogSource(mls);
