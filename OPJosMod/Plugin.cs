@@ -12,7 +12,7 @@ namespace OPJosMod.OneHitShovel
     {
         private const string modGUID = "OpJosMod.OneHitShovel";
         private const string modName = "OneHitShovel";
-        private const string modVersion = "1.4.0"; 
+        private const string modVersion = "1.5.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -27,14 +27,13 @@ namespace OPJosMod.OneHitShovel
             }
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-
-            mls.LogInfo("mod has started");
             setupConfig();
+            PatchesForRPC.SetLogSource(mls);
+            RpcMessageHandler.SetLogSource(mls);
+            CompleteRecievedTasks.SetLogSource(mls);
 
             ShovelPatch.SetLogSource(mls);
             CustomEnemyDeaths.SetLogSource(mls);
-            HUDManagerPatchForRPC.SetLogSource(mls);
-            RpcMessageHandler.SetLogSource(mls);
 
             harmony.PatchAll();
         }

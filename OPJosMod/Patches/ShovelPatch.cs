@@ -26,6 +26,7 @@ namespace OPJosMod.OneHitShovel.Patches
         [HarmonyPrefix]
         private static void hitShovelPatch(Shovel __instance)
         {
+            mls.LogMessage($"mod activated:{GlobalVariables.ModActivated}");
             try
             {
                 __instance.shovelHitForce = 30;

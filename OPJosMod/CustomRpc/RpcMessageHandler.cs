@@ -42,24 +42,23 @@ namespace OPJosMod.OneHitShovel.CustomRpc
             }          
         }
 
-        public static void ReceiveRpcMessage(string message, int user) 
+        public static void ReceiveRpcMessage(string message, int user)
         {
-            if (user == (int)StartOfRound.Instance.localPlayerController.playerClientId)
-                return;
-
-            var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
-            if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
+            if (user != (int)StartOfRound.Instance.localPlayerController.playerClientId)
             {
-                if (decodedMessage.Contains("EnemyDied:"))
+                var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
+                if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
                 {
-                    handleKillEnemyMessage(decodedMessage);
-                }
+                    MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
+                    string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
+                    handleTask(task, taskMessage);
 
-                //SendRpcResponse(decodedMessage);
-            }
-            else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
-            {
-                mls.LogMessage("got the response that the other clients recieved this message");
+                    //SendRpcResponse(decodedMessage);
+                }
+                else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
+                {
+                    mls.LogMessage("got the response that the other clients recieved this message");
+                }
             }
         }
 
@@ -69,17 +68,20 @@ namespace OPJosMod.OneHitShovel.CustomRpc
             SendRpcMessage(responseMessage);
         }
 
-        private static void handleKillEnemyMessage(string message)
+        private static void handleTask(MessageTasks task, string message)
         {
-            string plainMessage = message.Substring("EnemyDied:".Length).Trim();
-            Vector3 newPosition = GeneralUtil.StringToVector3(plainMessage);
-
-            EnemyAI enemy = CustomEnemyDeaths.findClosestEnemyAI(newPosition);
-
-            if (enemy != null)
-                CustomEnemyDeaths.KillAnyEnemy(enemy);
-            else
-                mls.LogMessage("couldnt find enemy to kill");
+            switch (task)
+            {
+                case MessageTasks.ModActivated:
+                    CompleteRecievedTasks.ModActivated(message);
+                    break;
+                case MessageTasks.EnemyDied:
+                    CompleteRecievedTasks.EnemyDied(message);
+                    break;
+                case MessageTasks.ErrorNoTask:
+                    mls.LogError("got an error task");
+                    break;
+            }
         }
     }
 }
