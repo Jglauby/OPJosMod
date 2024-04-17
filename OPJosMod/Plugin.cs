@@ -14,7 +14,7 @@ namespace OPJosMod.TheFlash
     {
         private const string modGUID = "OpJosMod.TheFlash";
         private const string modName = "TheFlash";
-        private const string modVersion = "1.4.0";
+        private const string modVersion = "1.5.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -27,24 +27,10 @@ namespace OPJosMod.TheFlash
             {
                 Instance = this;
             }
-
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-            mls.LogInfo("mod has started");
-
             setupConfig();
-            //Config.SettingChanged += (obj, args) =>
-            //{
-            //    mls.LogMessage("config chagned!!!!");
-            //    setupConfig();
-            //    patch();
-            //};
 
-            patch();
-        }
-
-        private void patch()
-        {
-            Patches.PlayerControllerBPatch.SetLogSource(mls);
+            PlayerControllerBPatch.SetLogSource(mls);
             EntranceTeleportPatch.SetLogSource(mls);
             ShipTeleporterPatch.SetLogSource(mls);
 
