@@ -15,7 +15,7 @@ namespace OPJosMod.HealthRegen
     {
         private const string modGUID = "OpJosMod.HealthRegen";
         private const string modName = "Health Regen";
-        private const string modVersion = "2.3.0";
+        private const string modVersion = "2.4.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -52,6 +52,7 @@ namespace OPJosMod.HealthRegen
                                         "How much you heal");
 
             ConfigVariables.healFrequency = configHealFrequency.Value;
+            ConfigVariables.healAmount = configHealthToAdd.Value;
         }
     }
 }

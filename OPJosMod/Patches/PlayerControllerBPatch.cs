@@ -20,25 +20,23 @@ namespace OPJosMod.HealthRegen.Patches
             mls = logSource;
         }
 
-        private static bool isHealing = false;
+        private static float lastHealedAt = Time.time;
 
         [HarmonyPatch("Update")]
         [HarmonyPrefix]
         static void patchUpdate(PlayerControllerB __instance)
         {
-            if (__instance.health < 100 && !isHealing)
+            if (__instance.health < 100 && Time.time - lastHealedAt > ConfigVariables.healFrequency)
             {
-                __instance.StartCoroutine(HealPlayer(__instance, ConfigVariables.healFrequency));
+                HealPlayer(__instance);
             }
         }
 
-        private static IEnumerator HealPlayer(PlayerControllerB player, float frequency)
+        private static void HealPlayer(PlayerControllerB player)
         {
-            isHealing = true;
-            yield return new WaitForSeconds(frequency);
-
-            if (player.health < 100 && !player.isPlayerDead)
+            if (!player.isPlayerDead)
             {
+                lastHealedAt = Time.time;
                 int healthToAddCritical = 1;
                 int healthToAdd = ConfigVariables.healAmount;
 
@@ -53,19 +51,19 @@ namespace OPJosMod.HealthRegen.Patches
                         int healthHealed = 100 - player.health;
                         player.health = 100;
                         player.DamagePlayerServerRpc(-healthHealed, player.health);
+                        mls.LogMessage($"first if, healthHealed:{healthHealed}, player helath:{player.health}");
                     }
                     else
                     {
                         player.health += healthToAdd;
                         player.DamagePlayerServerRpc(-healthToAdd, player.health);
+                        mls.LogMessage($"second if, healthToAdd:{healthToAdd}, player helath:{player.health}");
                     }
                     HUDManager.Instance.UpdateHealthUI(player.health, false);
                 }
 
                 mls.LogMessage($"updated health to:{player.health} at: {Time.time}");
             }
-
-            isHealing = false;
         }
     }
 }
