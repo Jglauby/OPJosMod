@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using OPJosMod.ModNameHere;
 
 namespace OPJosMod.MODNAMEHERE.CustomRpc
 {
@@ -8,6 +9,15 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         public static void SetLogSource(ManualLogSource logSource)
         {
             mls = logSource;
+        }
+
+        public static void ModActivated(string modName)
+        {
+            if (mls.SourceName == modName)
+            {
+                mls.LogMessage("Mod Activated");
+                Constants.ModActivated = true;
+            }                
         }
 
         public static void SeekingStarted(string playerIdString)
@@ -21,21 +31,6 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
             //}
             //
             //GeneralUtil.spawnHiderItem(int.Parse(playerIdString));
-        }
-
-        public static void MakePlayerWhistle(string playerIdString)
-        {
-            //int playerClientId = int.Parse(playerIdString);
-            //mls.LogMessage($"make player{playerClientId} whistle");
-            //
-            //var fartingPlayer = StartOfRound.Instance.allPlayerScripts[playerClientId];
-            //PlaySounds.PlayFart(fartingPlayer);
-            //
-            //if ((int)StartOfRound.Instance.localPlayerController.playerClientId == playerClientId)
-            //{
-            //    //you are the one who is makign noise
-            //    mls.LogMessage("seeker made u make noise");
-            //}
         }
     }
 }

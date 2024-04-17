@@ -4,8 +4,8 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
 {
     public enum MessageTasks 
     {
+        ModActivated,
         StartedSeeking,
-        MakePlayerWhistle,
         ErrorNoTask
     }
 
@@ -15,10 +15,10 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         {
             switch (code)
             {
+                case MessageTasks.ModActivated:
+                    return ":ModActivated:";
                 case MessageTasks.StartedSeeking:
                     return ":StartedSeeking:";
-                case MessageTasks.MakePlayerWhistle:
-                    return ":MakeWhistle:";
                 case MessageTasks.ErrorNoTask:
                     return ":Error:";
             }
@@ -39,12 +39,12 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
 
         public static MessageTasks getMessageTask(string givenString)
         {
-            if (givenString.Contains(GetCode(MessageTasks.StartedSeeking))){
-                return MessageTasks.StartedSeeking;
-            }
-            else if (givenString.Contains(GetCode(MessageTasks.MakePlayerWhistle)))
+            if (givenString.Contains(GetCode(MessageTasks.ModActivated)))
             {
-                return MessageTasks.MakePlayerWhistle;
+                return MessageTasks.ModActivated;
+            }
+            else if (givenString.Contains(GetCode(MessageTasks.StartedSeeking))){
+                return MessageTasks.StartedSeeking;
             }
             else
             {

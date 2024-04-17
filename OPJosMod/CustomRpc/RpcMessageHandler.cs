@@ -53,7 +53,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
                     handleTask(task, taskMessage);
 
-                    SendRpcResponse(decodedMessage);
+                    //SendRpcResponse(decodedMessage);
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
@@ -72,11 +72,11 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         {
             switch (task)
             {
+                case MessageTasks.ModActivated:
+                    CompleteRecievedTasks.ModActivated(message);
+                    break;
                 case MessageTasks.StartedSeeking:
                     CompleteRecievedTasks.SeekingStarted(message);
-                    break;
-                case MessageTasks.MakePlayerWhistle:
-                    CompleteRecievedTasks.MakePlayerWhistle(message);
                     break;
                 case MessageTasks.ErrorNoTask:
                     mls.LogError("got an error task");

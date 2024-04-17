@@ -3,20 +3,15 @@ using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.MODNAMEHERE.CustomRpc;
 using OPJosMod.Patches;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OPJosMod//.ModNameHere
+namespace OPJosMod.ModNameHere
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
         private const string modGUID = "OpJosMod.ModNameHere";
         private const string modName = "ModNameHere";
-        private const string modVersion = "1.0.0.0"; //dont forget to update this lol
+        private const string modVersion = "1.0.0"; //dont forget to update this lol
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -31,13 +26,12 @@ namespace OPJosMod//.ModNameHere
             }
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-
-            mls.LogInfo("mod has started");
             setupConfig();
 
             HUDManagerPatchForRPC.SetLogSource(mls);
             RpcMessageHandler.SetLogSource(mls);
             PlayerControllerBPatch.SetLogSource(mls);
+            mls.LogMessage($"mls name:{mls.SourceName}");
 
             harmony.PatchAll();
         }
