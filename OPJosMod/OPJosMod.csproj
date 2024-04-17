@@ -61,9 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="GlobalVariables.cs" />
     <Compile Include="CustomRpc\CompleteRecievedTasks.cs" />
-    <Compile Include="CustomRpc\HudManagerPatchForRPC.cs" />
+    <Compile Include="CustomRpc\PatchesForRPC.cs" />
     <Compile Include="CustomRpc\MessageCodes.cs" />
     <Compile Include="CustomRpc\MessageTasks.cs" />
     <Compile Include="CustomRpc\RpcMessage.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OPJosMod.ModNameHere
 {
-    public static class Constants
+    public static class GlobalVariables
     {
         public static bool ModActivated = false;
     }

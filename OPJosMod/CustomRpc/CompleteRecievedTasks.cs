@@ -16,7 +16,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
             if (mls.SourceName == modName)
             {
                 mls.LogMessage("Mod Activated");
-                Constants.ModActivated = true;
+                GlobalVariables.ModActivated = true;
             }                
         }
 

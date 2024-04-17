@@ -28,10 +28,11 @@ namespace OPJosMod.ModNameHere
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             setupConfig();
 
-            HUDManagerPatchForRPC.SetLogSource(mls);
+            PatchesForRPC.SetLogSource(mls);
             RpcMessageHandler.SetLogSource(mls);
+            CompleteRecievedTasks.SetLogSource(mls);
+
             PlayerControllerBPatch.SetLogSource(mls);
-            mls.LogMessage($"mls name:{mls.SourceName}");
 
             harmony.PatchAll();
         }
