@@ -3,7 +3,6 @@ using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.OneHitShovel.CustomRpc;
 using OPJosMod.OneHitShovel.Patches;
-using Unity.Netcode;
 
 namespace OPJosMod.OneHitShovel
 {
@@ -40,10 +39,10 @@ namespace OPJosMod.OneHitShovel
 
         private void setupConfig()//example config setup
         {            
-            var configSyncDeathAnimations = Config.Bind("Sync Death Animations",
-                                        "SyncDeathAnimations",
+            var configSyncDeathAnimations = Config.Bind("Custom Death Animations",
+                                        "CustomDeathAnimations",
                                         true,
-                                        "Setting for attempting to sync death animations for enemies that can't normally die. This only works if everyone has the mod. If its just you turn this off and the enemies will just despawn instead.");
+                                        "Setting for attempting to sync death animations for enemies that can't normally die. If off the enemies will just despawn instead.");
             
             ConfigVariables.syncDeathAnimations = configSyncDeathAnimations.Value;
         }
