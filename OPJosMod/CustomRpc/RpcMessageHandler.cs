@@ -53,7 +53,7 @@ namespace OPJosMod.TheFlash.CustomRpc
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
                     handleTask(task, taskMessage);
 
-                    //SendRpcResponse(decodedMessage);
+                    //SendRpcResponse(task, decodedMessage);
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
@@ -62,9 +62,9 @@ namespace OPJosMod.TheFlash.CustomRpc
             }
         }
 
-        public static void SendRpcResponse(string message)
+        public static void SendRpcResponse(MessageTasks task, string message)
         {
-            var responseMessage = new RpcMessage(message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
+            var responseMessage = new RpcMessage(task, message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
             SendRpcMessage(responseMessage);
         }
 

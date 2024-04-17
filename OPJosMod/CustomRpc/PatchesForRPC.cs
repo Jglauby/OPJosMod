@@ -79,8 +79,7 @@ namespace OPJosMod.TheFlash.CustomRpc
             if (__instance.IsHost)
             {
                 GlobalVariables.ModActivated = true;
-                string message = MessageTaskUtil.GetCode(MessageTasks.ModActivated) + PatchesForRPC.mls.SourceName;
-                RpcMessage rpcMessage = new RpcMessage(message, (int)__instance.localPlayerController.playerClientId, MessageCodes.Request);
+                RpcMessage rpcMessage = new RpcMessage(MessageTasks.ModActivated, PatchesForRPC.mls.SourceName, (int)__instance.localPlayerController.playerClientId, MessageCodes.Request);
                 RpcMessageHandler.SendRpcMessage(rpcMessage);
             }
         }
