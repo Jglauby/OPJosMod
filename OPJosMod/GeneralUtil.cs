@@ -23,8 +23,24 @@ namespace OPJosMod.ReviveCompany
 
         public static PlayerControllerB GetClosestDeadPlayer(Vector3 position)
         {
-            //implemnt this
-            return StartOfRound.Instance.localPlayerController;
+            PlayerControllerB closestPlayer = null;
+            float closestDistance = float.MaxValue;
+
+            PlayerControllerB[] allPlayers = GameObject.FindObjectsOfType<PlayerControllerB>();
+            foreach (PlayerControllerB player in allPlayers)
+            {
+                if (player.isPlayerDead)
+                {
+                    float distance = Vector3.Distance(player.transform.position, position);
+                    if (distance < closestDistance)
+                    {
+                        closestPlayer = player;
+                        closestDistance = distance;
+                    }
+                }
+            }
+
+            return closestPlayer;
         }
     }
 }
