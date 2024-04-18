@@ -17,16 +17,18 @@ namespace OPJosMod.OneHitShovel.CustomRpc
     [HarmonyPatch(typeof(HUDManager))]
     static class HUDManagerPatchForRPC
     {
-        private static float lastRecieved = Time.time;
+        private static float lastRecievedAt = Time.time;
+        private static string lastRecievedMessage = "";
         private static float messageWaitTime = 0.5f;
 
         [HarmonyPatch("AddPlayerChatMessageClientRpc")]
         [HarmonyPrefix]
         private static void addPlayerChatMessageClientRpcPatch(ref string chatMessage, ref int playerId)
         {
-            if (MessageCodeUtil.stringContainsMessageCode(chatMessage) && Time.time - lastRecieved > messageWaitTime)
+            if (MessageCodeUtil.stringContainsMessageCode(chatMessage) && (Time.time - lastRecievedAt > messageWaitTime || chatMessage != lastRecievedMessage))
             {
-                lastRecieved = Time.time;
+                lastRecievedAt = Time.time;
+                lastRecievedMessage = chatMessage;
                 RpcMessageHandler.ReceiveRpcMessage(chatMessage, playerId);
             }
         }
