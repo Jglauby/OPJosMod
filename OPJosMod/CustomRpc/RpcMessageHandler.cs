@@ -75,8 +75,8 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                 case MessageTasks.ModActivated:
                     CompleteRecievedTasks.ModActivated(message);
                     break;
-                case MessageTasks.StartedSeeking:
-                    CompleteRecievedTasks.SeekingStarted(message);
+                case MessageTasks.RevivePlayer:
+                    CompleteRecievedTasks.RevivePlayer(message);
                     break;
                 case MessageTasks.ErrorNoTask:
                     mls.LogError("got an error task");

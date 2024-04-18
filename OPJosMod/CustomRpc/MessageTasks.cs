@@ -5,7 +5,7 @@ namespace OPJosMod.ReviveCompany.CustomRpc
     public enum MessageTasks 
     {
         ModActivated,
-        StartedSeeking,
+        RevivePlayer,
         ErrorNoTask
     }
 
@@ -17,8 +17,8 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             {
                 case MessageTasks.ModActivated:
                     return ":ModActivated:";
-                case MessageTasks.StartedSeeking:
-                    return ":StartedSeeking:";
+                case MessageTasks.RevivePlayer:
+                    return ":RevivePlayer:";
                 case MessageTasks.ErrorNoTask:
                     return ":Error:";
             }
@@ -43,8 +43,8 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             {
                 return MessageTasks.ModActivated;
             }
-            else if (givenString.Contains(GetCode(MessageTasks.StartedSeeking))){
-                return MessageTasks.StartedSeeking;
+            else if (givenString.Contains(GetCode(MessageTasks.RevivePlayer))){
+                return MessageTasks.RevivePlayer;
             }
             else
             {
