@@ -1,7 +1,6 @@
 ﻿using BepInEx.Logging;
-using OPJosMod.ModNameHere;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.ReviveCompany.CustomRpc
 {
     public static class CompleteRecievedTasks
     {

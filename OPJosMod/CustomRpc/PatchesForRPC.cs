@@ -1,12 +1,9 @@
 ﻿using BepInEx.Logging;
-using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.ModNameHere;
 using System.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.ReviveCompany.CustomRpc
 {
     public static class PatchesForRPC
     {

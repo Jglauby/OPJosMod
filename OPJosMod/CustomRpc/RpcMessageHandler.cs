@@ -2,7 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.ReviveCompany.CustomRpc
 {
     public static class RpcMessageHandler
     {

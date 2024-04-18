@@ -1,16 +1,16 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.MODNAMEHERE.CustomRpc;
-using OPJosMod.Patches;
+using OPJosMod.ReviveCompany.CustomRpc;
+using OPJosMod.ReviveCompany.Patches;
 
-namespace OPJosMod.ModNameHere
+namespace OPJosMod.ReviveCompany
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "OpJosMod.ModNameHere";
-        private const string modName = "ModNameHere";
+        private const string modGUID = "OpJosMod.ReviveCompany";
+        private const string modName = "ReviveCompany";
         private const string modVersion = "1.0.0"; //dont forget to update this lol
 
         private readonly Harmony harmony = new Harmony(modGUID);

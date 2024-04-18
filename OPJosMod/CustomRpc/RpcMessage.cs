@@ -1,4 +1,4 @@
-﻿namespace OPJosMod.MODNAMEHERE.CustomRpc
+﻿namespace OPJosMod.ReviveCompany.CustomRpc
 {
     public class RpcMessage
     {

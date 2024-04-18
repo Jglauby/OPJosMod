@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.ReviveCompany.CustomRpc
 {
     public enum MessageTasks 
     {
