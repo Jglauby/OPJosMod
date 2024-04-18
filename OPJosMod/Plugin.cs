@@ -15,7 +15,7 @@ namespace OPJosMod.TheFlash
     {
         private const string modGUID = "OpJosMod.TheFlash";
         private const string modName = "TheFlash";
-        private const string modVersion = "1.5.0";
+        private const string modVersion = "1.5.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
