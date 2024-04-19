@@ -3,6 +3,8 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 namespace OPJosMod.ReviveCompany.Patches
 {
@@ -43,6 +45,11 @@ namespace OPJosMod.ReviveCompany.Patches
             if (!canUse(__instance) && __instance.cursorTip.text != "")
             {
                 __instance.cursorTip.text = "Can't use as a ghost!";
+
+                if (((ButtonControl)Keyboard.current[Key.E]).isPressed)//E is pressed
+                {
+                    __instance.cursorTip.text = "Pressing E";
+                }
             }
         }
 
