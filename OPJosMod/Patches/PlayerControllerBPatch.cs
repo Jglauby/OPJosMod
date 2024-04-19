@@ -1,6 +1,7 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using OPJosMod.ReviveCompany.CustomRpc;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +18,10 @@ namespace OPJosMod.ReviveCompany.Patches
             mls = logSource;
         }
 
+        private static int interactableObjectsMask = 832;
+        private static float StartedReviveAt = Time.time;
+        private static bool StartedRevive = false;
+
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void patchUpdate(PlayerControllerB __instance)
@@ -24,7 +29,6 @@ namespace OPJosMod.ReviveCompany.Patches
             //mls.LogMessage($"Constants.ModActivated:{GlobalVariables.ModActivated}");
         }
 
-        private static int interactableObjectsMask = 832;
         [HarmonyPatch("Interact_performed")]
         [HarmonyPrefix]
         private static bool interact_performedPatch(PlayerControllerB __instance)
@@ -44,11 +48,27 @@ namespace OPJosMod.ReviveCompany.Patches
         {
             if (!canUse(__instance) && __instance.cursorTip.text != "")
             {
-                __instance.cursorTip.text = "Can't use as a ghost!";
-
                 if (((ButtonControl)Keyboard.current[Key.E]).isPressed)//E is pressed
                 {
-                    __instance.cursorTip.text = "Pressing E";
+                    if (StartedRevive == false)
+                    {
+                        StartedRevive = true;
+                        StartedReviveAt = Time.time;
+                    }
+                    else if (Time.time - StartedReviveAt > 7f)
+                    {
+                        //send revive message!
+                        CompleteRecievedTasks.RevivePlayer(__instance.transform.position.ToString());
+                        RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, __instance.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
+                        RpcMessageHandler.SendRpcMessage(rpcMessage);
+                    }
+
+                    __instance.cursorTip.text = "Reviving!";
+                }
+                else
+                {
+                    __instance.cursorTip.text = "Hold E to revive!";
+                    StartedRevive = false;
                 }
             }
         }
