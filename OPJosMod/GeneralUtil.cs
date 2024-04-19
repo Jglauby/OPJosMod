@@ -42,5 +42,15 @@ namespace OPJosMod.ReviveCompany
 
             return closestPlayer;
         }
+
+        public static string simplifyObjectNames(string ogName)
+        {
+            var objectName = ogName;
+            int index = objectName.IndexOf("(");
+            if (index != -1)
+                objectName = objectName.Substring(0, index).Trim();
+
+            return objectName;
+        }
     }
 }
