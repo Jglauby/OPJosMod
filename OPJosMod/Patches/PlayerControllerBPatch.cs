@@ -22,17 +22,13 @@ namespace OPJosMod.ReviveCompany.Patches
         private static float StartedReviveAt = Time.time;
         private static bool StartedRevive = false;
 
-        [HarmonyPatch("Update")]
-        [HarmonyPostfix]
-        static void patchUpdate(PlayerControllerB __instance)
-        {
-            //mls.LogMessage($"Constants.ModActivated:{GlobalVariables.ModActivated}");
-        }
-
         [HarmonyPatch("Interact_performed")]
         [HarmonyPrefix]
         private static bool interact_performedPatch(PlayerControllerB __instance)
         {
+            if (!GlobalVariables.ModActivated)
+                return true;
+
             if (__instance.IsOwner && !__instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
             {
                 if (!canUse(__instance))
@@ -46,6 +42,9 @@ namespace OPJosMod.ReviveCompany.Patches
         [HarmonyPostfix]
         private static void setHoverTipAndCurrentInteractTriggerPatch(PlayerControllerB __instance)
         {
+            if (!GlobalVariables.ModActivated)
+                return;
+
             if (!canUse(__instance) && __instance.cursorTip.text != "")
             {
                 if (((ButtonControl)Keyboard.current[Key.E]).isPressed)//E is pressed
