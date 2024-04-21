@@ -45,6 +45,28 @@ namespace OPJosMod.ReviveCompany
             return closestPlayer;
         }
 
+        public static PlayerControllerB GetClosestAlivePlayer(Vector3 position)
+        {
+            PlayerControllerB closestPlayer = null;
+            float closestDistance = float.MaxValue;
+
+            PlayerControllerB[] allPlayers = GameObject.FindObjectsOfType<PlayerControllerB>();
+            foreach (PlayerControllerB player in allPlayers)
+            {
+                if (!player.isPlayerDead)
+                {
+                    float distance = Vector3.Distance(player.transform.position, position);
+                    if (distance < closestDistance)
+                    {
+                        closestPlayer = player;
+                        closestDistance = distance;
+                    }
+                }
+            }
+
+            return closestPlayer;
+        }
+
         public static string simplifyObjectNames(string ogName)
         {
             var objectName = ogName;
@@ -57,6 +79,7 @@ namespace OPJosMod.ReviveCompany
 
         public static void RevivePlayer(Vector3 revivedPosition)
         {
+            PlayerControllerB closestAlivePlayer = GeneralUtil.GetClosestAlivePlayer(revivedPosition);
             PlayerControllerB player = GeneralUtil.GetClosestDeadPlayer(revivedPosition);
             int playerIndex = (int)player.playerClientId;
 
@@ -72,7 +95,7 @@ namespace OPJosMod.ReviveCompany
                 player.isPlayerControlled = true;
                 player.isInElevator = true;
                 player.isInHangarShipRoom = true;
-                player.isInsideFactory = false;
+                player.isInsideFactory = closestAlivePlayer.isInsideFactory;
                 player.wasInElevatorLastFrame = false;
                 StartOfRound.Instance.SetPlayerObjectExtrapolate(false);
                 player.TeleportPlayer(revivedPosition, false, 0f, false, true); //adjust for reviving??
@@ -141,8 +164,6 @@ namespace OPJosMod.ReviveCompany
                 localPlayerController.spectatedPlayerScript = null;
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
-
-                //fix lighting! based on inside or outside
             }
 
             RagdollGrabbableObject[] array = Object.FindObjectsOfType<RagdollGrabbableObject>();
