@@ -80,7 +80,6 @@ namespace OPJosMod.ReviveCompany
                 player.setPositionOfDeadPlayer = false;
                 player.DisablePlayerModel(StartOfRound.Instance.allPlayerObjects[playerIndex], true, true);
                 ((Behaviour)player.helmetLight).enabled = false;
-                Debug.Log((object)"Reviving players C");
                 player.Crouch(false);
                 player.criticallyInjured = false;
                 if ((Object)(object)player.playerBodyAnimator != (Object)null)
@@ -95,14 +94,12 @@ namespace OPJosMod.ReviveCompany
                 player.inAnimationWithEnemy = null;
                 player.holdingWalkieTalkie = false;
                 player.speakingToWalkieTalkie = false;
-                Debug.Log((object)"Reviving players D");
                 player.isSinking = false;
                 player.isUnderwater = false;
                 player.sinkingValue = 0f;
                 player.statusEffectAudio.Stop();
                 player.DisableJetpackControlsLocally();
                 player.health = 100;
-                Debug.Log((object)"Reviving players E");
                 player.mapRadarDotAnimator.SetBool("dead", false);
                 HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", false);
                 player.hasBegunSpectating = false;
@@ -111,7 +108,6 @@ namespace OPJosMod.ReviveCompany
                 player.hinderedMultiplier = 1f;
                 player.isMovementHindered = 0;
                 player.sourcesCausingSinking = 0;
-                Debug.Log((object)"Reviving players E2");
                 player.reverbPreset = StartOfRound.Instance.shipReverb;
             }
             Debug.Log((object)"Reviving players F");
@@ -135,7 +131,6 @@ namespace OPJosMod.ReviveCompany
                 }
                 ((Component)player.currentVoiceChatIngameSettings.voiceAudio).GetComponent<OccludeAudio>().overridingLowPass = false;
             }
-            Debug.Log((object)"Reviving players G");
             PlayerControllerB localPlayerController = GameNetworkManager.Instance.localPlayerController;
             localPlayerController.bleedingHeavily = false;
             localPlayerController.criticallyInjured = false;
@@ -144,7 +139,6 @@ namespace OPJosMod.ReviveCompany
             HUDManager.Instance.UpdateHealthUI(100, false);
             localPlayerController.spectatedPlayerScript = null;
             ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
-            Debug.Log((object)"Reviving players H");
             StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
             RagdollGrabbableObject[] array = Object.FindObjectsOfType<RagdollGrabbableObject>();
             for (int i = 0; i < array.Length; i++)
