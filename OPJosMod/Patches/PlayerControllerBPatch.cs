@@ -55,15 +55,15 @@ namespace OPJosMod.ReviveCompany.Patches
                         StartedRevive = true;
                         StartedReviveAt = Time.time;
                     }
-                    else if (Time.time - StartedReviveAt > 7f)
+                    else if (Time.time - StartedReviveAt > 6f)
                     {
                         //send revive message!
-                        CompleteRecievedTasks.RevivePlayer(__instance.transform.position.ToString());
+                        GeneralUtil.RevivePlayer(__instance.transform.position);
                         RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, __instance.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
                         RpcMessageHandler.SendRpcMessage(rpcMessage);
                     }
 
-                    __instance.cursorTip.text = "Reviving!";
+                    __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/6s";
                 }
                 else
                 {
