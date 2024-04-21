@@ -66,7 +66,6 @@ namespace OPJosMod.ReviveCompany
             ((Collider)player.thisController).enabled = true;
             player.health = 100;
             player.disableLookInput = false;
-            Debug.Log((object)"Reviving players B");
             if (player.isPlayerDead)
             {
                 player.isPlayerDead = false;
@@ -110,7 +109,6 @@ namespace OPJosMod.ReviveCompany
                 player.sourcesCausingSinking = 0;
                 player.reverbPreset = StartOfRound.Instance.shipReverb;
             }
-            Debug.Log((object)"Reviving players F");
             SoundManager.Instance.earsRingingTimer = 0f;
             player.voiceMuffledByEnemy = false;
             SoundManager.Instance.playerVoicePitchTargets[playerIndex] = 1f;
@@ -131,15 +129,22 @@ namespace OPJosMod.ReviveCompany
                 }
                 ((Component)player.currentVoiceChatIngameSettings.voiceAudio).GetComponent<OccludeAudio>().overridingLowPass = false;
             }
+
             PlayerControllerB localPlayerController = GameNetworkManager.Instance.localPlayerController;
-            localPlayerController.bleedingHeavily = false;
-            localPlayerController.criticallyInjured = false;
-            localPlayerController.playerBodyAnimator.SetBool("Limp", false);
-            localPlayerController.health = 100;
-            HUDManager.Instance.UpdateHealthUI(100, false);
-            localPlayerController.spectatedPlayerScript = null;
-            ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
-            StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
+            if (localPlayerController.playerClientId == player.playerClientId)
+            {
+                localPlayerController.bleedingHeavily = false;
+                localPlayerController.criticallyInjured = false;
+                localPlayerController.playerBodyAnimator.SetBool("Limp", false);
+                localPlayerController.health = 100;
+                HUDManager.Instance.UpdateHealthUI(100, true);
+                localPlayerController.spectatedPlayerScript = null;
+                ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
+                StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
+
+                //fix lighting! based on inside or outside
+            }
+
             RagdollGrabbableObject[] array = Object.FindObjectsOfType<RagdollGrabbableObject>();
             for (int i = 0; i < array.Length; i++)
             {
@@ -171,6 +176,6 @@ namespace OPJosMod.ReviveCompany
             instance.livingPlayers++;
             StartOfRound.Instance.allPlayersDead = false;
             StartOfRound.Instance.UpdatePlayerVoiceEffects();
-        }
+        }       
     }
 }
