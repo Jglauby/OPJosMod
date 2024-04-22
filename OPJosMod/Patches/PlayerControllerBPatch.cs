@@ -54,7 +54,7 @@ namespace OPJosMod.ReviveCompany.Patches
                         StartedRevive = true;
                         StartedReviveAt = Time.time;
                     }
-                    else if (Time.time - StartedReviveAt > 6f)
+                    else if (Time.time - StartedReviveAt > 5f)
                     {
                         //send revive message!
                         GeneralUtil.RevivePlayer(__instance.transform.position);
@@ -62,7 +62,7 @@ namespace OPJosMod.ReviveCompany.Patches
                         RpcMessageHandler.SendRpcMessage(rpcMessage);
                     }
 
-                    __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/6s";
+                    __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/5s";
                 }
                 else
                 {
