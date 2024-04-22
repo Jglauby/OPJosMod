@@ -80,6 +80,10 @@ namespace OPJosMod.ReviveCompany.Patches
                     StartedRevive = false;
                 }
             }
+            else
+            {
+                StartedRevive = false;
+            }
         }
 
         private static bool canUse(PlayerControllerB __instance)
