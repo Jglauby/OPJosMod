@@ -187,27 +187,30 @@ namespace OPJosMod.ReviveCompany
 
             //delete closest dead body to revived player
             RagdollGrabbableObject deadBody = GetClosestDeadBody(player.transform.position);
-            if (!((GrabbableObject)deadBody).isHeld)
+            if (deadBody != null)
             {
-                if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
+                if (!((GrabbableObject)deadBody).isHeld)
                 {
-                    if (((NetworkBehaviour)deadBody).NetworkObject.IsSpawned)
+                    if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
                     {
-                        ((NetworkBehaviour)deadBody).NetworkObject.Despawn(true);
+                        if (((NetworkBehaviour)deadBody).NetworkObject.IsSpawned)
+                        {
+                            ((NetworkBehaviour)deadBody).NetworkObject.Despawn(true);
+                        }
+                        else
+                        {
+                            Object.Destroy((Object)(object)((Component)deadBody).gameObject);
+                        }
                     }
-                    else
-                    {
-                        Object.Destroy((Object)(object)((Component)deadBody).gameObject);
-                    }
-                }                
-            }
-            else if (((GrabbableObject)deadBody).isHeld && (Object)(object)((GrabbableObject)deadBody).playerHeldBy != (Object)null)
-            {
-                ((GrabbableObject)deadBody).playerHeldBy.DropAllHeldItems(true, false);
-            }
+                }
+                else if (((GrabbableObject)deadBody).isHeld && (Object)(object)((GrabbableObject)deadBody).playerHeldBy != (Object)null)
+                {
+                    ((GrabbableObject)deadBody).playerHeldBy.DropAllHeldItems(true, false);
+                }
 
-            if (deadBody.ragdoll != null)
-                Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
+                if (deadBody.ragdoll != null)
+                    Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
+            }
 
             StartOfRound instance = StartOfRound.Instance;
             instance.livingPlayers++;

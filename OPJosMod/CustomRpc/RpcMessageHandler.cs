@@ -15,12 +15,13 @@ namespace OPJosMod.ReviveCompany.CustomRpc
 
         private static RpcMessage lastSentMessage = null;
         private static float lastSentTime = Time.time;
-        private static float messageWaitTime = 0.3f;
+        private static float messageWaitTime = 0.5f;
 
         public static void SendRpcMessage(RpcMessage message)
         {
             if (Time.time - lastSentTime > messageWaitTime || lastSentMessage != message)
             {
+                mls.LogMessage($"Sending rpc message: {message.getMessageWithCode()}");
                 lastSentTime = Time.time;
                 lastSentMessage = message;
                 HUDManager hudManagerInstance = HUDManager.Instance;
@@ -42,11 +43,16 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                 {
                     mls.LogError("HUDManager.Instance is null.");
                 }
-            }          
+            }
+            else
+            {
+                mls.LogError($"didnt' send message as it was too soon and was the same message as last message {message.getMessageWithCode()}");
+            }
         }
 
         public static void ReceiveRpcMessage(string message, int user) 
         {
+            mls.LogMessage($"recieved message: {message}, user:{user}");
             if (user != (int)StartOfRound.Instance.localPlayerController.playerClientId)
             {
                 var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
@@ -55,8 +61,8 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                     MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
 
-                    SendRpcResponse(task, decodedMessage);
                     handleTask(task, taskMessage);
+                    //SendRpcResponse(task, MessageTaskUtil.getMessageWithoutTask(decodedMessage));
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
@@ -70,6 +76,7 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             try
             {
                 var responseMessage = new RpcMessage(task, message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
+                //mls.LogMessage($"message:{responseMessage.getMessageWithCode()}, user:{responseMessage.FromUser}");
                 SendRpcMessage(responseMessage);
             }
             catch (Exception e)
@@ -77,11 +84,12 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                 mls.LogError($"failed to send response message: {e}");
             }
         }
-
+        
         private static void handleTask(MessageTasks task, string message)
         {
             try
             {
+                //mls.LogMessage($"handling task, {task}, {message}");
                 switch (task)
                 {
                     case MessageTasks.ModActivated:
@@ -97,7 +105,7 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             }
             catch(Exception e)
             {
-                mls.LogError($"failed handlign rpc task: {e}");
+                mls.LogError($"failed handlign rpc task: {e}, task:{task}, message:{message}");
             }
         }
     }

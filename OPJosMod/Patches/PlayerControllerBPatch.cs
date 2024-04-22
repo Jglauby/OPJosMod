@@ -55,15 +55,20 @@ namespace OPJosMod.ReviveCompany.Patches
                         StartedReviveAt = Time.time;
                     }
                     else if (Time.time - StartedReviveAt > 5f)
-                    {                      
+                    {
+                        StartedRevive = false;
                         var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
                         if (revivingBody != null) //couldnt find a dead body?
                         {
-                            GeneralUtil.RevivePlayer(revivingBody.transform.position);
-
                             //send revive message!
                             RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
                             RpcMessageHandler.SendRpcMessage(rpcMessage);
+
+                            GeneralUtil.RevivePlayer(revivingBody.transform.position);
+                        }
+                        else
+                        {
+                            mls.LogError("Couldn't revive no deadBody was found");
                         }
                     }
 
