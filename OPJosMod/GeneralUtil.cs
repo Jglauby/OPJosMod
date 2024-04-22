@@ -45,6 +45,25 @@ namespace OPJosMod.ReviveCompany
             return closestPlayer;
         }
 
+        public static RagdollGrabbableObject GetClosestDeadBody(Vector3 position)
+        {
+            RagdollGrabbableObject closestBody = null;
+            float closestDistance = float.MaxValue;
+
+            RagdollGrabbableObject[] allDeadBodies = GameObject.FindObjectsOfType<RagdollGrabbableObject>();
+            foreach (RagdollGrabbableObject body in allDeadBodies)
+            {
+                float distance = Vector3.Distance(body.transform.position, position);
+                if (distance < closestDistance)
+                {
+                    closestBody = body;
+                    closestDistance = distance;
+                }
+            }
+
+            return closestBody;
+        }
+
         public static PlayerControllerB GetClosestAlivePlayer(Vector3 position)
         {
             PlayerControllerB closestPlayer = null;
@@ -166,33 +185,30 @@ namespace OPJosMod.ReviveCompany
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
             }
 
-            RagdollGrabbableObject[] array = Object.FindObjectsOfType<RagdollGrabbableObject>();
-            for (int i = 0; i < array.Length; i++)
+            //delete closest dead body to revived player
+            RagdollGrabbableObject deadBody = GetClosestDeadBody(player.transform.position);
+            if (!((GrabbableObject)deadBody).isHeld)
             {
-                if (!((GrabbableObject)array[i]).isHeld)
+                if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
                 {
-                    if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
+                    if (((NetworkBehaviour)deadBody).NetworkObject.IsSpawned)
                     {
-                        if (((NetworkBehaviour)array[i]).NetworkObject.IsSpawned)
-                        {
-                            ((NetworkBehaviour)array[i]).NetworkObject.Despawn(true);
-                        }
-                        else
-                        {
-                            Object.Destroy((Object)(object)((Component)array[i]).gameObject);
-                        }
+                        ((NetworkBehaviour)deadBody).NetworkObject.Despawn(true);
                     }
-                }
-                else if (((GrabbableObject)array[i]).isHeld && (Object)(object)((GrabbableObject)array[i]).playerHeldBy != (Object)null)
-                {
-                    ((GrabbableObject)array[i]).playerHeldBy.DropAllHeldItems(true, false);
-                }
+                    else
+                    {
+                        Object.Destroy((Object)(object)((Component)deadBody).gameObject);
+                    }
+                }                
             }
-            DeadBodyInfo[] array2 = Object.FindObjectsOfType<DeadBodyInfo>();
-            for (int j = 0; j < array2.Length; j++)
+            else if (((GrabbableObject)deadBody).isHeld && (Object)(object)((GrabbableObject)deadBody).playerHeldBy != (Object)null)
             {
-                Object.Destroy((Object)(object)((Component)array2[j]).gameObject);
+                ((GrabbableObject)deadBody).playerHeldBy.DropAllHeldItems(true, false);
             }
+
+            if (deadBody.ragdoll != null)
+                Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
+
             StartOfRound instance = StartOfRound.Instance;
             instance.livingPlayers++;
             StartOfRound.Instance.allPlayersDead = false;

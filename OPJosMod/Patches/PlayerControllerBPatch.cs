@@ -55,10 +55,12 @@ namespace OPJosMod.ReviveCompany.Patches
                         StartedReviveAt = Time.time;
                     }
                     else if (Time.time - StartedReviveAt > 5f)
-                    {
+                    {                      
+                        var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
+                        GeneralUtil.RevivePlayer(revivingBody.transform.position);
+
                         //send revive message!
-                        GeneralUtil.RevivePlayer(__instance.transform.position);
-                        RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, __instance.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
+                        RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
                         RpcMessageHandler.SendRpcMessage(rpcMessage);
                     }
 
