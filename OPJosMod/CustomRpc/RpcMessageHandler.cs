@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using System;
 using System.Reflection;
 using UnityEngine;
 
@@ -51,36 +52,50 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                 {
                     MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
-                    handleTask(task, taskMessage);
 
-                    //SendRpcResponse(task, decodedMessage);
+                    SendRpcResponse(task, decodedMessage);
+                    handleTask(task, taskMessage);
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
-                    mls.LogMessage("got the response that the other clients recieved this message");
+                    mls.LogMessage($"got the response that the other clients recieved this message:{message}");
                 }
             }
         }
 
         public static void SendRpcResponse(MessageTasks task, string message)
         {
-            var responseMessage = new RpcMessage(task, message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
-            SendRpcMessage(responseMessage);
+            try
+            {
+                var responseMessage = new RpcMessage(task, message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
+                SendRpcMessage(responseMessage);
+            }
+            catch (Exception e)
+            {
+                mls.LogError($"failed to send response message: {e}");
+            }
         }
 
         private static void handleTask(MessageTasks task, string message)
         {
-            switch (task)
+            try
             {
-                case MessageTasks.ModActivated:
-                    CompleteRecievedTasks.ModActivated(message);
-                    break;
-                case MessageTasks.RevivePlayer:
-                    CompleteRecievedTasks.RevivePlayer(message);
-                    break;
-                case MessageTasks.ErrorNoTask:
-                    mls.LogError("got an error task");
-                    break;
+                switch (task)
+                {
+                    case MessageTasks.ModActivated:
+                        CompleteRecievedTasks.ModActivated(message);
+                        break;
+                    case MessageTasks.RevivePlayer:
+                        CompleteRecievedTasks.RevivePlayer(message);
+                        break;
+                    case MessageTasks.ErrorNoTask:
+                        mls.LogError("got an error task");
+                        break;
+                }
+            }
+            catch(Exception e)
+            {
+                mls.LogError($"failed handlign rpc task: {e}");
             }
         }
     }

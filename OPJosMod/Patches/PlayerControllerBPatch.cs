@@ -57,11 +57,14 @@ namespace OPJosMod.ReviveCompany.Patches
                     else if (Time.time - StartedReviveAt > 5f)
                     {                      
                         var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
-                        GeneralUtil.RevivePlayer(revivingBody.transform.position);
+                        if (revivingBody != null) //couldnt find a dead body?
+                        {
+                            GeneralUtil.RevivePlayer(revivingBody.transform.position);
 
-                        //send revive message!
-                        RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
-                        RpcMessageHandler.SendRpcMessage(rpcMessage);
+                            //send revive message!
+                            RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
+                            RpcMessageHandler.SendRpcMessage(rpcMessage);
+                        }
                     }
 
                     __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/5s";
