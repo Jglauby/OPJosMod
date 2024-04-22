@@ -13,14 +13,16 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             mls = logSource;
         }
 
+        private static RpcMessage lastSentMessage = null;
         private static float lastSentTime = Time.time;
-        private static float messageWaitTime = 0.5f;
+        private static float messageWaitTime = 0.3f;
 
         public static void SendRpcMessage(RpcMessage message)
         {
-            if (Time.time - lastSentTime > messageWaitTime)
+            if (Time.time - lastSentTime > messageWaitTime || lastSentMessage != message)
             {
                 lastSentTime = Time.time;
+                lastSentMessage = message;
                 HUDManager hudManagerInstance = HUDManager.Instance;
                 if (hudManagerInstance != null)
                 {
