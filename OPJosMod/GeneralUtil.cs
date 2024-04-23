@@ -64,6 +64,17 @@ namespace OPJosMod.ReviveCompany
             return closestBody;
         }
 
+        public static Vector3 GetClosestDeadBodyPosition(Vector3 position)
+        {
+            Vector3 result = position;
+            RagdollGrabbableObject closestBody = GetClosestDeadBody(position);
+
+            if (closestBody != null && Vector3.Distance(position, closestBody.transform.position) < 5f)
+                result = closestBody.transform.position;
+
+            return result;
+        }
+
         public static PlayerControllerB GetClosestAlivePlayer(Vector3 position)
         {
             PlayerControllerB closestPlayer = null;
