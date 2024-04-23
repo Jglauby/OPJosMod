@@ -81,6 +81,7 @@ namespace OPJosMod.GhostMode.CustomRpc
 
         public static void OtherPlayerGhostToggle(string message)
         {
+            //message should be in this format "playerClientID,0" -> where 0 is false and a 1 would be true
 
         }
     }
