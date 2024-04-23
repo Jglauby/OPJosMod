@@ -61,16 +61,24 @@ namespace OPJosMod.ReviveCompany.Patches
                         var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
                         if (revivingBody != null) //couldnt find a dead body?
                         {
-                            //send revive message!
-                            RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
-                            RpcMessageHandler.SendRpcMessage(rpcMessage);
+                            if (GameNetworkManager.Instance.localPlayerController.playerClientId != revivingBody.ragdoll.playerScript.playerClientId)
+                            {
+                                //send revive message!
+                                RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.transform.position.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
+                                RpcMessageHandler.SendRpcMessage(rpcMessage);
 
-                            GeneralUtil.RevivePlayer(revivingBody.transform.position);
+                                GeneralUtil.RevivePlayer(revivingBody.transform.position);
 
-                            //turn off ghost mode for the player
-                            PlayerControllerB revivingPlayer = GeneralUtil.GetClosestAlivePlayer(revivingBody.transform.position);
-                            RpcMessage rpcMessage2 = new RpcMessage(MessageTasks.TurnOffGhostMode, revivingPlayer.playerClientId.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
-                            RpcMessageHandler.SendRpcMessage(rpcMessage2);
+                                //turn off ghost mode for the player
+                                PlayerControllerB revivingPlayer = GeneralUtil.GetClosestAlivePlayer(revivingBody.transform.position);
+                                RpcMessage rpcMessage2 = new RpcMessage(MessageTasks.TurnOffGhostMode, revivingPlayer.playerClientId.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
+                                RpcMessageHandler.SendRpcMessage(rpcMessage2);
+                            }
+                            else
+                            {
+                                mls.LogError("didn't revive as the dead body that was attempted to revive was the local player");
+                                __instance.cursorTip.text = $"You can't revive yourself!";
+                            }
                         }
                         else
                         {
