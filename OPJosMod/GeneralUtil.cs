@@ -189,6 +189,8 @@ namespace OPJosMod.ReviveCompany
                 localPlayerController.spectatedPlayerScript = null;
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
+
+                localPlayerController.SyncBodyPositionWithClients();
             }
 
             //delete closest dead body to revived player
