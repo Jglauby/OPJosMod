@@ -77,7 +77,6 @@ namespace OPJosMod.ReviveCompany.Patches
                             else
                             {
                                 mls.LogError("didn't revive as the dead body that was attempted to revive was the local player");
-                                __instance.cursorTip.text = $"You can't revive yourself!";
                             }
                         }
                         else
