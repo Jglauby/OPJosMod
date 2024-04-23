@@ -32,7 +32,7 @@ namespace OPJosMod.GhostMode.Patches
             mls = logSource;
         }
 
-        private static bool allowKill = true;
+        public static bool allowKill = true;
         public static bool isGhostMode = false;
         private static Coroutine jumpCoroutine;
 

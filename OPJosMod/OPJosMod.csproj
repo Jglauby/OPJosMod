@@ -102,6 +102,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
+    <Compile Include="CustomRpc\CompleteRecievedTasks.cs" />
+    <Compile Include="CustomRpc\MessageCodes.cs" />
+    <Compile Include="CustomRpc\MessageTasks.cs" />
+    <Compile Include="CustomRpc\PatchesForRPC.cs" />
+    <Compile Include="CustomRpc\RpcMessage.cs" />
+    <Compile Include="CustomRpc\RpcMessageHandler.cs" />
+    <Compile Include="GlobalVariables.cs" />
     <Compile Include="OPnessModes.cs" />
     <Compile Include="Patches\EnemyPatches\CrawlerAIPatch.cs" />
     <Compile Include="Patches\EnemyPatches\FlowermanAIPatch.cs" />

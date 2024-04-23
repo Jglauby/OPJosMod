@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using OPJosMod.GhostMode.CustomRpc;
 using OPJosMod.GhostMode.Enemy.Patches;
 using OPJosMod.GhostMode.Patches;
 using System;
@@ -18,7 +19,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.6.0";
+        private const string modVersion = "2.6.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -36,6 +37,10 @@ namespace OPJosMod.GhostMode
 
             mls.LogInfo("mod has started");
             setupConfig();
+
+            CompleteRecievedTasks.SetLogSource(mls);
+            PatchesForRPC.SetLogSource(mls);
+            RpcMessageHandler.SetLogSource(mls);
 
             PlayerControllerBPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
