@@ -208,7 +208,7 @@ namespace OPJosMod.GhostMode.Patches
         {
             float currentTime = Time.time;
 
-            if (__instance.IsOwner)
+            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId)
             {
                 if (allowKill)
                 {
@@ -242,7 +242,7 @@ namespace OPJosMod.GhostMode.Patches
                 }
             }
 
-            mls.LogMessage("called kill player as __instance.playerClientId != StartOfRoundLocalPlayerClientID");
+            mls.LogMessage("kill patch was called as, __instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId");
             return true;
         }
 

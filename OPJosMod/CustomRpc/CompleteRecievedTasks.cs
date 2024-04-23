@@ -35,6 +35,45 @@ namespace OPJosMod.GhostMode.CustomRpc
                     var player = StartOfRound.Instance.localPlayerController;
                     player.TeleportPlayer(player.deadBody.transform.position);
 
+                    //delete closest dead body
+                    RagdollGrabbableObject closestBody = null;
+                    float closestDistance = float.MaxValue;
+
+                    RagdollGrabbableObject[] allDeadBodies = GameObject.FindObjectsOfType<RagdollGrabbableObject>();
+                    foreach (RagdollGrabbableObject body in allDeadBodies)
+                    {
+                        float distance = Vector3.Distance(body.transform.position, player.transform.position);
+                        if (distance < closestDistance)
+                        {
+                            closestBody = body;
+                            closestDistance = distance;
+                        }
+                    }
+                    if (closestBody != null)
+                    {
+                        if (!((GrabbableObject)closestBody).isHeld)
+                        {
+                            if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
+                            {
+                                if (((NetworkBehaviour)closestBody).NetworkObject.IsSpawned)
+                                {
+                                    ((NetworkBehaviour)closestBody).NetworkObject.Despawn(true);
+                                }
+                                else
+                                {
+                                    Object.Destroy((Object)(object)((Component)closestBody).gameObject);
+                                }
+                            }
+                        }
+                        else if (((GrabbableObject)closestBody).isHeld && (Object)(object)((GrabbableObject)closestBody).playerHeldBy != (Object)null)
+                        {
+                            ((GrabbableObject)closestBody).playerHeldBy.DropAllHeldItems(true, false);
+                        }
+
+                        if (closestBody.ragdoll != null)
+                            Object.Destroy((Object)(object)((Component)closestBody.ragdoll).gameObject);
+                    }
+
                     PlayerControllerBPatch.resetGhostModeVars(player);
                 }
             }          
