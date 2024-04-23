@@ -100,7 +100,6 @@ namespace OPJosMod.ReviveCompany
         {
             PlayerControllerB closestAlivePlayer = GeneralUtil.GetClosestAlivePlayer(revivedPosition);
             PlayerControllerB player = GeneralUtil.GetClosestDeadPlayer(revivedPosition);
-            int playerIndex = (int)player.playerClientId;
 
             //up amount of alive palyers recorded
             StartOfRound instance = StartOfRound.Instance;
@@ -108,6 +107,7 @@ namespace OPJosMod.ReviveCompany
             StartOfRound.Instance.allPlayersDead = false;
             StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
+            int playerIndex = (int)player.playerClientId;
             player.ResetPlayerBloodObjects(player.isPlayerDead);
             player.isClimbingLadder = false;
             player.ResetZAndXRotation();
