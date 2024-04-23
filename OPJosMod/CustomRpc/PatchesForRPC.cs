@@ -77,9 +77,9 @@ namespace OPJosMod.GhostMode.CustomRpc
             yield return new WaitForSeconds(3f);
             if (__instance.IsHost)
             {
-                GlobalVariables.ModActivated = true;
-                RpcMessage rpcMessage = new RpcMessage(MessageTasks.ModActivated, PatchesForRPC.mls.SourceName, (int)__instance.localPlayerController.playerClientId, MessageCodes.Request);
-                RpcMessageHandler.SendRpcMessage(rpcMessage);
+                //GlobalVariables.ModActivated = true;
+                //RpcMessage rpcMessage = new RpcMessage(MessageTasks.ModActivated, PatchesForRPC.mls.SourceName, (int)__instance.localPlayerController.playerClientId, MessageCodes.Request);
+                //RpcMessageHandler.SendRpcMessage(rpcMessage);
             }
         }
     }
