@@ -102,6 +102,12 @@ namespace OPJosMod.ReviveCompany
             PlayerControllerB player = GeneralUtil.GetClosestDeadPlayer(revivedPosition);
             int playerIndex = (int)player.playerClientId;
 
+            //up amount of alive palyers recorded
+            StartOfRound instance = StartOfRound.Instance;
+            instance.livingPlayers++;
+            StartOfRound.Instance.allPlayersDead = false;
+            StartOfRound.Instance.UpdatePlayerVoiceEffects();
+
             player.ResetPlayerBloodObjects(player.isPlayerDead);
             player.isClimbingLadder = false;
             player.ResetZAndXRotation();
@@ -211,11 +217,6 @@ namespace OPJosMod.ReviveCompany
                 if (deadBody.ragdoll != null)
                     Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
             }
-
-            StartOfRound instance = StartOfRound.Instance;
-            instance.livingPlayers++;
-            StartOfRound.Instance.allPlayersDead = false;
-            StartOfRound.Instance.UpdatePlayerVoiceEffects();
         }       
     }
 }

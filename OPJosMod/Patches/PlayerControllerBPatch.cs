@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.ReviveCompany.CustomRpc;
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -65,6 +66,11 @@ namespace OPJosMod.ReviveCompany.Patches
                             RpcMessageHandler.SendRpcMessage(rpcMessage);
 
                             GeneralUtil.RevivePlayer(revivingBody.transform.position);
+
+                            //turn off ghost mode for the player
+                            PlayerControllerB revivingPlayer = GeneralUtil.GetClosestAlivePlayer(revivingBody.transform.position);
+                            RpcMessage rpcMessage2 = new RpcMessage(MessageTasks.TurnOffGhostMode, revivingPlayer.playerClientId.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
+                            RpcMessageHandler.SendRpcMessage(rpcMessage2);
                         }
                         else
                         {

@@ -6,6 +6,7 @@ namespace OPJosMod.ReviveCompany.CustomRpc
     {
         ModActivated,
         RevivePlayer,
+        TurnOffGhostMode,
         ErrorNoTask
     }
 
@@ -19,6 +20,8 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                     return ":ModActivated:";
                 case MessageTasks.RevivePlayer:
                     return ":RevivePlayer:";
+                case MessageTasks.TurnOffGhostMode:
+                    return ":TurnOffGhostMode:";
                 case MessageTasks.ErrorNoTask:
                     return ":Error:";
             }
@@ -45,6 +48,10 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             }
             else if (givenString.Contains(GetCode(MessageTasks.RevivePlayer))){
                 return MessageTasks.RevivePlayer;
+            }
+            else if (givenString.Contains(GetCode(MessageTasks.TurnOffGhostMode)))
+            {
+                return MessageTasks.TurnOffGhostMode;
             }
             else
             {
