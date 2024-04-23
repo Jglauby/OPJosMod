@@ -78,5 +78,10 @@ namespace OPJosMod.GhostMode.CustomRpc
                 }
             }          
         }
+
+        public static void OtherPlayerGhostToggle(string message)
+        {
+
+        }
     }
 }

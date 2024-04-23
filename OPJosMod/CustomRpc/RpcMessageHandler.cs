@@ -98,6 +98,9 @@ namespace OPJosMod.GhostMode.CustomRpc
                     case MessageTasks.TurnOffGhostMode:
                         CompleteRecievedTasks.TurnOffGhostMode(message);
                         break;
+                    case MessageTasks.OtherPlayerGhostToggle:
+                        CompleteRecievedTasks.OtherPlayerGhostToggle(message);
+                        break;
                     case MessageTasks.ErrorNoTask:
                         mls.LogError("got an error task");
                         break;

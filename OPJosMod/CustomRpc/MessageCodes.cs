@@ -23,6 +23,8 @@
 
         public static bool stringContainsMessageCode(string givenString)
         {
+            if (string.IsNullOrEmpty(givenString)) return false;
+
             return givenString.Contains(GetCode(MessageCodes.Request)) || givenString.Contains(GetCode(MessageCodes.Response));
         }
 

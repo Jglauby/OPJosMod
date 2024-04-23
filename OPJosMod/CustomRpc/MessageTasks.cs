@@ -6,6 +6,7 @@ namespace OPJosMod.GhostMode.CustomRpc
     {
         ModActivated,
         TurnOffGhostMode,
+        OtherPlayerGhostToggle,
         ErrorNoTask
     }
 
@@ -19,6 +20,8 @@ namespace OPJosMod.GhostMode.CustomRpc
                     return ":ModActivated:";
                 case MessageTasks.TurnOffGhostMode:
                     return ":TurnOffGhostMode:";
+                case MessageTasks.OtherPlayerGhostToggle:
+                    return ":OtherPlayerGhostToggle:";
                 case MessageTasks.ErrorNoTask:
                     return ":Error:";
             }
@@ -45,6 +48,10 @@ namespace OPJosMod.GhostMode.CustomRpc
             }
             else if (givenString.Contains(GetCode(MessageTasks.TurnOffGhostMode))){
                 return MessageTasks.TurnOffGhostMode;
+            }
+            else if (givenString.Contains(GetCode(MessageTasks.OtherPlayerGhostToggle)))
+            {
+                return MessageTasks.OtherPlayerGhostToggle;
             }
             else
             {

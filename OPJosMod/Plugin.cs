@@ -19,7 +19,7 @@ namespace OPJosMod.GhostMode
     {
         private const string modGUID = "OpJosMod.GhostMode";
         private const string modName = "GhostMode";
-        private const string modVersion = "2.6.2";
+        private const string modVersion = "2.7.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -68,6 +68,11 @@ namespace OPJosMod.GhostMode
 
         private void setupConfig()
         {
+            var configSeeOtherGhosts = Config.Bind("See Other Ghosts",
+                                        "SeeOtherGhosts",
+                                        false,
+                                        "Everyone needs this mod installed and have this toggled on for this to work, but it will allow ghosts to see eachother run around!");
+
             var configOPness = Config.Bind("OP-Ness",
                                         "OPness",
                                         OPnessModes.Balanced,
@@ -168,6 +173,7 @@ namespace OPJosMod.GhostMode
                             Key.LeftShift,
                             "Button to move down in no clip mode");
 
+            ConfigVariables.seeOtherGhosts = configSeeOtherGhosts.Value;
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
             ConfigVariables.canPickupScrap = configCanGrabScrap.Value;
 

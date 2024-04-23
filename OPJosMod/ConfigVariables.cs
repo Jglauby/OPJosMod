@@ -7,6 +7,7 @@ namespace OPJosMod
 {
     public static class ConfigVariables
     {
+        public static bool seeOtherGhosts;
         public static float waitTimeBetweenInteractions;
         public static Key startGhostModeButton;
         public static Key teleportBodyButton;
