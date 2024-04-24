@@ -201,7 +201,7 @@ namespace OPJosMod.ReviveCompany
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
 
-                localPlayerController.SyncBodyPositionWithClients();
+                //localPlayerController.SyncBodyPositionWithClients(); trying to sync dead body? instead sync player location
             }
 
             //delete closest dead body to revived player
