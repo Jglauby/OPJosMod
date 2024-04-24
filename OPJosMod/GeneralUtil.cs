@@ -210,7 +210,7 @@ namespace OPJosMod.ReviveCompany
             {
                 if (!((GrabbableObject)deadBody).isHeld)
                 {
-                    if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
+                    if (StartOfRound.Instance.IsServer)    //if (((NetworkBehaviour)this).IsServer)
                     {
                         if (((NetworkBehaviour)deadBody).NetworkObject.IsSpawned)
                         {
