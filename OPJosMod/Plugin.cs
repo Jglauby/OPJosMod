@@ -11,13 +11,12 @@ namespace OPJosMod.ModNameHere
     {
         private const string modGUID = "OpJosMod.ModNameHere";
         private const string modName = "ModNameHere";
-        private const string modVersion = "1.0.0"; //dont forget to update this lol
+        private const string modVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
 
         internal ManualLogSource mls;
-        //update namespaces, and the strings for names
         void Awake()
         {
             if (Instance == null)

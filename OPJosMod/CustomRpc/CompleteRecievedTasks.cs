@@ -20,17 +20,10 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
             }                
         }
 
-        public static void SeekingStarted(string playerIdString)
+        public static void PlayerJumped(string playerName)
         {
-            //if (PlayerControllerBPatch.isHider)
-            //{
-            //    if (ConfigVariables.hiderItem == BuyableItems.None)
-            //        HUDManagerPatch.CustomDisplayTip("Careful!", "Seeker is on their way!");
-            //    else
-            //        HUDManagerPatch.CustomDisplayTip("Seeker is on their way!", "an item dropped at your feet");
-            //}
-            //
-            //GeneralUtil.spawnHiderItem(int.Parse(playerIdString));
+            mls.LogMessage($"{playerName} has jumped!");
+            HUDManager.Instance.DisplayTip(playerName, "has jumped!");
         }
     }
 }

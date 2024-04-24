@@ -5,7 +5,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
     public enum MessageTasks 
     {
         ModActivated,
-        StartedSeeking,
+        PlayerJumped,
         ErrorNoTask
     }
 
@@ -17,8 +17,8 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
             {
                 case MessageTasks.ModActivated:
                     return ":ModActivated:";
-                case MessageTasks.StartedSeeking:
-                    return ":StartedSeeking:";
+                case MessageTasks.PlayerJumped:
+                    return ":PlayerJumped:";
                 case MessageTasks.ErrorNoTask:
                     return ":Error:";
             }
@@ -43,8 +43,8 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
             {
                 return MessageTasks.ModActivated;
             }
-            else if (givenString.Contains(GetCode(MessageTasks.StartedSeeking))){
-                return MessageTasks.StartedSeeking;
+            else if (givenString.Contains(GetCode(MessageTasks.PlayerJumped))){
+                return MessageTasks.PlayerJumped;
             }
             else
             {

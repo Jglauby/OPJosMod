@@ -61,7 +61,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
                     MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
 
-                    SendRpcResponse(task, decodedMessage);
+                    //SendRpcResponse(task, decodedMessage);
                     handleTask(task, taskMessage);
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
@@ -86,8 +86,8 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
                     case MessageTasks.ModActivated:
                         CompleteRecievedTasks.ModActivated(message);
                         break;
-                    case MessageTasks.StartedSeeking:
-                        CompleteRecievedTasks.SeekingStarted(message);
+                    case MessageTasks.PlayerJumped:
+                        CompleteRecievedTasks.PlayerJumped(message);
                         break;
                     case MessageTasks.ErrorNoTask:
                         mls.LogError("got an error task");

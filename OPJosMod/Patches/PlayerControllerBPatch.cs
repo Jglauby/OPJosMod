@@ -27,5 +27,17 @@ namespace OPJosMod.Patches//OPJosMod.MODNameHere.Patches
         {
             //mls.LogMessage($"Constants.ModActivated:{GlobalVariables.ModActivated}");
         }
+
+        [HarmonyPatch("PlayerJump")]
+        [HarmonyPostfix]
+        static void patchPlayerJump(PlayerControllerB __instance)
+        {
+            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId)
+            {
+                mls.LogMessage("local player jumped!");
+                RpcMessage rpcMessage = new RpcMessage(MessageTasks.PlayerJumped, __instance.playerUsername, (int)__instance.playerClientId, MessageCodes.Request);
+                RpcMessageHandler.SendRpcMessage(rpcMessage);
+            }
+        }
     }
 }
