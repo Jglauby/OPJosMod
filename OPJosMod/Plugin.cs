@@ -40,7 +40,7 @@ namespace OPJosMod.MoreEnemies
         {
             var configEnemySpawnMultiplier = Config.Bind("Enemy Spawn Multiplier",
                                         "EnemySpawnMultiplier",
-                                        5,
+                                        7,
                                         "How many more enemies do you want? 5 = 5 times as many enemies.");
 
             ConfigVariables.enemySpawnMultiplier = configEnemySpawnMultiplier.Value;
