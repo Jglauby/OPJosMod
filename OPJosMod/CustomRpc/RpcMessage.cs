@@ -1,4 +1,4 @@
-﻿namespace OPJosMod.MODNAMEHERE.CustomRpc
+﻿namespace OPJosMod.MoreEnemies.CustomRpc
 {
     public class RpcMessage
     {

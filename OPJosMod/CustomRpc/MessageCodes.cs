@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.MoreEnemies.CustomRpc
 {
     public enum MessageCodes 
     {

@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.MoreEnemies.CustomRpc
 {
     public static class RpcMessageHandler
     {

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPJosMod
+namespace OPJosMod.MoreEnemies
 {
-    public static class ConfigVariables //example config variables class
+    public static class ConfigVariables
     {
         public static float defaultSprintMultiplier;
         public static string flashTimeButton;

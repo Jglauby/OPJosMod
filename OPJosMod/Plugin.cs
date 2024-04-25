@@ -1,16 +1,16 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.MODNAMEHERE.CustomRpc;
-using OPJosMod.Patches;
+using OPJosMod.MoreEnemies.CustomRpc;
+using OPJosMod.MoreEnemies.Patches;
 
-namespace OPJosMod.ModNameHere
+namespace OPJosMod.MoreEnemies
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "OpJosMod.ModNameHere";
-        private const string modName = "ModNameHere";
+        private const string modGUID = "OpJosMod.MoreEnemies";
+        private const string modName = "MoreEnemies";
         private const string modVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);

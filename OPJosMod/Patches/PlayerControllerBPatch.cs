@@ -1,8 +1,8 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using OPJosMod.ModNameHere;
-using OPJosMod.MODNAMEHERE.CustomRpc;
+using OPJosMod.MoreEnemies;
+using OPJosMod.MoreEnemies.CustomRpc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace OPJosMod.Patches//OPJosMod.MODNameHere.Patches
+namespace OPJosMod.MoreEnemies.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch

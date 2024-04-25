@@ -1,7 +1,7 @@
 ﻿using BepInEx.Logging;
-using OPJosMod.ModNameHere;
+using OPJosMod.MoreEnemies;
 
-namespace OPJosMod.MODNAMEHERE.CustomRpc
+namespace OPJosMod.MoreEnemies.CustomRpc
 {
     public static class CompleteRecievedTasks
     {
