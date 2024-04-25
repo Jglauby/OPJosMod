@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using System;
 using System.Reflection;
 using UnityEngine;
 
@@ -12,14 +13,17 @@ namespace OPJosMod.OneHitShovel.CustomRpc
             mls = logSource;
         }
 
+        private static RpcMessage lastSentMessage = null;
         private static float lastSentTime = Time.time;
-        private static float messageWaitTime = 1f;
+        private static float messageWaitTime = 0.5f;
 
         public static void SendRpcMessage(RpcMessage message)
         {
-            if (Time.time - lastSentTime > messageWaitTime)
+            if (Time.time - lastSentTime > messageWaitTime || message != lastSentMessage)
             {
+                mls.LogMessage($"Sending rpc message: {message.getMessageWithCode()}, user:{message.FromUser}");
                 lastSentTime = Time.time;
+                lastSentMessage = message;
                 HUDManager hudManagerInstance = HUDManager.Instance;
                 if (hudManagerInstance != null)
                 {
@@ -39,48 +43,60 @@ namespace OPJosMod.OneHitShovel.CustomRpc
                 {
                     mls.LogError("HUDManager.Instance is null.");
                 }
-            }          
+            }
+            else
+            {
+                mls.LogError($"didnt' send message as it was too soon and was the same message as last message {message.getMessageWithCode()}");
+            }
         }
 
         public static void ReceiveRpcMessage(string message, int user)
         {
             if (user != (int)StartOfRound.Instance.localPlayerController.playerClientId)
             {
+                mls.LogMessage($"recieved message: {message}, user:{user}");
                 var decodedMessage = MessageCodeUtil.returnMessageWithoutCode(message);
                 if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Request)))
                 {
                     MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
-                    handleTask(task, taskMessage);
 
-                    //SendRpcResponse(decodedMessage);
+                    SendRpcResponse(task, taskMessage);
+                    handleTask(task, taskMessage);
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
-                    mls.LogMessage("got the response that the other clients recieved this message");
+                    mls.LogMessage($"got the response that the other clients recieved this message: {message}");
                 }
             }
         }
 
-        public static void SendRpcResponse(string message)
+        public static void SendRpcResponse(MessageTasks task, string message)
         {
-            var responseMessage = new RpcMessage(message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
+            var responseMessage = new RpcMessage(task, message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
             SendRpcMessage(responseMessage);
         }
 
         private static void handleTask(MessageTasks task, string message)
         {
-            switch (task)
+            try
             {
-                case MessageTasks.ModActivated:
-                    CompleteRecievedTasks.ModActivated(message);
-                    break;
-                case MessageTasks.EnemyDied:
-                    CompleteRecievedTasks.EnemyDied(message);
-                    break;
-                case MessageTasks.ErrorNoTask:
-                    mls.LogError("got an error task");
-                    break;
+                switch (task)
+                {
+                    case MessageTasks.ModActivated:
+                        CompleteRecievedTasks.ModActivated(message);
+                        break;
+                    case MessageTasks.EnemyDied:
+                        CompleteRecievedTasks.EnemyDied(message);
+                        break;
+                    case MessageTasks.ErrorNoTask:
+                        mls.LogError("got an error task");
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                mls.LogError($"error handling rpc task, {e}");
             }
         }
     }

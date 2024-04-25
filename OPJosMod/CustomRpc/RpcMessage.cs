@@ -2,12 +2,15 @@
 {
     public class RpcMessage
     {
-        public RpcMessage(string message, int user, MessageCodes code)
+        public RpcMessage(MessageTasks task, string message, int user, MessageCodes code)
         {
+            Task = task;
             Message = message;
             FromUser = user;
             MessageCode = code;
         }
+
+        public MessageTasks Task { get; set; }
 
         public string Message { get; set; }
 
@@ -17,7 +20,7 @@
 
         public string getMessageWithCode()
         {
-            string result = MessageCodeUtil.GetCode(MessageCode) + Message;
+            string result = MessageCodeUtil.GetCode(MessageCode) + MessageTaskUtil.GetCode(Task) + Message;
             return result;
         }
     }

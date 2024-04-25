@@ -176,8 +176,7 @@ namespace OPJosMod.OneHitShovel
             //send message to update death for other players with mod
             if (ConfigVariables.syncDeathAnimations)
             {
-                string message = MessageTaskUtil.GetCode(MessageTasks.EnemyDied) + gameObject.transform.position;
-                RpcMessage rpcMessage = new RpcMessage(message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
+                RpcMessage rpcMessage = new RpcMessage(MessageTasks.EnemyDied, gameObject.transform.position.ToString(), (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Request);
                 RpcMessageHandler.SendRpcMessage(rpcMessage);
             }
             else

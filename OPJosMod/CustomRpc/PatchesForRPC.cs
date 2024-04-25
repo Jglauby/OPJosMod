@@ -18,17 +18,20 @@ namespace OPJosMod.OneHitShovel.CustomRpc
     static class HUDManagerPatchForRPC
     {
         private static float lastRecievedAt = Time.time;
-        private static string lastRecievedMessage = "";
+        private static string lastRecievedMessage = null;
         private static float messageWaitTime = 0.5f;
 
         [HarmonyPatch("AddPlayerChatMessageClientRpc")]
         [HarmonyPrefix]
         private static void addPlayerChatMessageClientRpcPatch(ref string chatMessage, ref int playerId)
         {
-            if (MessageCodeUtil.stringContainsMessageCode(chatMessage) && (Time.time - lastRecievedAt > messageWaitTime || chatMessage != lastRecievedMessage))
+            var rawMessage = MessageCodeUtil.returnMessageNoSeperators(chatMessage);
+            if (MessageCodeUtil.stringContainsMessageCode(chatMessage) &&
+                (Time.time - lastRecievedAt > messageWaitTime || rawMessage != lastRecievedMessage) &&
+                (playerId != (int)GameNetworkManager.Instance.localPlayerController.playerClientId))
             {
                 lastRecievedAt = Time.time;
-                lastRecievedMessage = chatMessage;
+                lastRecievedMessage = rawMessage;
                 RpcMessageHandler.ReceiveRpcMessage(chatMessage, playerId);
             }
         }
@@ -78,8 +81,7 @@ namespace OPJosMod.OneHitShovel.CustomRpc
             if (__instance.IsHost)
             {
                 GlobalVariables.ModActivated = true;
-                string message = MessageTaskUtil.GetCode(MessageTasks.ModActivated) + PatchesForRPC.mls.SourceName;
-                RpcMessage rpcMessage = new RpcMessage(message, (int)__instance.localPlayerController.playerClientId, MessageCodes.Request);
+                RpcMessage rpcMessage = new RpcMessage(MessageTasks.ModActivated, PatchesForRPC.mls.SourceName, (int)__instance.localPlayerController.playerClientId, MessageCodes.Request);
                 RpcMessageHandler.SendRpcMessage(rpcMessage);
             }
         }
