@@ -55,7 +55,7 @@ namespace OPJosMod.ReviveCompany.Patches
                         StartedRevive = true;
                         StartedReviveAt = Time.time;
                     }
-                    else if (Time.time - StartedReviveAt > 5f)
+                    else if (Time.time - StartedReviveAt > ConfigVariables.reviveTime)
                     {
                         StartedRevive = false;
                         var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
@@ -81,7 +81,7 @@ namespace OPJosMod.ReviveCompany.Patches
                         RpcMessageHandler.SendRpcMessage(rpcMessage2);
                     }
 
-                    __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/5s";
+                    __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/{ConfigVariables.reviveTime}s";
                 }
                 else
                 {
