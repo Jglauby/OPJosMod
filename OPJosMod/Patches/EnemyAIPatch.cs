@@ -156,7 +156,7 @@ namespace OPJosMod.GhostMode.Patches
 
             if (resultingPlayer != null)
             {
-                mls.LogMessage("Closest player found: " + resultingPlayer.name);
+                //mls.LogMessage("Closest player found: " + resultingPlayer.name);
             }
             else
             {
