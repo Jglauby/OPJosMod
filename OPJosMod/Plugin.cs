@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.MoreEnemies.CustomRpc;
 using OPJosMod.MoreEnemies.Patches;
 
 namespace OPJosMod.MoreEnemies
@@ -26,10 +25,6 @@ namespace OPJosMod.MoreEnemies
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             setupConfig();
-
-            PatchesForRPC.SetLogSource(mls);
-            RpcMessageHandler.SetLogSource(mls);
-            CompleteRecievedTasks.SetLogSource(mls);
 
             RoundManagerPatch.SetLogSource(mls);
 
