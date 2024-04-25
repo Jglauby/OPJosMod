@@ -25,13 +25,11 @@ namespace OPJosMod.HideNSeek
                 Instance = this;
             }
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-
-            mls.LogInfo("mod has started");
             setupConfig();
-
             RpcMessageHandler.SetLogSource(mls);
-            HUDManagerPatchForRPC.SetLogSource(mls);
+            PatchesForRPC.SetLogSource(mls);
             CompleteRecievedTasks.SetLogSource(mls);
+
             PlayerControllerBPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);

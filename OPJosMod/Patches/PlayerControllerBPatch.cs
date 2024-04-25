@@ -230,8 +230,7 @@ namespace OPJosMode.HideNSeek.Patches
             player.playerCollider.enabled = true;
 
             //let hiders know u lookin for them
-            string message = MessageTaskUtil.GetCode(MessageTasks.StartedSeeking) + player.playerClientId;
-            RpcMessage rpcMessage = new RpcMessage(message, (int)player.playerClientId, MessageCodes.Request);
+            RpcMessage rpcMessage = new RpcMessage(MessageTasks.StartedSeeking, player.playerClientId.ToString(), (int)player.playerClientId, MessageCodes.Request);
             RpcMessageHandler.SendRpcMessage(rpcMessage);
 
             GeneralUtil.spawnHiderItem((int)player.playerClientId);
@@ -245,8 +244,7 @@ namespace OPJosMode.HideNSeek.Patches
             PlaySounds.PlayFart(closestPlayer);
 
             //send message
-            string message = MessageTaskUtil.GetCode(MessageTasks.MakePlayerWhistle) + closestPlayer.playerClientId;
-            RpcMessage rpcMessage = new RpcMessage(message, (int)localPlayer.playerClientId, MessageCodes.Request);
+            RpcMessage rpcMessage = new RpcMessage(MessageTasks.MakePlayerWhistle, closestPlayer.playerClientId.ToString(), (int)localPlayer.playerClientId, MessageCodes.Request);
             RpcMessageHandler.SendRpcMessage(rpcMessage);
         }
 

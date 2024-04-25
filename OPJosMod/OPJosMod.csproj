@@ -87,7 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomRpc\CompleteRecievedTasks.cs" />
-    <Compile Include="CustomRpc\HudManagerPatchForRPC.cs" />
+    <Compile Include="CustomRpc\PatchesForRPC.cs" />
     <Compile Include="CustomRpc\MessageTasks.cs" />
     <Compile Include="CustomRpc\MessageCodes.cs" />
     <Compile Include="CustomRpc\RpcMessage.cs" />
@@ -96,6 +96,7 @@
     <Compile Include="BuyableItems.cs" />
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="GeneralUtil.cs" />
+    <Compile Include="GlobalVariables.cs" />
     <Compile Include="Patches\EntranceTeleportPatch.cs" />
     <Compile Include="Patches\TimeOfDayPatch.cs" />
     <Compile Include="Patches\TurretPatch.cs" />

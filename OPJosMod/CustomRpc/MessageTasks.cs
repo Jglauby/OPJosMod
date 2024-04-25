@@ -4,6 +4,7 @@ namespace OPJosMod.HideNSeek.CustomRpc
 {
     public enum MessageTasks 
     {
+        ModActivated,
         StartedSeeking,
         MakePlayerWhistle,
         ErrorNoTask
@@ -15,6 +16,8 @@ namespace OPJosMod.HideNSeek.CustomRpc
         {
             switch (code)
             {
+                case MessageTasks.ModActivated:
+                    return ":ModActivated:";
                 case MessageTasks.StartedSeeking:
                     return ":StartedSeeking:";
                 case MessageTasks.MakePlayerWhistle:
@@ -45,6 +48,10 @@ namespace OPJosMod.HideNSeek.CustomRpc
             else if (givenString.Contains(GetCode(MessageTasks.MakePlayerWhistle)))
             {
                 return MessageTasks.MakePlayerWhistle;
+            }
+            else if (givenString.Contains(GetCode(MessageTasks.ModActivated)))
+            {
+                return MessageTasks.ModActivated;
             }
             else
             {
