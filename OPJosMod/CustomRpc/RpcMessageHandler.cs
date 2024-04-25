@@ -21,7 +21,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
         {
             if (Time.time - lastSentTime > messageWaitTime || message != lastSentMessage)
             {
-                mls.LogMessage($"Sending rpc message: {message.getMessageWithCode()}");
+                mls.LogMessage($"Sending rpc message: {message.getMessageWithCode()}, user:{message.FromUser}");
                 lastSentTime = Time.time;
                 lastSentMessage = message;
                 HUDManager hudManagerInstance = HUDManager.Instance;
@@ -61,7 +61,7 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
                     MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
 
-                    //SendRpcResponse(task, decodedMessage);
+                    SendRpcResponse(task, taskMessage);
                     handleTask(task, taskMessage);
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))

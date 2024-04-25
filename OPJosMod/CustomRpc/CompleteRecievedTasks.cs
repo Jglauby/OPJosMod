@@ -22,7 +22,6 @@ namespace OPJosMod.MODNAMEHERE.CustomRpc
 
         public static void PlayerJumped(string playerName)
         {
-            mls.LogMessage($"{playerName} has jumped!");
             HUDManager.Instance.DisplayTip(playerName, "has jumped!");
         }
     }
