@@ -31,25 +31,19 @@ namespace OPJosMod.MoreEnemies
             RpcMessageHandler.SetLogSource(mls);
             CompleteRecievedTasks.SetLogSource(mls);
 
-            PlayerControllerBPatch.SetLogSource(mls);
+            RoundManagerPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
 
         private void setupConfig()//example config setup
         {
-            var configSprintMultiplier = Config.Bind("Sprint Multiplier", // The section under which the option is shown
-                                        "SprintMultiplier",  // The key of the configuration option in the configuration file
-                                        1.04f, // The default value
-                                        "How fast your speed rams up when sprinting"); // Description of the option to show in the config file
+            var configEnemySpawnMultiplier = Config.Bind("Enemy Spawn Multiplier",
+                                        "EnemySpawnMultiplier",
+                                        5,
+                                        "How many more enemies do you want? 5 = 5 times as many enemies.");
 
-            var configFlashTimeButton = Config.Bind("Flash Time Button",
-                                        "FlashTimeButton",
-                                        "R",
-                                        "Button used to toggle flash time");
-
-            ConfigVariables.defaultSprintMultiplier = configSprintMultiplier.Value;
-            ConfigVariables.flashTimeButton = configFlashTimeButton.Value;
+            ConfigVariables.enemySpawnMultiplier = configEnemySpawnMultiplier.Value;
         }
     }
 }
