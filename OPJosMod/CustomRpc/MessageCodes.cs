@@ -1,6 +1,8 @@
-﻿namespace OPJosMod.TheFlash.CustomRpc
+﻿using System.Linq;
+
+namespace OPJosMod.TheFlash.CustomRpc
 {
-    public enum MessageCodes 
+    public enum MessageCodes
     {
         Request,
         Response
@@ -23,6 +25,8 @@
 
         public static bool stringContainsMessageCode(string givenString)
         {
+            if (string.IsNullOrEmpty(givenString)) return false;
+
             return givenString.Contains(GetCode(MessageCodes.Request)) || givenString.Contains(GetCode(MessageCodes.Response));
         }
 
@@ -30,9 +34,19 @@
         {
             if (MessageCodeUtil.stringContainsMessageCode(message))
             {
-                int codeLength = MessageCodeUtil.GetCode(MessageCodes.Request).Length;
+                message = message.Replace(GetCode(MessageCodes.Request), string.Empty);
+                message = message.Replace(GetCode(MessageCodes.Response), string.Empty);
+            }
 
-                return message.Substring(codeLength);
+            return message;
+        }
+
+        public static string returnMessageNoSeperators(string message)
+        {
+            if (MessageCodeUtil.stringContainsMessageCode(message))
+            {
+                string withoutColons = new string(message.Where(c => c != ':').ToArray());
+                return withoutColons;
             }
 
             return message;
