@@ -21,7 +21,7 @@ namespace OPJosMod.GhostMode.CustomRpc
         {
             if (Time.time - lastSentTime > messageWaitTime || lastSentMessage != message)
             {
-                mls.LogMessage($"Sending rpc message: {message.getMessageWithCode()}");
+                mls.LogMessage($"Sending rpc message: {message.getMessageWithCode()}, user:{message.FromUser}");
                 lastSentTime = Time.time;
                 lastSentMessage = message;
                 HUDManager hudManagerInstance = HUDManager.Instance;
@@ -61,8 +61,8 @@ namespace OPJosMod.GhostMode.CustomRpc
                     MessageTasks task = MessageTaskUtil.getMessageTask(decodedMessage);
                     string taskMessage = MessageTaskUtil.getMessageWithoutTask(decodedMessage);
 
+                    SendRpcResponse(task, taskMessage);
                     handleTask(task, taskMessage);
-                    //SendRpcResponse(task, MessageTaskUtil.getMessageWithoutTask(decodedMessage));
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
@@ -76,7 +76,6 @@ namespace OPJosMod.GhostMode.CustomRpc
             try
             {
                 var responseMessage = new RpcMessage(task, message, (int)StartOfRound.Instance.localPlayerController.playerClientId, MessageCodes.Response);
-                //mls.LogMessage($"message:{responseMessage.getMessageWithCode()}, user:{responseMessage.FromUser}");
                 SendRpcMessage(responseMessage);
             }
             catch (Exception e)
