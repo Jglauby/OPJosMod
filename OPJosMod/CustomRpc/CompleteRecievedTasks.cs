@@ -4,6 +4,7 @@ using static Unity.Netcode.FastBufferWriter;
 using Unity.Netcode;
 using UnityEngine;
 using OPJosMod.GhostMode.Patches;
+using System.Linq;
 
 namespace OPJosMod.GhostMode.CustomRpc
 {
@@ -28,12 +29,16 @@ namespace OPJosMod.GhostMode.CustomRpc
         {
             if (int.TryParse(clientID, out var clientIDInt))
             {
-                if ((int)StartOfRound.Instance.localPlayerController.playerClientId == clientIDInt && PlayerControllerBPatch.isGhostMode)
+                if ((int)StartOfRound.Instance.localPlayerController.playerClientId == clientIDInt && !PlayerControllerBPatch.allowKill)
                 {
                     //teleport to dead body
                     mls.LogMessage("Revived on Other Client, turning off ghost mode.");
                     var player = StartOfRound.Instance.localPlayerController;
                     player.TeleportPlayer(player.deadBody.transform.position);
+
+                    //realign allive players count
+                    var alivePlayers = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => !x.playerUsername.Contains("Player") && !x.isPlayerDead).ToList().Count();
+                    StartOfRound.Instance.livingPlayers = alivePlayers;
 
                     //delete closest dead body
                     RagdollGrabbableObject closestBody = null;
