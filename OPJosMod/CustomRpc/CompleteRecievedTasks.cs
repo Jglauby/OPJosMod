@@ -53,7 +53,7 @@ namespace OPJosMod.GhostMode.CustomRpc
                     {
                         if (!((GrabbableObject)closestBody).isHeld)
                         {
-                            if (StartOfRound.Instance.IsHost)    //if (((NetworkBehaviour)this).IsServer)
+                            if (StartOfRound.Instance.IsServer)    //if (((NetworkBehaviour)this).IsServer)
                             {
                                 if (((NetworkBehaviour)closestBody).NetworkObject.IsSpawned)
                                 {
