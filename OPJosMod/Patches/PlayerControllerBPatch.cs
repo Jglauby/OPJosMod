@@ -60,7 +60,7 @@ namespace OPJosMod.ReviveCompany.Patches
                         var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);                 
                         if (!canRevive(revivingBody))
                         {
-                            mls.LogMessage("not allowd to revie player");
+                            //mls.LogMessage("not allowd to revive player");
                             __instance.cursorTip.text = "[Can't Revive Player!]";
                             return;
                         }
