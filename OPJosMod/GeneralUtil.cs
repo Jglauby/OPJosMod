@@ -76,7 +76,19 @@ namespace OPJosMod.ReviveCompany
 
         public static void RevivePlayer(int playerId)
         {
-            PlayerControllerB player = RoundManager.Instance.playersManager.allPlayerScripts.ElementAt(playerId);
+            //ensure playerId is a valid index
+            if (playerId >= RoundManager.Instance.playersManager.allPlayerScripts.Length || playerId < 0)
+            {
+                Debug.Log($"ReiveCompanyERROR: error when trying to revive player {playerId} as it is outside the range of the allPlayerScripts array");
+                return;
+            }
+            PlayerControllerB player = RoundManager.Instance.playersManager.allPlayerScripts[playerId];
+
+            if (player != null && player.isPlayerDead == false)
+            {
+                Debug.Log($"ReiveCompanyERROR: error when trying to revive player {playerId} player is already alive! do nothing more");
+                return;
+            }
 
             //set tp location aka revive location
             //sets it to server postiion, if it can sets it to players dead body location, if that is too far away set it to the closest players location
