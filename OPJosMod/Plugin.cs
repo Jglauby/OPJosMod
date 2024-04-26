@@ -45,8 +45,14 @@ namespace OPJosMod.ReviveCompany
                                         "ReviveTime",
                                         5f,
                                         "How long it takes to revive someone");
-        
+
+            var configReviveTeleported = Config.Bind("Can Revive Teleported Bodies",
+                                        "CanReviveTeleportedBodies",
+                                        false,
+                                        "Toggle for if you are able to revive dead players you teleport back to the ship");
+
             ConfigVariables.reviveTime = configReviveTime.Value;
+            ConfigVariables.reviveTeleportedBodies = configReviveTeleported.Value;
         }
     }
 }
