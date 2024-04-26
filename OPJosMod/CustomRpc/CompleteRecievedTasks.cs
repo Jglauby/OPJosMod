@@ -28,7 +28,7 @@ namespace OPJosMod.GhostMode.CustomRpc
         {
             if (int.TryParse(clientID, out var clientIDInt))
             {
-                if ((int)StartOfRound.Instance.localPlayerController.playerClientId == clientIDInt)
+                if ((int)StartOfRound.Instance.localPlayerController.playerClientId == clientIDInt && PlayerControllerBPatch.isGhostMode)
                 {
                     //teleport to dead body
                     mls.LogMessage("Revived on Other Client, turning off ghost mode.");
