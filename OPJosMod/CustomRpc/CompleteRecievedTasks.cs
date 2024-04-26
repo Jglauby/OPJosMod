@@ -3,6 +3,8 @@ using GameNetcodeStuff;
 using static Unity.Netcode.FastBufferWriter;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
+using System;
 
 namespace OPJosMod.ReviveCompany.CustomRpc
 {
@@ -23,10 +25,16 @@ namespace OPJosMod.ReviveCompany.CustomRpc
             }                
         }
 
-        public static void RevivePlayer(string position)
+        public static void RevivePlayer(string playerIdString)
         {
-            Vector3 revivedPosition = GeneralUtil.StringToVector3(position);
-            GeneralUtil.RevivePlayer(revivedPosition);
+            if (int.TryParse(playerIdString, out var playerId))
+            {
+                GeneralUtil.RevivePlayer(playerId);
+            }
+            else
+            {
+                mls.LogError($"Error: Invalid player ID '{playerIdString}' did not revive");
+            }
         }
     }
 }

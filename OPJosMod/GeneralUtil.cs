@@ -23,28 +23,6 @@ namespace OPJosMod.ReviveCompany
             return new Vector3(x, y, z);
         }
 
-        public static PlayerControllerB GetClosestDeadPlayer(Vector3 position)
-        {
-            PlayerControllerB closestPlayer = null;
-            float closestDistance = float.MaxValue;
-
-            PlayerControllerB[] allPlayers = GameObject.FindObjectsOfType<PlayerControllerB>();
-            foreach (PlayerControllerB player in allPlayers)
-            {
-                if (player.isPlayerDead)
-                {
-                    float distance = Vector3.Distance(player.transform.position, position);
-                    if (distance < closestDistance)
-                    {
-                        closestPlayer = player;
-                        closestDistance = distance;
-                    }
-                }
-            }
-
-            return closestPlayer;
-        }
-
         public static RagdollGrabbableObject GetClosestDeadBody(Vector3 position)
         {
             RagdollGrabbableObject closestBody = null;
@@ -64,23 +42,12 @@ namespace OPJosMod.ReviveCompany
             return closestBody;
         }
 
-        public static Vector3 GetClosestDeadBodyPosition(Vector3 position)
-        {
-            Vector3 result = position;
-            RagdollGrabbableObject closestBody = GetClosestDeadBody(position);
-
-            if (closestBody != null && Vector3.Distance(position, closestBody.transform.position) < 5f)
-                result = closestBody.transform.position;
-
-            return result;
-        }
-
         public static PlayerControllerB GetClosestAlivePlayer(Vector3 position)
         {
             PlayerControllerB closestPlayer = null;
             float closestDistance = float.MaxValue;
 
-            PlayerControllerB[] allPlayers = GameObject.FindObjectsOfType<PlayerControllerB>();
+            PlayerControllerB[] allPlayers = RoundManager.Instance.playersManager.allPlayerScripts;
             foreach (PlayerControllerB player in allPlayers)
             {
                 if (!player.isPlayerDead)
@@ -107,10 +74,30 @@ namespace OPJosMod.ReviveCompany
             return objectName;
         }
 
-        public static void RevivePlayer(Vector3 revivedPosition)
+        public static void RevivePlayer(int playerId)
         {
-            PlayerControllerB closestAlivePlayer = GeneralUtil.GetClosestAlivePlayer(revivedPosition);
-            PlayerControllerB player = GeneralUtil.GetClosestDeadPlayer(revivedPosition);
+            PlayerControllerB player = RoundManager.Instance.playersManager.allPlayerScripts.ElementAt(playerId);
+
+            //set tp location aka revive location
+            //sets it to server postiion, if it can sets it to players dead body location, if that is too far away set it to the closest players location
+            var tpLocation = player.serverPlayerPosition;
+            if (player.deadBody != null && player.deadBody.transform != null && player.deadBody.transform.position != null)
+            {
+                tpLocation = player.deadBody.transform.position;
+                PlayerControllerB closestPlayer = GeneralUtil.GetClosestAlivePlayer(player.deadBody.transform.position);
+                if (closestPlayer != null && Vector3.Distance(tpLocation, closestPlayer.transform.position) > 7)
+                {
+                    tpLocation = closestPlayer.transform.position;
+                }
+            }
+
+            //get if is inside factory or not
+            bool isInsideFactory = false;
+            PlayerControllerB closestAlivePlayer = GeneralUtil.GetClosestAlivePlayer(player.deadBody.transform.position);
+            if (closestAlivePlayer != null)
+            {
+                isInsideFactory = closestAlivePlayer.isInsideFactory;
+            }
 
             //up amount of alive palyers recorded
             StartOfRound instance = StartOfRound.Instance;
@@ -131,10 +118,10 @@ namespace OPJosMod.ReviveCompany
                 player.isPlayerControlled = true;
                 player.isInElevator = true;
                 player.isInHangarShipRoom = true;
-                player.isInsideFactory = closestAlivePlayer.isInsideFactory;
+                player.isInsideFactory = isInsideFactory;
                 player.wasInElevatorLastFrame = false;
                 StartOfRound.Instance.SetPlayerObjectExtrapolate(false);
-                player.TeleportPlayer(revivedPosition, false, 0f, false, true); //adjust for reviving??
+                player.TeleportPlayer(tpLocation, false, 0f, false, true); //adjust for reviving??
                 player.setPositionOfDeadPlayer = false;
                 player.DisablePlayerModel(StartOfRound.Instance.allPlayerObjects[playerIndex], true, true);
                 ((Behaviour)player.helmetLight).enabled = false;
