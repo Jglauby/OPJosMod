@@ -30,10 +30,11 @@ namespace OPJosMod.ReviveCompany
             PatchesForRPC.SetLogSource(mls);
             RpcMessageHandler.SetLogSource(mls);
             CompleteRecievedTasks.SetLogSource(mls);
-
             ResponseHandler.SetLogSource(mls);
 
             PlayerControllerBPatch.SetLogSource(mls);
+            ShipTeleporterPatch.SetLogSource(mls);
+            StartOfRoundPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }

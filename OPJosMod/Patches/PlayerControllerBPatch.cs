@@ -57,16 +57,14 @@ namespace OPJosMod.ReviveCompany.Patches
                     }
                     else if (Time.time - StartedReviveAt > ConfigVariables.reviveTime)
                     {
-                        StartedRevive = false;
-                        var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
-
-                        //return if it is your body you are reviving
-                        if (revivingBody != null && revivingBody.ragdoll != null && revivingBody.ragdoll.playerScript != null &&
-                            GameNetworkManager.Instance.localPlayerController.playerClientId == revivingBody.ragdoll.playerScript.playerClientId)
+                        var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);                 
+                        if (!canRevive(revivingBody))
                         {
-                            mls.LogError("didn't revive as the dead body that was attempted to revive was the local player or was missing info?");
+                            mls.LogMessage("not allowd to revie player");
+                            __instance.cursorTip.text = "[Can't Revive Player!]";
                             return;
                         }
+                        StartedRevive = false;
 
                         //send revive message!
                         RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.ragdoll.playerScript.playerClientId.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
@@ -80,11 +78,11 @@ namespace OPJosMod.ReviveCompany.Patches
                         RpcMessageHandler.SendRpcMessage(rpcMessage2);
                     }
 
-                    __instance.cursorTip.text = $"Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/{ConfigVariables.reviveTime}s";
+                    __instance.cursorTip.text = $"[Reviving! {(int)Mathf.Round(Time.time - StartedReviveAt)}/{ConfigVariables.reviveTime}s]";
                 }
                 else
                 {
-                    __instance.cursorTip.text = "Hold E to revive!";
+                    __instance.cursorTip.text = "[Hold E to revive!]";
                     StartedRevive = false;
                 }
             }
@@ -104,6 +102,24 @@ namespace OPJosMod.ReviveCompany.Patches
                 var objectName = GeneralUtil.simplifyObjectNames(currentlyGrabbingObject.name);
                 if (objectName == "RagdollGrabbableObject")
                     return false;
+            }
+
+            return true;
+        }
+
+        private static bool canRevive(RagdollGrabbableObject revivingBody)
+        {
+            //cant revive if it is your body you are reviving
+            if (revivingBody != null && revivingBody.ragdoll != null && revivingBody.ragdoll.playerScript != null &&
+                            GameNetworkManager.Instance.localPlayerController.playerClientId == revivingBody.ragdoll.playerScript.playerClientId)
+            {
+                return false;
+            }
+
+            var revivingBodyId = (int)revivingBody.ragdoll.playerScript.playerClientId;
+            if (GlobalVariables.DeadBodiesTeleported.Contains(revivingBodyId))
+            {
+                return false;
             }
 
             return true;

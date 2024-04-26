@@ -102,6 +102,8 @@
     <Compile Include="CustomRpc\MessageTasks.cs" />
     <Compile Include="CustomRpc\RpcMessage.cs" />
     <Compile Include="CustomRpc\RpcMessageHandler.cs" />
+    <Compile Include="Patches\StartOfRoundPatch.cs" />
+    <Compile Include="Patches\ShipTeleporterPatch.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
