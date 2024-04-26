@@ -31,6 +31,8 @@ namespace OPJosMod.ReviveCompany
             RpcMessageHandler.SetLogSource(mls);
             CompleteRecievedTasks.SetLogSource(mls);
 
+            ResponseHandler.SetLogSource(mls);
+
             PlayerControllerBPatch.SetLogSource(mls);
 
             harmony.PatchAll();

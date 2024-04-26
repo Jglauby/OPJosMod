@@ -71,6 +71,7 @@ namespace OPJosMod.ReviveCompany.Patches
                         //send revive message!
                         RpcMessage rpcMessage = new RpcMessage(MessageTasks.RevivePlayer, revivingBody.ragdoll.playerScript.playerClientId.ToString(), (int)__instance.playerClientId, MessageCodes.Request);
                         RpcMessageHandler.SendRpcMessage(rpcMessage);
+                        ResponseHandler.SentMessageNeedResponses(rpcMessage);
 
                         GeneralUtil.RevivePlayer((int)revivingBody.ragdoll.playerScript.playerClientId);
 

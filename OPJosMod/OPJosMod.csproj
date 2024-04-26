@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
+    <Compile Include="CustomRpc\ResponseHandler.cs" />
     <Compile Include="GeneralUtil.cs" />
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="CustomRpc\CompleteRecievedTasks.cs" />

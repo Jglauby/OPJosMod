@@ -67,7 +67,8 @@ namespace OPJosMod.ReviveCompany.CustomRpc
                 }
                 else if (message.Contains(MessageCodeUtil.GetCode(MessageCodes.Response)))
                 {
-                    mls.LogMessage($"got the response that the other clients recieved this message:{message}");
+                    //mls.LogMessage($"got the response that the other clients recieved this message:{message}");
+                    ResponseHandler.RecievedResponse(MessageTaskUtil.getMessageTask(decodedMessage));
                 }
             }
         }
