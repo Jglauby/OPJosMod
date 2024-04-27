@@ -9,6 +9,6 @@ namespace OPJosMod.MoreEnemies
 {
     public static class ConfigVariables
     {
-        public static int enemySpawnMultiplier;
+        public static float enemySpawnMultiplier;
     }
 }

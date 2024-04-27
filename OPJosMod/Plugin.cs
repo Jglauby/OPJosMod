@@ -10,7 +10,7 @@ namespace OPJosMod.MoreEnemies
     {
         private const string modGUID = "OpJosMod.MoreEnemies";
         private const string modName = "MoreEnemies";
-        private const string modVersion = "1.1.0";
+        private const string modVersion = "1.2.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -35,7 +35,7 @@ namespace OPJosMod.MoreEnemies
         {
             var configEnemySpawnMultiplier = Config.Bind("Enemy Spawn Multiplier",
                                         "EnemySpawnMultiplier",
-                                        2,
+                                        2.5f,
                                         "How many more enemies do you want?");
 
             ConfigVariables.enemySpawnMultiplier = configEnemySpawnMultiplier.Value;
