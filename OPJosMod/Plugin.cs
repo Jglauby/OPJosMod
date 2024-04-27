@@ -10,7 +10,7 @@ namespace OPJosMod.MoreEnemies
     {
         private const string modGUID = "OpJosMod.MoreEnemies";
         private const string modName = "MoreEnemies";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.1.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -31,12 +31,12 @@ namespace OPJosMod.MoreEnemies
             harmony.PatchAll();
         }
 
-        private void setupConfig()//example config setup
+        private void setupConfig()
         {
             var configEnemySpawnMultiplier = Config.Bind("Enemy Spawn Multiplier",
                                         "EnemySpawnMultiplier",
-                                        7,
-                                        "How many more enemies do you want? 5 = 5 times as many enemies.");
+                                        2,
+                                        "How many more enemies do you want?");
 
             ConfigVariables.enemySpawnMultiplier = configEnemySpawnMultiplier.Value;
         }
