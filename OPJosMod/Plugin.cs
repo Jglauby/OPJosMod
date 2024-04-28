@@ -10,7 +10,7 @@ namespace OPJosMod.MoreEnemies
     {
         private const string modGUID = "OpJosMod.MoreEnemies";
         private const string modName = "MoreEnemies";
-        private const string modVersion = "1.2.5";
+        private const string modVersion = "1.3.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
