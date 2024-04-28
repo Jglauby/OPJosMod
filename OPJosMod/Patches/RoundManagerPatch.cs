@@ -25,10 +25,10 @@ namespace OPJosMod.MoreEnemies.Patches
             if (GameNetworkManager.Instance.isHostingGame)
             {
                 mls.LogMessage("adjusting enemies spawnrates");
-                foreach (SpawnableEnemyWithRarity enemy in newLevel.Enemies)
-                {
-                    enemy.rarity = Mathf.Clamp(enemy.rarity * (int)Math.Round(ConfigVariables.enemySpawnMultiplier), 0, 100);
-                }
+                //foreach (SpawnableEnemyWithRarity enemy in newLevel.Enemies)
+                //{
+                //    enemy.rarity = Mathf.Clamp(enemy.rarity * (int)Math.Round(ConfigVariables.enemySpawnMultiplier), 0, 100);
+                //}
 
                 //newLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(
                 //    new Keyframe(0f, 0.2f),
@@ -40,15 +40,31 @@ namespace OPJosMod.MoreEnemies.Patches
                 //    new Keyframe(1f, 50f)
                 //);
 
-                newLevel.enemySpawnChanceThroughoutDay = MultiplyAnimationCurve(__instance.currentLevel.enemySpawnChanceThroughoutDay, ConfigVariables.enemySpawnMultiplier);
-                newLevel.outsideEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.outsideEnemySpawnChanceThroughDay, ConfigVariables.enemySpawnMultiplier);
-                newLevel.daytimeEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.daytimeEnemySpawnChanceThroughDay, ConfigVariables.enemySpawnMultiplier);
+                //inside
+                if (ConfigVariables.spawnEnemiesInside)
+                {
+                    newLevel.enemySpawnChanceThroughoutDay = MultiplyAnimationCurve(__instance.currentLevel.enemySpawnChanceThroughoutDay, ConfigVariables.enemyInsideSpawnMultiplier);
+                    __instance.currentMaxInsidePower = __instance.currentMaxInsidePower * ConfigVariables.enemyInsideSpawnMultiplier;
+                    __instance.currentLevel.maxEnemyPowerCount = (int)Math.Round(__instance.currentLevel.maxEnemyPowerCount * ConfigVariables.enemyInsideSpawnMultiplier);
+                }
+                else
+                {
+                    __instance.currentMaxInsidePower = 0;
+                }
 
-                //__instance.currentLevel.spawnProbabilityRange = __instance.currentLevel.spawnProbabilityRange * ConfigVariables.enemySpawnMultiplier;
-                __instance.currentMaxInsidePower = __instance.currentMaxInsidePower * ConfigVariables.enemySpawnMultiplier;
-                __instance.currentMaxOutsidePower = __instance.currentMaxOutsidePower * ConfigVariables.enemySpawnMultiplier;
-                __instance.currentLevel.maxEnemyPowerCount = (int)Math.Round(__instance.currentLevel.maxEnemyPowerCount * ConfigVariables.enemySpawnMultiplier);
-                __instance.currentLevel.maxOutsideEnemyPowerCount = (int)Math.Round(__instance.currentLevel.maxOutsideEnemyPowerCount * ConfigVariables.enemySpawnMultiplier);
+                //outside
+                if (ConfigVariables.spawnEnemiesOutside)
+                {
+                    newLevel.outsideEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.outsideEnemySpawnChanceThroughDay, ConfigVariables.enemyOutsideSpawnMultiplier, true);
+                    newLevel.daytimeEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.daytimeEnemySpawnChanceThroughDay, ConfigVariables.enemyOutsideSpawnMultiplier, true);
+                    __instance.currentMaxOutsidePower = __instance.currentMaxOutsidePower * ConfigVariables.enemyOutsideSpawnMultiplier;
+                    __instance.currentLevel.maxOutsideEnemyPowerCount = (int)Math.Round(__instance.currentLevel.maxOutsideEnemyPowerCount * ConfigVariables.enemyOutsideSpawnMultiplier);
+                }
+                else
+                {
+                    __instance.currentMaxOutsidePower = 0;
+                    __instance.currentLevel.maxOutsideEnemyPowerCount = 0;
+                }
             }
             else
             {
@@ -56,7 +72,7 @@ namespace OPJosMod.MoreEnemies.Patches
             }
         }
 
-        private static AnimationCurve MultiplyAnimationCurve(AnimationCurve animationCurve, float multiplicative)
+        private static AnimationCurve MultiplyAnimationCurve(AnimationCurve animationCurve, float multiplicative, bool allowNegative = false)
         {
             AnimationCurve enemySpawnChanceThroughoutDay = animationCurve;
             AnimationCurve newCurve = new AnimationCurve();
@@ -64,8 +80,11 @@ namespace OPJosMod.MoreEnemies.Patches
             for (int i = 0; i < enemySpawnChanceThroughoutDay.length; i++)
             {
                 Keyframe key = enemySpawnChanceThroughoutDay[i];
+                float correctedValue = (allowNegative) ? Mathf.Max(key.value, 0.1f * (i + 1)) : key.value;
 
-                Keyframe newKey = new Keyframe(key.time, key.value * ConfigVariables.enemySpawnMultiplier);
+                //mls.LogMessage($"{i} Keyframe [{key.time}, {key.value}]");
+                var newValue = (correctedValue > 0) ? correctedValue * multiplicative : correctedValue;
+                Keyframe newKey = new Keyframe(key.time, newValue);
 
                 newKey.inTangent = key.inTangent;
                 newKey.outTangent = key.outTangent;

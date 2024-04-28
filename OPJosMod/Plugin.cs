@@ -10,7 +10,7 @@ namespace OPJosMod.MoreEnemies
     {
         private const string modGUID = "OpJosMod.MoreEnemies";
         private const string modName = "MoreEnemies";
-        private const string modVersion = "1.2.0";
+        private const string modVersion = "1.2.5";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -33,12 +33,31 @@ namespace OPJosMod.MoreEnemies
 
         private void setupConfig()
         {
-            var configEnemySpawnMultiplier = Config.Bind("Enemy Spawn Multiplier",
-                                        "EnemySpawnMultiplier",
-                                        2.5f,
-                                        "How many more enemies do you want?");
+            var configSpawnInsideEnemies = Config.Bind("Spawn Inside Enemies",
+                                       "SpawnInsideEnemeies",
+                                       true,
+                                       "Have indoor enemies or not");
 
-            ConfigVariables.enemySpawnMultiplier = configEnemySpawnMultiplier.Value;
+            var configEnemyInsideSpawnMultiplier = Config.Bind("Inside Spawn Multiplier",
+                                        "InsideSpawnMultiplier",
+                                        1.5f,
+                                        "How many more enemies do you want inside?");
+
+            var configSpawnOutsideEnemies = Config.Bind("Spawn Outside Enemies",
+                                       "SpawnOutsideEnemeies",
+                                       true,
+                                       "Have outdoor enemies or not");
+
+            var configEnemyOutsideSpawnMultiplier = Config.Bind("Outside Spawn Multiplier",
+                                        "OutsideSpawnMultiplier",
+                                        1.5f,
+                                        "How many more enemies do you want outside?");
+
+            ConfigVariables.spawnEnemiesInside = configSpawnInsideEnemies.Value;
+            ConfigVariables.enemyInsideSpawnMultiplier = configEnemyInsideSpawnMultiplier.Value;
+
+            ConfigVariables.spawnEnemiesOutside = configSpawnOutsideEnemies.Value;
+            ConfigVariables.enemyOutsideSpawnMultiplier = configEnemyOutsideSpawnMultiplier.Value;
         }
     }
 }
