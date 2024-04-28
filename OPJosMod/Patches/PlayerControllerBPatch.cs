@@ -431,6 +431,19 @@ namespace OPJosMod.GhostMode.Patches
 
                 try
                 {
+                    var action = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump"); //games jump button
+                    if (action != null && action.IsPressed() && collisionsOn)
+                    {
+                        Vector3 upDirection = Vector3.up;
+
+                        __instance.ResetFallGravity();
+                        __instance.gameObject.transform.position += upDirection * 0.15f;
+                    }
+                }
+                catch { }
+
+                try
+                {
                     if (((ButtonControl)Keyboard.current[ConfigVariables.switchToSpectateButton]).wasPressedThisFrame)//O was pressed
                     {
                         mls.LogMessage("attempt to switch back to spectate mode");
@@ -687,69 +700,7 @@ namespace OPJosMod.GhostMode.Patches
             {
                 RoundManager.Instance.PlayAudibleNoise(__instance.transform.position, 7f);
             }
-        }
-
-        [HarmonyPatch("Jump_performed")]
-        [HarmonyPrefix]
-        static void jump_performedPatch(PlayerControllerB __instance)
-        {
-            //mls.LogMessage($"jump performed, jumpForce:{__instance.jumpForce}, allowKill:{allowKill}");
-
-            FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo isFallingFromJumpField = typeof(PlayerControllerB).GetField("isFallingFromJump", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (isJumpingField != null && playerSlidingTimerField != null && isFallingFromJumpField != null)
-            {
-                if (!__instance.quickMenuManager.isMenuOpen && ((__instance.IsOwner && __instance.isPlayerControlled && (!__instance.IsServer || __instance.isHostPlayerObject)) || __instance.isTestingPlayer) && !__instance.inSpecialInteractAnimation && !__instance.isTypingChat && (__instance.isMovementHindered <= 0 || __instance.isUnderwater) && !__instance.isExhausted && (!__instance.isPlayerSliding || (float)playerSlidingTimerField.GetValue(__instance) > 2.5f) && !__instance.isCrouching)
-                {
-                    //if not dead/ghost then you need to check if youre in the air to allow jump
-                    if (!allowKill || ((__instance.thisController.isGrounded || (!(bool)isJumpingField.GetValue(__instance) && IsPlayerNearGround(__instance))) && !(bool)isJumpingField.GetValue(__instance)))
-                    {
-                        playerSlidingTimerField.SetValue(__instance, 0f);
-                        isJumpingField.SetValue(__instance, true);
-                        __instance.sprintMeter = Mathf.Clamp(__instance.sprintMeter - 0.08f, 0f, 1f);
-                        //__instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerJumpSFX);
-                        if (jumpCoroutine != null)
-                        {
-                            __instance.StopCoroutine(jumpCoroutine);
-                        }
-
-                        jumpCoroutine = __instance.StartCoroutine(PlayerJump(__instance, isJumpingField, isFallingFromJumpField));
-                    }
-                }
-            }
-            else
-            {
-                mls.LogError("private field not found");
-            }
-        }
-
-        private static IEnumerator PlayerJump(PlayerControllerB __instance, FieldInfo isJumpingField, FieldInfo isFallingFromJumpField)
-        {
-            if (allowKill)
-                __instance.jumpForce = 13f;
-            else
-                __instance.jumpForce = 25f;
-
-            __instance.playerBodyAnimator.SetBool("Jumping", true);
-            yield return new WaitForSeconds(0.15f);
-            __instance.fallValue = __instance.jumpForce;
-            __instance.fallValueUncapped = __instance.jumpForce;
-            yield return new WaitForSeconds(0.1f);
-            isJumpingField.SetValue(__instance, false);
-            isFallingFromJumpField.SetValue(__instance, true);
-
-            if (!allowKill)
-                yield return new WaitForSeconds(0.1f);
-            else
-                yield return new WaitUntil(() => __instance.thisController.isGrounded);
-
-            __instance.playerBodyAnimator.SetBool("Jumping", value: false);
-            isFallingFromJumpField.SetValue(__instance, false);
-            PlayerHitGroundEffects(__instance);
-            jumpCoroutine = null;
-        }
+        }     
 
         [HarmonyPatch("DamagePlayer")]
         [HarmonyPrefix]
