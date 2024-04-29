@@ -34,7 +34,7 @@ namespace OPJosMod.GhostMode.Patches
 
         public static bool allowKill = true;
         public static bool isGhostMode = false;
-        private static Coroutine jumpCoroutine;
+        private static float lastTimeJumped = Time.time;
 
         private static Vector3 deathLocation;
         private static int consecutiveDeathExceptions = 0;
@@ -87,7 +87,6 @@ namespace OPJosMod.GhostMode.Patches
                 lastSafeLocations = new Vector3[10];
                 timeWhenSafe = Time.time;
 
-                jumpCoroutine = null;
                 tpPlayerIndex = 0;
                 tpCoroutine = null;
                 isTeleporting = false;
@@ -432,12 +431,19 @@ namespace OPJosMod.GhostMode.Patches
                 try
                 {
                     var action = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump"); //games jump button
-                    if (action != null && action.IsPressed() && collisionsOn)
-                    {
-                        Vector3 upDirection = Vector3.up;
+                    if (action == null || !collisionsOn)
+                        return;
 
-                        __instance.ResetFallGravity();
-                        __instance.gameObject.transform.position += upDirection * 0.15f;
+                    if (action.IsPressed())
+                    {
+                        __instance.fallValue = __instance.jumpForce;
+                        __instance.fallValueUncapped = __instance.jumpForce;
+                    }
+                    else if (action.WasReleasedThisFrame())
+                    {
+                        //__instance.ResetFallGravity();
+                        ReflectionUtils.SetPropertyValue(__instance, "isJumping", false);
+                        ReflectionUtils.SetPropertyValue(__instance, "isFallingFromJump", true);
                     }
                 }
                 catch { }
