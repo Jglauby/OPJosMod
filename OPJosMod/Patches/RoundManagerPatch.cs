@@ -40,10 +40,11 @@ namespace OPJosMod.MoreEnemies.Patches
                 //    new Keyframe(1f, 50f)
                 //);
 
+                setOGVariables(__instance, newLevel);
                 //inside
                 if (ConfigVariables.spawnEnemiesInside)
                 {
-                    newLevel.enemySpawnChanceThroughoutDay = MultiplyAnimationCurve(__instance.currentLevel.enemySpawnChanceThroughoutDay, ConfigVariables.enemyInsideSpawnMultiplier);
+                    newLevel.enemySpawnChanceThroughoutDay = MultiplyAnimationCurve(__instance.currentLevel.enemySpawnChanceThroughoutDay, ConfigVariables.enemyInsideSpawnMultiplier, false);
                     __instance.currentMaxInsidePower = __instance.currentMaxInsidePower * ConfigVariables.enemyInsideSpawnMultiplier;
                     __instance.currentLevel.maxEnemyPowerCount = (int)Math.Round(__instance.currentLevel.maxEnemyPowerCount * ConfigVariables.enemyInsideSpawnMultiplier);
                 }
@@ -55,8 +56,8 @@ namespace OPJosMod.MoreEnemies.Patches
                 //outside
                 if (ConfigVariables.spawnEnemiesOutside)
                 {
-                    newLevel.outsideEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.outsideEnemySpawnChanceThroughDay, ConfigVariables.enemyOutsideSpawnMultiplier, true);
-                    newLevel.daytimeEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.daytimeEnemySpawnChanceThroughDay, ConfigVariables.enemyOutsideSpawnMultiplier, true);
+                    newLevel.outsideEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.outsideEnemySpawnChanceThroughDay, ConfigVariables.enemyOutsideSpawnMultiplier);
+                    newLevel.daytimeEnemySpawnChanceThroughDay = MultiplyAnimationCurve(__instance.currentLevel.daytimeEnemySpawnChanceThroughDay, ConfigVariables.enemyOutsideSpawnMultiplier);
                     __instance.currentMaxOutsidePower = __instance.currentMaxOutsidePower * ConfigVariables.enemyOutsideSpawnMultiplier;
                     __instance.currentLevel.maxOutsideEnemyPowerCount = (int)Math.Round(__instance.currentLevel.maxOutsideEnemyPowerCount * ConfigVariables.enemyOutsideSpawnMultiplier);
                 }
@@ -72,7 +73,19 @@ namespace OPJosMod.MoreEnemies.Patches
             }
         }
 
-        private static AnimationCurve MultiplyAnimationCurve(AnimationCurve animationCurve, float multiplicative, bool allowNegative = false)
+        private static void setOGVariables(RoundManager __instance, SelectableLevel level)
+        {
+            GlobalVariables.OGenemySpawnChanceThroughoutDay = level.enemySpawnChanceThroughoutDay;
+            GlobalVariables.OGcurrentMaxInsidePower = __instance.currentMaxInsidePower;
+            GlobalVariables.OGmaxEnemyPowerCount = __instance.currentLevel.maxEnemyPowerCount;
+
+            GlobalVariables.OGoutsideEnemySpawnChanceThroughDay = level.outsideEnemySpawnChanceThroughDay;
+            GlobalVariables.OGdaytimeEnemySpawnChanceThroughDay = level.daytimeEnemySpawnChanceThroughDay;
+            GlobalVariables.OGcurrentMaxOutsidePower = __instance.currentMaxOutsidePower;
+            GlobalVariables.OGmaxOutsideEnemyPowerCount = __instance.currentLevel.maxOutsideEnemyPowerCount;
+        }
+
+        private static AnimationCurve MultiplyAnimationCurve(AnimationCurve animationCurve, float multiplicative, bool allowNegative = true)
         {
             AnimationCurve enemySpawnChanceThroughoutDay = animationCurve;
             AnimationCurve newCurve = new AnimationCurve();
@@ -80,11 +93,12 @@ namespace OPJosMod.MoreEnemies.Patches
             for (int i = 0; i < enemySpawnChanceThroughoutDay.length; i++)
             {
                 Keyframe key = enemySpawnChanceThroughoutDay[i];
-                float correctedValue = (allowNegative) ? Mathf.Max(key.value, 0.1f * (i + 1)) : key.value;
+                float correctedValue = (!allowNegative) ? Mathf.Max(key.value, 0.1f * (i + 1)) : key.value;
 
-                //mls.LogMessage($"{i} Keyframe [{key.time}, {key.value}]");
+                mls.LogMessage($"{i} OLDKeyframe [{key.time}, {key.value}]");
                 var newValue = (correctedValue > 0) ? correctedValue * multiplicative : correctedValue;
                 Keyframe newKey = new Keyframe(key.time, newValue);
+                mls.LogMessage($"{i} NewKeyframe [{newKey.time}, {newKey.value}]");
 
                 newKey.inTangent = key.inTangent;
                 newKey.outTangent = key.outTangent;

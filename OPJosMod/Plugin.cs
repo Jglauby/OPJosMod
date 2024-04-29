@@ -10,7 +10,7 @@ namespace OPJosMod.MoreEnemies
     {
         private const string modGUID = "OpJosMod.MoreEnemies";
         private const string modName = "MoreEnemies";
-        private const string modVersion = "1.3.0";
+        private const string modVersion = "1.3.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -27,6 +27,8 @@ namespace OPJosMod.MoreEnemies
             setupConfig();
 
             RoundManagerPatch.SetLogSource(mls);
+            StartMatchLeverPatch.SetLogSource(mls);
+            GameNetworkManagerPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
