@@ -441,7 +441,6 @@ namespace OPJosMod.GhostMode.Patches
                     }
                     else if (action.WasReleasedThisFrame())
                     {
-                        //__instance.ResetFallGravity();
                         ReflectionUtils.SetPropertyValue(__instance, "isJumping", false);
                         ReflectionUtils.SetPropertyValue(__instance, "isFallingFromJump", true);
                     }
@@ -602,9 +601,12 @@ namespace OPJosMod.GhostMode.Patches
             if (ConfigVariables.OPness == OPnessModes.Limited)
                 return false;
 
-            string[] nonoObjects = {
-                    "RedButton", "LadderTrigger", "RagdollGrabbableObject"
-                };
+            List<string> nonoObjects = new List<string> {
+                    "LadderTrigger", "RagdollGrabbableObject"
+            };
+
+            if (!ConfigVariables.canPressTeleportButtons)
+                nonoObjects.Add("RedButton");
 
             //check interactions
             if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)

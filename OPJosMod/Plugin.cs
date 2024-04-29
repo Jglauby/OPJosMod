@@ -68,10 +68,10 @@ namespace OPJosMod.GhostMode
 
         private void setupConfig()
         {
-            var configSeeOtherGhosts = Config.Bind("See Other Ghosts",
-                                        "SeeOtherGhosts",
-                                        false,
-                                        "Everyone needs this mod installed and have this toggled on for this to work, but it will allow ghosts to see eachother run around!");
+            //var configSeeOtherGhosts = Config.Bind("See Other Ghosts",
+            //                            "SeeOtherGhosts",
+            //                            false,
+            //                            "Everyone needs this mod installed and have this toggled on for this to work, but it will allow ghosts to see eachother run around!");
 
             var configOPness = Config.Bind("OP-Ness",
                                         "OPness",
@@ -91,6 +91,11 @@ namespace OPJosMod.GhostMode
             var configCanGrabScrap = Config.Bind("Can Grab Scrap",
                                         "CanGrabScrap",
                                         true,
+                                        "this setting only has an effect if you are in balanced mode");
+
+            var configCanUseTeleporter = Config.Bind("Can Press Teleport Buttons",
+                                        "CanPressTeleportButtons",
+                                        false,
                                         "this setting only has an effect if you are in balanced mode");
 
             var configTeleportBodyButton = Config.Bind("Teleport to Dead Body Button",
@@ -173,9 +178,10 @@ namespace OPJosMod.GhostMode
                             Key.LeftShift,
                             "Button to move down in no clip mode");
 
-            ConfigVariables.seeOtherGhosts = configSeeOtherGhosts.Value;
+            //ConfigVariables.seeOtherGhosts = configSeeOtherGhosts.Value;
             ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
             ConfigVariables.canPickupScrap = configCanGrabScrap.Value;
+            ConfigVariables.canPressTeleportButtons = configCanUseTeleporter.Value;
 
             ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
             ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;
