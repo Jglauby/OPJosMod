@@ -199,8 +199,6 @@ namespace OPJosMod.ReviveCompany
                 localPlayerController.spectatedPlayerScript = null;
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
-
-                //localPlayerController.SyncBodyPositionWithClients(); trying to sync dead body? instead sync player location
             }
 
             //delete closest dead body to revived player
@@ -229,6 +227,9 @@ namespace OPJosMod.ReviveCompany
                 if (deadBody.ragdoll != null)
                     Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
             }
+
+            //ui shit
+            HUDManager.Instance.UpdateBoxesSpectateUI();
         }       
     }
 }
