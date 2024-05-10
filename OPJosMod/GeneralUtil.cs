@@ -227,9 +227,6 @@ namespace OPJosMod.ReviveCompany
                 if (deadBody.ragdoll != null)
                     Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
             }
-
-            //ui shit
-            HUDManager.Instance.UpdateBoxesSpectateUI();
         }       
     }
 }
