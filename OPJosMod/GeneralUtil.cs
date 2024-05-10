@@ -132,7 +132,6 @@ namespace OPJosMod.ReviveCompany
                 player.isInHangarShipRoom = true;
                 player.isInsideFactory = isInsideFactory;
                 player.wasInElevatorLastFrame = false;
-                StartOfRound.Instance.SetPlayerObjectExtrapolate(false);
                 player.TeleportPlayer(tpLocation, false, 0f, false, true); //adjust for reviving??
                 player.setPositionOfDeadPlayer = false;
                 player.DisablePlayerModel(StartOfRound.Instance.allPlayerObjects[playerIndex], true, true);
@@ -158,10 +157,7 @@ namespace OPJosMod.ReviveCompany
                 player.DisableJetpackControlsLocally();
                 player.health = 100;
                 player.mapRadarDotAnimator.SetBool("dead", false);
-                HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", false);
                 player.hasBegunSpectating = false;
-                HUDManager.Instance.RemoveSpectateUI();
-                HUDManager.Instance.gameOverAnimator.SetTrigger("revive");
                 player.hinderedMultiplier = 1f;
                 player.isMovementHindered = 0;
                 player.sourcesCausingSinking = 0;
@@ -195,10 +191,16 @@ namespace OPJosMod.ReviveCompany
                 localPlayerController.criticallyInjured = false;
                 localPlayerController.playerBodyAnimator.SetBool("Limp", false);
                 localPlayerController.health = 100;
-                HUDManager.Instance.UpdateHealthUI(100, true);
                 localPlayerController.spectatedPlayerScript = null;
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
+                StartOfRound.Instance.SetPlayerObjectExtrapolate(false);
+
+                //ui changes
+                HUDManager.Instance.UpdateHealthUI(100, true);
+                HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", false);
+                HUDManager.Instance.RemoveSpectateUI();
+                HUDManager.Instance.gameOverAnimator.SetTrigger("revive");
             }
 
             //delete closest dead body to revived player
