@@ -8,5 +8,6 @@ namespace OPJosMod.ReviveCompany
         public static bool reviveTeleportedBodies;
         public static Key ReviveButton;
         public static bool CanPickUpBodies;
+        public static float DeadPlayerWeight;
     }
 }

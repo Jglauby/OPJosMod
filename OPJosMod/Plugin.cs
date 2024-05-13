@@ -36,6 +36,7 @@ namespace OPJosMod.ReviveCompany
             PlayerControllerBPatch.SetLogSource(mls);
             ShipTeleporterPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
+            RagdollGrabbableObjectPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
@@ -57,6 +58,11 @@ namespace OPJosMod.ReviveCompany
                                        true,
                                        "Toggle if you can pick up bodies.");
 
+            var configDeadBodyWeight = Config.Bind("Dead Body Weight Multiplier",
+                                       "DeadBodyWeight",
+                                       3.25f,
+                                       "How heavy are the dead players.");
+
             var configReviveTeleported = Config.Bind("Can Revive Teleported Bodies",
                                         "CanReviveTeleportedBodies",
                                         false,
@@ -65,6 +71,7 @@ namespace OPJosMod.ReviveCompany
             ConfigVariables.reviveTime = configReviveTime.Value;
             ConfigVariables.ReviveButton = configReviveButton.Value;
             ConfigVariables.CanPickUpBodies = configCanPickUpBodies.Value;
+            ConfigVariables.DeadPlayerWeight = configDeadBodyWeight.Value;
             ConfigVariables.reviveTeleportedBodies = configReviveTeleported.Value;
         }
     }
