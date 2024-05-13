@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.ReviveCompany.CustomRpc;
 using OPJosMod.ReviveCompany.Patches;
+using UnityEngine.InputSystem;
 
 namespace OPJosMod.ReviveCompany
 {
@@ -11,7 +12,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "0.9.4"; 
+        private const string modVersion = "1.0.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -46,12 +47,24 @@ namespace OPJosMod.ReviveCompany
                                         5f,
                                         "How long it takes to revive someone");
 
+            var configReviveButton = Config.Bind("ReviveButton",
+                                        "ReviveButton",
+                                        Key.R,
+                                        "Button Used to Revive Players");
+
+            var configCanPickUpBodies = Config.Bind("Can Pick Up Bodies",
+                                       "CanPickUpBodies",
+                                       true,
+                                       "Toggle if you can pick up bodies.");
+
             var configReviveTeleported = Config.Bind("Can Revive Teleported Bodies",
                                         "CanReviveTeleportedBodies",
                                         false,
                                         "Toggle for if you are able to revive dead players you teleport back to the ship");
 
             ConfigVariables.reviveTime = configReviveTime.Value;
+            ConfigVariables.ReviveButton = configReviveButton.Value;
+            ConfigVariables.CanPickUpBodies = configCanPickUpBodies.Value;
             ConfigVariables.reviveTeleportedBodies = configReviveTeleported.Value;
         }
     }

@@ -30,7 +30,8 @@ namespace OPJosMod.ReviveCompany.Patches
             if (playerBeamedUp == null || playerBeamedUp.redirectToEnemy != null || playerBeamedUp.deadBody == null)            
                 return;
 
-            GlobalVariables.DeadBodiesTeleported.Add((int)playerBeamedUp.playerClientId);
+            if (playerBeamedUp.isPlayerDead)
+                GlobalVariables.DeadBodiesTeleported.Add((int)playerBeamedUp.playerClientId);
         }
     }
 }

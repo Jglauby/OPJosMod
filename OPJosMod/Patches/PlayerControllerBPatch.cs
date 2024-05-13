@@ -30,6 +30,9 @@ namespace OPJosMod.ReviveCompany.Patches
             if (!GlobalVariables.ModActivated)
                 return true;
 
+            if (ConfigVariables.CanPickUpBodies)
+                return true;
+
             if (__instance.IsOwner && !__instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
             {
                 if (!canUse(__instance))
@@ -48,7 +51,7 @@ namespace OPJosMod.ReviveCompany.Patches
 
             if (!canUse(__instance) && __instance.cursorTip.text != "")
             {
-                if (((ButtonControl)Keyboard.current[Key.E]).isPressed)//E is pressed
+                if (((ButtonControl)Keyboard.current[ConfigVariables.ReviveButton]).isPressed)
                 {
                     if (StartedRevive == false)
                     {
@@ -82,7 +85,7 @@ namespace OPJosMod.ReviveCompany.Patches
                 }
                 else
                 {
-                    __instance.cursorTip.text = "[Hold E to revive!]";
+                    __instance.cursorTip.text = $"[Hold {ConfigVariables.ReviveButton} to revive!]";
                     StartedRevive = false;
                 }
             }
