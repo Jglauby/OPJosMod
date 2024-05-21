@@ -13,7 +13,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "1.1.0"; 
+        private const string modVersion = "1.1.1"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -75,7 +75,7 @@ namespace OPJosMod.ReviveCompany
                                         "How much health you revive with.");
 
             var configRevivePerLevel = Config.Bind("Revives Per Level",
-                                        "HealthYouReviveWith",
+                                        "RevivesPerLevel",
                                         "5",
                                         "How many times you can revive each round. Put 'NULL' to have no limit");
 
