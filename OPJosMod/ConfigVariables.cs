@@ -9,5 +9,7 @@ namespace OPJosMod.ReviveCompany
         public static Key ReviveButton;
         public static bool CanPickUpBodies;
         public static float DeadPlayerWeight;
+        public static int ReviveToHealth;
+        public static int? RevivesPerLevel;
     }
 }

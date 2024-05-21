@@ -29,5 +29,25 @@ namespace OPJosMod.ReviveCompany.Patches
             mls.LogMessage("reset bodies teleported list");
             GlobalVariables.DeadBodiesTeleported.Clear();
         }
+
+        [HarmonyPatch("openingDoorsSequence")]
+        [HarmonyPrefix]
+        private static void patchOpeningDoorsSequence()
+        {
+            if (!GlobalVariables.ModActivated)
+                return;
+
+            mls.LogMessage("round starting, reseting allowed revive count");
+            GlobalVariables.DeadBodiesTeleported.Clear();
+
+            if (ConfigVariables.RevivesPerLevel != null)
+            {
+                GlobalVariables.RemainingRevives = ConfigVariables.RevivesPerLevel.Value;
+            }
+            else
+            {
+                GlobalVariables.RemainingRevives = int.MaxValue;
+            }
+        }
     }
 }

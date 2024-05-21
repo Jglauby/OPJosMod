@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using OPJosMod.ReviveCompany.CustomRpc;
@@ -12,7 +13,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "1.0.1"; 
+        private const string modVersion = "1.1.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -68,11 +69,34 @@ namespace OPJosMod.ReviveCompany
                                         false,
                                         "Toggle for if you are able to revive dead players you teleport back to the ship");
 
+            var configReviveHealth = Config.Bind("Health you revive with.",
+                                        "HealthYouReviveWith",
+                                        25,
+                                        "How much health you revive with.");
+
+            var configRevivePerLevel = Config.Bind("Revives Per Level",
+                                        "HealthYouReviveWith",
+                                        "5",
+                                        "How many times you can revive each round. Put 'NULL' to have no limit");
+
             ConfigVariables.reviveTime = configReviveTime.Value;
             ConfigVariables.ReviveButton = configReviveButton.Value;
             ConfigVariables.CanPickUpBodies = configCanPickUpBodies.Value;
             ConfigVariables.DeadPlayerWeight = configDeadBodyWeight.Value;
             ConfigVariables.reviveTeleportedBodies = configReviveTeleported.Value;
+            ConfigVariables.ReviveToHealth = configReviveHealth.Value;
+            ConfigVariables.RevivesPerLevel = GetValueForRevivesPerLevel(configRevivePerLevel);
+        }
+
+        private int? GetValueForRevivesPerLevel(ConfigEntry<string> config)
+        {
+            if (config.Value.ToLower() == "null")
+                return null;
+
+            if (int.TryParse(config.Value, out var intValue))
+                return intValue;
+
+            return 5; //make this match the default value!!
         }
     }
 }

@@ -117,12 +117,19 @@ namespace OPJosMod.ReviveCompany
             StartOfRound.Instance.allPlayersDead = false;
             StartOfRound.Instance.UpdatePlayerVoiceEffects();
 
+            //adjust remainging revives
+            GlobalVariables.RemainingRevives--;
+            if (GlobalVariables.RemainingRevives < 100)
+            {
+                HUDManager.Instance.DisplayTip($"{player.playerUsername} was revived", $"{GlobalVariables.RemainingRevives} revives remain!");
+            }
+
             int playerIndex = (int)player.playerClientId;
             player.ResetPlayerBloodObjects(player.isPlayerDead);
             player.isClimbingLadder = false;
             player.ResetZAndXRotation();
             ((Collider)player.thisController).enabled = true;
-            player.health = 100;
+            player.health = ConfigVariables.ReviveToHealth;
             player.disableLookInput = false;
             if (player.isPlayerDead)
             {
@@ -155,7 +162,7 @@ namespace OPJosMod.ReviveCompany
                 player.sinkingValue = 0f;
                 player.statusEffectAudio.Stop();
                 player.DisableJetpackControlsLocally();
-                player.health = 100;
+                player.health = ConfigVariables.ReviveToHealth;
                 player.mapRadarDotAnimator.SetBool("dead", false);
                 player.hasBegunSpectating = false;
                 player.hinderedMultiplier = 1f;
@@ -190,14 +197,14 @@ namespace OPJosMod.ReviveCompany
                 localPlayerController.bleedingHeavily = false;
                 localPlayerController.criticallyInjured = false;
                 localPlayerController.playerBodyAnimator.SetBool("Limp", false);
-                localPlayerController.health = 100;
+                localPlayerController.health = ConfigVariables.ReviveToHealth;
                 localPlayerController.spectatedPlayerScript = null;
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
                 StartOfRound.Instance.SetPlayerObjectExtrapolate(false);
 
                 //ui changes
-                HUDManager.Instance.UpdateHealthUI(100, true);
+                HUDManager.Instance.UpdateHealthUI(ConfigVariables.ReviveToHealth, true);
                 HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", false);
                 HUDManager.Instance.RemoveSpectateUI();
                 HUDManager.Instance.gameOverAnimator.SetTrigger("revive");

@@ -112,6 +112,9 @@ namespace OPJosMod.ReviveCompany.Patches
 
         private static bool canRevive(RagdollGrabbableObject revivingBody)
         {
+            if (GlobalVariables.RemainingRevives <= 0)
+                return false;
+
             //cant revive if it is your body you are reviving
             if (revivingBody != null && revivingBody.ragdoll != null && revivingBody.ragdoll.playerScript != null &&
                             GameNetworkManager.Instance.localPlayerController.playerClientId == revivingBody.ragdoll.playerScript.playerClientId)
