@@ -96,7 +96,9 @@ namespace OPJosMod.ReviveCompany
             if (int.TryParse(config.Value, out var intValue))
                 return intValue;
 
-            return 5; //make this match the default value!!
+            //make this match the default value!!
+            config.Value = "5";
+            return 5; 
         }
     }
 }
