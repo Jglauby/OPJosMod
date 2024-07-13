@@ -847,7 +847,6 @@ namespace OPJosMod.GhostMode.Patches
                     allPlayerScripts[playerIndex].isInElevator = true;
                     allPlayerScripts[playerIndex].isInHangarShipRoom = true;
                     allPlayerScripts[playerIndex].isInsideFactory = false;
-                    allPlayerScripts[playerIndex].wasInElevatorLastFrame = false;
                     StartOfRound.Instance.SetPlayerObjectExtrapolate(enable: false);
                     //allPlayerScripts[playerIndex].TeleportPlayer(respawnLocation);
                     allPlayerScripts[playerIndex].transform.position = respawnLocation;
