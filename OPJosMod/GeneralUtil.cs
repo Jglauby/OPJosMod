@@ -138,7 +138,6 @@ namespace OPJosMod.ReviveCompany
                 player.isInElevator = true;
                 player.isInHangarShipRoom = true;
                 player.isInsideFactory = isInsideFactory;
-                player.wasInElevatorLastFrame = false;
                 player.TeleportPlayer(tpLocation, false, 0f, false, true); //adjust for reviving??
                 player.setPositionOfDeadPlayer = false;
                 player.DisablePlayerModel(StartOfRound.Instance.allPlayerObjects[playerIndex], true, true);

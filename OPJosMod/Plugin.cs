@@ -13,7 +13,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "1.1.1"; 
+        private const string modVersion = "1.2.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
