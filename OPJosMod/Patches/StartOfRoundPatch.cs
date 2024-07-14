@@ -40,9 +40,15 @@ namespace OPJosMod.ReviveCompany.Patches
             mls.LogMessage("round starting, reseting allowed revive count");
             GlobalVariables.DeadBodiesTeleported.Clear();
 
-            if (ConfigVariables.RevivesPerLevel != null)
+            setStartingRevives();
+        }
+
+        private static void setStartingRevives()
+        {
+            var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
+            if (ConfigVariables.RevivesPerLevelMultiplier != null)
             {
-                GlobalVariables.RemainingRevives = ConfigVariables.RevivesPerLevel.Value;
+                GlobalVariables.RemainingRevives = Mathf.RoundToInt(totalPlayerCount * ConfigVariables.RevivesPerLevelMultiplier.Value);
             }
             else
             {

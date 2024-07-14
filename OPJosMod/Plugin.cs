@@ -13,7 +13,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "1.2.0"; 
+        private const string modVersion = "1.3.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -74,10 +74,10 @@ namespace OPJosMod.ReviveCompany
                                         25,
                                         "How much health you revive with.");
 
-            var configRevivePerLevel = Config.Bind("Revives Per Level",
-                                        "RevivesPerLevel",
-                                        "5",
-                                        "How many times you can revive each round. Put 'NULL' to have no limit");
+            var configRevivePerLevelMultiplier = Config.Bind("Revives Per Level Multiplier",
+                                                   "RevivesPerLevelMultiplier",
+                                                   "1.25",
+                                                   "How many revives you get per level, mulitplied by players in game. ex) value set to 2 and have 4 players then you get 8 revives. Put 'NULL' to have no limit");
 
             ConfigVariables.reviveTime = configReviveTime.Value;
             ConfigVariables.ReviveButton = configReviveButton.Value;
@@ -85,20 +85,20 @@ namespace OPJosMod.ReviveCompany
             ConfigVariables.DeadPlayerWeight = configDeadBodyWeight.Value;
             ConfigVariables.reviveTeleportedBodies = configReviveTeleported.Value;
             ConfigVariables.ReviveToHealth = configReviveHealth.Value;
-            ConfigVariables.RevivesPerLevel = GetValueForRevivesPerLevel(configRevivePerLevel);
+            ConfigVariables.RevivesPerLevelMultiplier = GetValueForRevivesPerLevel(configRevivePerLevelMultiplier);
         }
 
-        private int? GetValueForRevivesPerLevel(ConfigEntry<string> config)
+        private float? GetValueForRevivesPerLevel(ConfigEntry<string> config)
         {
             if (config.Value.ToLower() == "null")
                 return null;
 
-            if (int.TryParse(config.Value, out var intValue))
-                return intValue;
+            if (float.TryParse(config.Value, out var floatValue))
+                return floatValue;
 
             //make this match the default value!!
-            config.Value = "5";
-            return 5; 
+            config.Value = "1";
+            return 1; 
         }
     }
 }

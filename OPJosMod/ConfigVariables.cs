@@ -10,6 +10,6 @@ namespace OPJosMod.ReviveCompany
         public static bool CanPickUpBodies;
         public static float DeadPlayerWeight;
         public static int ReviveToHealth;
-        public static int? RevivesPerLevel;
+        public static float? RevivesPerLevelMultiplier;
     }
 }
