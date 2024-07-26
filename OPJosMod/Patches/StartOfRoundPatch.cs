@@ -46,9 +46,13 @@ namespace OPJosMod.ReviveCompany.Patches
         private static void setStartingRevives()
         {
             var totalPlayerCount = RoundManager.Instance.playersManager.allPlayerScripts.Where(x => x.isPlayerControlled).Count();
-            if (ConfigVariables.RevivesPerLevelMultiplier != null)
+            GlobalVariables.AmountOfTimesRevived = 0;
+            if (ConfigVariables.LimitedRevives)
             {
-                GlobalVariables.RemainingRevives = Mathf.RoundToInt(totalPlayerCount * ConfigVariables.RevivesPerLevelMultiplier.Value);
+                if (ConfigVariables.HardAmountOfLives != 0)
+                    GlobalVariables.RemainingRevives = ConfigVariables.HardAmountOfLives;
+                else 
+                    GlobalVariables.RemainingRevives = Mathf.RoundToInt(totalPlayerCount * ConfigVariables.RevivesPerLevelMultiplier);
             }
             else
             {

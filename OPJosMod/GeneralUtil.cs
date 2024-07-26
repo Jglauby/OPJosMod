@@ -193,17 +193,20 @@ namespace OPJosMod.ReviveCompany
             PlayerControllerB localPlayerController = GameNetworkManager.Instance.localPlayerController;
             if (localPlayerController.playerClientId == player.playerClientId)
             {
+                GlobalVariables.AmountOfTimesRevived++;
+                int ReviveToHealth = ConfigVariables.ReviveToHealth - (GlobalVariables.AmountOfTimesRevived * ConfigVariables.ExtraHealthLostPerRevive);
+
                 localPlayerController.bleedingHeavily = false;
                 localPlayerController.criticallyInjured = false;
                 localPlayerController.playerBodyAnimator.SetBool("Limp", false);
-                localPlayerController.health = ConfigVariables.ReviveToHealth;
+                localPlayerController.health = ReviveToHealth;
                 localPlayerController.spectatedPlayerScript = null;
                 ((Behaviour)HUDManager.Instance.audioListenerLowPass).enabled = false;
                 StartOfRound.Instance.SetSpectateCameraToGameOverMode(false, localPlayerController);
                 StartOfRound.Instance.SetPlayerObjectExtrapolate(false);
 
                 //ui changes
-                HUDManager.Instance.UpdateHealthUI(ConfigVariables.ReviveToHealth, true);
+                HUDManager.Instance.UpdateHealthUI(ReviveToHealth, true);
                 HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", false);
                 HUDManager.Instance.RemoveSpectateUI();
                 HUDManager.Instance.gameOverAnimator.SetTrigger("revive");
@@ -235,6 +238,10 @@ namespace OPJosMod.ReviveCompany
                 if (deadBody.ragdoll != null)
                     Object.Destroy((Object)(object)((Component)deadBody.ragdoll).gameObject);
             }
+
+            //reset death boxes 
+            if (localPlayerController.isPlayerDead)
+                HUDManager.Instance.UpdateBoxesSpectateUI();           
         }       
     }
 }

@@ -13,7 +13,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "1.3.0"; 
+        private const string modVersion = "1.4.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -74,10 +74,26 @@ namespace OPJosMod.ReviveCompany
                                         25,
                                         "How much health you revive with.");
 
+            var configExtraHealthLostPerRevive = Config.Bind("Extra Health Lost Per Revive",
+                            "ExtraHealthLostPerRevive",
+                            5,
+                            "If player is revived more than once per level, revive with this much less HP each time");
+
+            var configLimitedRevives = Config.Bind("Limit amount of revives",
+                                        "LimitAmountOfRevives",
+                                        true,
+                                        "do you want to have limited revives?");
+
             var configRevivePerLevelMultiplier = Config.Bind("Revives Per Level Multiplier",
                                                    "RevivesPerLevelMultiplier",
-                                                   "1.25",
-                                                   "How many revives you get per level, mulitplied by players in game. ex) value set to 2 and have 4 players then you get 8 revives. Put 'NULL' to have no limit");
+                                                   1.25f,
+                                                   "How many revives you get per level, mulitplied by players in game. ex) value set to 2 and have 4 players then you get 8 revives.");
+
+            var configSetAmountOfLives = Config.Bind("Set Amount of Revives",
+                                        "SetAmountOfRevives",
+                                        0,
+                                        "Set amount of revives per level. If not at 0 This will override the revive amount being set by the (Revives Per Level Multiplier) setting");
+
 
             ConfigVariables.reviveTime = configReviveTime.Value;
             ConfigVariables.ReviveButton = configReviveButton.Value;
@@ -85,20 +101,10 @@ namespace OPJosMod.ReviveCompany
             ConfigVariables.DeadPlayerWeight = configDeadBodyWeight.Value;
             ConfigVariables.reviveTeleportedBodies = configReviveTeleported.Value;
             ConfigVariables.ReviveToHealth = configReviveHealth.Value;
-            ConfigVariables.RevivesPerLevelMultiplier = GetValueForRevivesPerLevel(configRevivePerLevelMultiplier);
-        }
-
-        private float? GetValueForRevivesPerLevel(ConfigEntry<string> config)
-        {
-            if (config.Value.ToLower() == "null")
-                return null;
-
-            if (float.TryParse(config.Value, out var floatValue))
-                return floatValue;
-
-            //make this match the default value!!
-            config.Value = "1";
-            return 1; 
+            ConfigVariables.LimitedRevives = configLimitedRevives.Value;
+            ConfigVariables.RevivesPerLevelMultiplier = configRevivePerLevelMultiplier.Value;
+            ConfigVariables.HardAmountOfLives = configSetAmountOfLives.Value;
+            ConfigVariables.ExtraHealthLostPerRevive = configExtraHealthLostPerRevive.Value;
         }
     }
 }
