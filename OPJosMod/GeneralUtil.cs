@@ -1,4 +1,5 @@
-﻿using GameNetcodeStuff;
+﻿using BepInEx.Logging;
+using GameNetcodeStuff;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,12 @@ namespace OPJosMod.ReviveCompany
 {
     public static class GeneralUtil
     {
+        private static ManualLogSource mls;
+        public static void SetLogSource(ManualLogSource logSource)
+        {
+            mls = logSource;
+        }
+
         public static Vector3 StringToVector3(string str)
         {
             string[] components = str.Trim('(', ')').Split(',');
@@ -243,5 +250,32 @@ namespace OPJosMod.ReviveCompany
             if (localPlayerController.isPlayerDead)
                 HUDManager.Instance.UpdateBoxesSpectateUI();           
         }       
+
+        public static void ResetAllPlayerInfos()
+        {
+            GlobalVariables.PlayerInfos.Clear();
+            foreach (var playerController in RoundManager.Instance.playersManager.allPlayerScripts)
+            {
+                GlobalVariables.PlayerInfos.Add(new PlayerInfo { PlayerId = (int)playerController.playerClientId });
+            }
+        }
+
+        public static bool HasPlayerTeleported(int playerClientId)
+        {
+            int playerInfoIndex = GlobalVariables.PlayerInfos.FindIndex(p => p.PlayerId == playerClientId);
+
+            if (playerInfoIndex != -1)          
+                return GlobalVariables.PlayerInfos[playerInfoIndex].HasBeenTeleported;
+            
+            return false;
+        }
+
+        public static void SetPlayerAsTeleported(int playerClientId)
+        {
+            int playerInfoIndex = GlobalVariables.PlayerInfos.FindIndex(p => p.PlayerId == playerClientId);
+
+            if (playerInfoIndex != -1)
+                GlobalVariables.PlayerInfos[playerInfoIndex].HasBeenTeleported = true;          
+        }
     }
 }

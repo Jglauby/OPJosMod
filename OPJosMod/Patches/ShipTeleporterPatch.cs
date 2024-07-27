@@ -31,7 +31,7 @@ namespace OPJosMod.ReviveCompany.Patches
                 return;
 
             if (playerBeamedUp.isPlayerDead)
-                GlobalVariables.DeadBodiesTeleported.Add((int)playerBeamedUp.playerClientId);
+                GeneralUtil.SetPlayerAsTeleported((int)playerBeamedUp.playerClientId);
         }
     }
 }

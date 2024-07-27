@@ -38,6 +38,7 @@ namespace OPJosMod.ReviveCompany
             ShipTeleporterPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
             RagdollGrabbableObjectPatch.SetLogSource(mls);
+            GeneralUtil.SetLogSource(mls);
 
             harmony.PatchAll();
         }
@@ -94,6 +95,16 @@ namespace OPJosMod.ReviveCompany
                                         0,
                                         "Set amount of revives per level. If not at 0 This will override the revive amount being set by the (Revives Per Level Multiplier) setting");
 
+            //var configInfiniteReviveTime = Config.Bind("Infinite Revive Time",
+            //                            "InfiniteReviveTime",
+            //                            false,
+            //                            "Can you alwasy revive someone no longer how long they have been dead?");
+
+            //var configRevivableTime = Config.Bind("Time Until Can't Be Revived",
+            //                            "TimeUntilCantBeRevived",
+            //                            120,
+            //                            "How long someone can be dead for and still be revived");
+
 
             ConfigVariables.reviveTime = configReviveTime.Value;
             ConfigVariables.ReviveButton = configReviveButton.Value;
@@ -105,6 +116,8 @@ namespace OPJosMod.ReviveCompany
             ConfigVariables.RevivesPerLevelMultiplier = configRevivePerLevelMultiplier.Value;
             ConfigVariables.HardAmountOfLives = configSetAmountOfLives.Value;
             ConfigVariables.ExtraHealthLostPerRevive = configExtraHealthLostPerRevive.Value;
+            //ConfigVariables.InfiniteReviveTime = configInfiniteReviveTime.Value;
+            //ConfigVariables.TimeUnitlCantBeRevived = configRevivableTime.Value;
         }
     }
 }

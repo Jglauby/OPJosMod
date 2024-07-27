@@ -27,7 +27,7 @@ namespace OPJosMod.ReviveCompany.Patches
                 return;
 
             mls.LogMessage("reset bodies teleported list");
-            GlobalVariables.DeadBodiesTeleported.Clear();
+            GeneralUtil.ResetAllPlayerInfos();
         }
 
         [HarmonyPatch("openingDoorsSequence")]
@@ -38,7 +38,7 @@ namespace OPJosMod.ReviveCompany.Patches
                 return;
 
             mls.LogMessage("round starting, reseting allowed revive count");
-            GlobalVariables.DeadBodiesTeleported.Clear();
+            GeneralUtil.ResetAllPlayerInfos();
 
             setStartingRevives();
         }

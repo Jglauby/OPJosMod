@@ -123,7 +123,7 @@ namespace OPJosMod.ReviveCompany.Patches
             }
 
             var revivingBodyId = (int)revivingBody.ragdoll.playerScript.playerClientId;
-            if (GlobalVariables.DeadBodiesTeleported.Contains(revivingBodyId) && !ConfigVariables.reviveTeleportedBodies)
+            if (GeneralUtil.HasPlayerTeleported(revivingBodyId) && !ConfigVariables.reviveTeleportedBodies)
             {
                 return false;
             }
