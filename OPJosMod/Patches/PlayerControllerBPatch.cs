@@ -42,6 +42,16 @@ namespace OPJosMod.ReviveCompany.Patches
             return true;
         }
 
+        [HarmonyPatch("KillPlayerClientRpc")]
+        [HarmonyPrefix]
+        private static void killPlayerClientRpcPatch(PlayerControllerB __instance, ref int playerId)
+        {
+            if (!GlobalVariables.ModActivated)
+                return;
+
+            GeneralUtil.SetPlayerDiedAt(playerId);
+        }
+
         [HarmonyPatch("SetHoverTipAndCurrentInteractTrigger")]
         [HarmonyPostfix]
         private static void setHoverTipAndCurrentInteractTriggerPatch(PlayerControllerB __instance)
@@ -85,7 +95,19 @@ namespace OPJosMod.ReviveCompany.Patches
                 }
                 else
                 {
-                    __instance.cursorTip.text = $"[Hold {ConfigVariables.ReviveButton} to revive!]";
+                    if (ConfigVariables.InfiniteReviveTime)
+                        __instance.cursorTip.text = $"[Hold {ConfigVariables.ReviveButton} to revive!]";
+                    else
+                    {
+                        var revivingBody = GeneralUtil.GetClosestDeadBody(__instance.transform.position);
+                        var remainingTime = Math.Round(ConfigVariables.TimeUnitlCantBeRevived - (Time.time - GeneralUtil.GetPlayersDiedAtTime((int)revivingBody.ragdoll.playerScript.playerClientId)));
+
+                        if (remainingTime > 0)
+                            __instance.cursorTip.text = $"[Hold {ConfigVariables.ReviveButton} to revive!] {remainingTime}s Left!";
+                        else
+                            __instance.cursorTip.text = $"0 Time Left!";
+                    }
+
                     StartedRevive = false;
                 }
             }
@@ -122,8 +144,16 @@ namespace OPJosMod.ReviveCompany.Patches
                 return false;
             }
 
+            //can't revive if body was teleported
             var revivingBodyId = (int)revivingBody.ragdoll.playerScript.playerClientId;
             if (GeneralUtil.HasPlayerTeleported(revivingBodyId) && !ConfigVariables.reviveTeleportedBodies)
+            {
+                return false;
+            }
+
+            //cant revive if time has ran out
+            mls.LogInfo(Time.time + " | " +GeneralUtil.GetPlayersDiedAtTime(revivingBodyId));
+            if (Time.time - GeneralUtil.GetPlayersDiedAtTime(revivingBodyId) > ConfigVariables.TimeUnitlCantBeRevived && ConfigVariables.InfiniteReviveTime == false)
             {
                 return false;
             }

@@ -277,5 +277,23 @@ namespace OPJosMod.ReviveCompany
             if (playerInfoIndex != -1)
                 GlobalVariables.PlayerInfos[playerInfoIndex].HasBeenTeleported = true;          
         }
+
+        public static void SetPlayerDiedAt(int playerClientId)
+        {
+            int playerInfoIndex = GlobalVariables.PlayerInfos.FindIndex(p => p.PlayerId == playerClientId);
+
+            if (playerInfoIndex != -1)
+                GlobalVariables.PlayerInfos[playerInfoIndex].TimeDiedAt = Time.time;
+        }
+
+        public static float GetPlayersDiedAtTime(int playerClientId)
+        {
+            int playerInfoIndex = GlobalVariables.PlayerInfos.FindIndex(p => p.PlayerId == playerClientId);
+
+            if (playerInfoIndex != -1)
+                return GlobalVariables.PlayerInfos[playerInfoIndex].TimeDiedAt;
+
+            return Time.time;
+        }
     }
 }
