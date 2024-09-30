@@ -16,5 +16,6 @@ namespace OPJosMod.ReviveCompany
         public static int ExtraHealthLostPerRevive;
         public static bool InfiniteReviveTime;
         public static int TimeUnitlCantBeRevived;
+        public static int RevivesPerPlayer;
     }
 }

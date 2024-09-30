@@ -13,7 +13,7 @@ namespace OPJosMod.ReviveCompany
     {
         private const string modGUID = "OpJosMod.ReviveCompany";
         private const string modName = "ReviveCompany";
-        private const string modVersion = "1.4.0"; 
+        private const string modVersion = "1.5.0"; 
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -95,6 +95,11 @@ namespace OPJosMod.ReviveCompany
                                         0,
                                         "Set amount of revives per level. If not at 0 This will override the revive amount being set by the (Revives Per Level Multiplier) setting");
 
+            var configSetAmountOfLivesPerPlayer = Config.Bind("Revives Per Player",
+                                        "Revives Per Player",
+                                        0,
+                                        "0 = Infinite, How many times a certain player can be revived in one level.");
+
             var configInfiniteReviveTime = Config.Bind("Infinite Revive Time",
                                         "InfiniteReviveTime",
                                         false,
@@ -118,6 +123,7 @@ namespace OPJosMod.ReviveCompany
             ConfigVariables.ExtraHealthLostPerRevive = configExtraHealthLostPerRevive.Value;
             ConfigVariables.InfiniteReviveTime = configInfiniteReviveTime.Value;
             ConfigVariables.TimeUnitlCantBeRevived = configRevivableTime.Value;
+            ConfigVariables.RevivesPerPlayer = configSetAmountOfLivesPerPlayer.Value;
         }
     }
 }
