@@ -8,20 +8,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.Rendering;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.OPClientSide.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
@@ -32,8 +23,6 @@ namespace OPJosMod.GhostMode.Patches
             mls = logSource;
         }
 
-        public static bool allowKill = true;
-        public static bool isGhostMode = false;
         private static float lastTimeJumped = Time.time;
 
         private static Vector3 deathLocation;
@@ -80,8 +69,6 @@ namespace OPJosMod.GhostMode.Patches
             try
             {
                 mls.LogMessage("hit reset ghost vars function");
-                allowKill = true;
-                isGhostMode = false;
                 isTogglingBrightMode = false;
                 consecutiveDeathExceptions = 0;
                 lastSafeLocations = new Vector3[10];

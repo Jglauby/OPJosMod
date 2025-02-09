@@ -16,7 +16,6 @@ namespace OPJosMod
         public static Key switchToSpectateButton;
         public static Key toggleNoClipButton;
         public static float noClipSpeed;
-        public static OPnessModes OPness;
         public static Key teleportShipButton;
         public static bool enemiesDetectYou;
         public static bool canPickupScrap;

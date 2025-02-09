@@ -20,7 +20,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.OPClientSide.Patches
 {
     [HarmonyPatch(typeof(StartOfRound))]
     internal class StartOfRoundPatch

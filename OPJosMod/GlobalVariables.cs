@@ -8,6 +8,6 @@ namespace OPJosMod.GhostMode
 {
     public static class GlobalVariables
     {
-        public static bool ModActivated = false;
+
     }
 }

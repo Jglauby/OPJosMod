@@ -102,30 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
-    <Compile Include="CustomRpc\CompleteRecievedTasks.cs" />
-    <Compile Include="CustomRpc\MessageCodes.cs" />
-    <Compile Include="CustomRpc\MessageTasks.cs" />
-    <Compile Include="CustomRpc\PatchesForRPC.cs" />
-    <Compile Include="CustomRpc\RpcMessage.cs" />
-    <Compile Include="CustomRpc\RpcMessageHandler.cs" />
     <Compile Include="GlobalVariables.cs" />
-    <Compile Include="OPnessModes.cs" />
-    <Compile Include="Patches\EnemyPatches\CrawlerAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\FlowermanAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\ButlerEnemyAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\SpikeRoofTrapPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\RadMechAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\LandminePatch.cs" />
-    <Compile Include="Patches\EnemyPatches\MaskedPlayerEnemyPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\JesterAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\TurretPatch.cs" />
     <Compile Include="Patches\ShovelPatch.cs" />
     <Compile Include="Patches\StartMatchLeverPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\NutcrackerEnemyAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\SandSpiderAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\ForestGiantAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\MouthDogAIPatch.cs" />
-    <Compile Include="Patches\EnemyPatches\CentipededAIPatch.cs" />
     <Compile Include="GeneralUtils.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="Patches\HUDManagerPatch.cs" />

@@ -21,7 +21,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.OPClientSide.Patches
 {
     [HarmonyPatch(typeof(EnemyAI))]
     internal class EnemyAIPatch

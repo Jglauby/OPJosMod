@@ -24,7 +24,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 using static UnityEngine.InputSystem.DefaultInputActions;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.OPClientSide.Patches
 {
     [HarmonyPatch(typeof(HUDManager))]
     internal class HUDManagerPatch

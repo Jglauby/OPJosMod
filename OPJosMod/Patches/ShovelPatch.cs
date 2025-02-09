@@ -7,7 +7,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 
-namespace OPJosMod.GhostMode.Patches
+namespace OPJosMod.OPClientSide.Patches
 {
     [HarmonyPatch(typeof(Shovel))]
     internal class ShovelPatch

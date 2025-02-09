@@ -1,25 +1,17 @@
 ﻿using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using OPJosMod.GhostMode.CustomRpc;
-using OPJosMod.GhostMode.Enemy.Patches;
-using OPJosMod.GhostMode.Patches;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OPJosMod.OPClientSide.Patches;
 using UnityEngine.InputSystem;
 
-namespace OPJosMod.GhostMode
+namespace OPJosMod.OPClientSide
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     public class OpJosMod : BaseUnityPlugin
     {
-        private const string modGUID = "OpJosMod.GhostMode";
-        private const string modName = "GhostMode";
-        private const string modVersion = "2.7.0";
+        private const string modGUID = "OpJosMod.OPClientSide";
+        private const string modName = "OPClientSide";
+        private const string modVersion = "1.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         private static OpJosMod Instance;
@@ -38,30 +30,12 @@ namespace OPJosMod.GhostMode
             mls.LogInfo("mod has started");
             setupConfig();
 
-            CompleteRecievedTasks.SetLogSource(mls);
-            PatchesForRPC.SetLogSource(mls);
-            RpcMessageHandler.SetLogSource(mls);
-
             PlayerControllerBPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
             EnemyAIPatch.SetLogSource(mls);
             HUDManagerPatch.SetLogSource(mls);
-            CentipedeAIPatch.SetLogSource(mls);
-            MouthDogAIPatch.SetLogSource(mls);
-            ForestGiantAIPatch.SetLogSource(mls);
-            SandSpiderAIPatch.SetLogSource(mls);
-            NutcrackerEnemyAIPatch.SetLogSource(mls);
             StartMatchLeverPatch.SetLogSource(mls);
-            LandminePatch.SetLogSource(mls);
-            FlowermanAIPatch.SetLogSource(mls);
-            CrawlerAIPatch.SetLogSource(mls);
-            TurretPatch.SetLogSource(mls);
-            MaskedPlayerEnemyPatch.SetLogSource(mls);
-            JesterAIPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
-            RadMechAIPatch.SetLogSource(mls);
-            ButlerEnemyAIPatch.SetLogSource(mls);
-            SpikeRoofTrapPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
@@ -72,11 +46,6 @@ namespace OPJosMod.GhostMode
             //                            "SeeOtherGhosts",
             //                            false,
             //                            "Everyone needs this mod installed and have this toggled on for this to work, but it will allow ghosts to see eachother run around!");
-
-            var configOPness = Config.Bind("OP-Ness",
-                                        "OPness",
-                                        OPnessModes.Balanced,
-                                        "(limited, balanced, unrestricted) The three modes of ghost mode. (limited -> almost no interactions allowed.) (balanced -> delays on lots of interactions. completly restricted from a few.) (unrestricted -> no restrictions on what you can interact with at all)");
 
             var configWaitTimeBetweenInteractions = Config.Bind("GhostMode interaction delay", // The section under which the option is shown
                                         "GhostModeInteractionDelay",  // The key of the configuration option in the configuration file
@@ -194,7 +163,6 @@ namespace OPJosMod.GhostMode
             ConfigVariables.teleportToPlayerBackwardButton = configTeleportPlayerToPlayer2.Value;
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
-            ConfigVariables.OPness = configOPness.Value;
             ConfigVariables.enemiesDetectYou = configEnemyDetection.Value;
 
             ConfigVariables.noClipForwardButton = configNoClipFlyForwardButton.Value;
