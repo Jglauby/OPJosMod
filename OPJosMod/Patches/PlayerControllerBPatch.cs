@@ -3,6 +3,7 @@ using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.Utils;
+using Steamworks.Ugc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,6 +37,8 @@ namespace OPJosMod.OPClientSide.Patches
         public static bool isGhostMode = false;
         public static bool playerHasDied = false;
         private static float lastTimeJumped = Time.time;
+
+        private static Vector3 EnteredGhostModeAt;
 
         private static Vector3 deathLocation;
         private static int consecutiveDeathExceptions = 0;
@@ -246,6 +249,57 @@ namespace OPJosMod.OPClientSide.Patches
             return true;
         }
 
+        [HarmonyPatch("UpdatePlayerPositionServerRpc")]
+        [HarmonyPrefix]
+        static bool updatePlayerPositionServerRpcPatch(PlayerControllerB __instance)
+        {
+            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId &&
+                isGhostMode)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPatch("UpdatePlayerPhysicsParentServerRpc")]
+        [HarmonyPrefix]
+        static bool updatePlayerPhysicsParentServerRpcPatch(PlayerControllerB __instance)
+        {
+            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId &&
+                isGhostMode)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPatch("UpdatePlayerAnimationServerRpc")]
+        [HarmonyPrefix]
+        static bool updatePlayerAnimationServerRpcPatch(PlayerControllerB __instance)
+        {
+            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId &&
+                isGhostMode)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [HarmonyPatch("UpdatePlayerRotationServerRpc")]
+        [HarmonyPrefix]
+        static bool updatePlayerRotationServerRpcPatch(PlayerControllerB __instance)
+        {
+            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId &&
+                isGhostMode)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
@@ -481,8 +535,9 @@ namespace OPJosMod.OPClientSide.Patches
                             }
                             else
                             {
-                                //start player auto pathing
-                                //leave body?
+                                mls.LogMessage("attempting to enter ghost mode while alive");
+                                EnteredGhostModeAt = __instance.transform.position;
+                                isGhostMode = true;
                             }
                         }
                     }
@@ -502,7 +557,11 @@ namespace OPJosMod.OPClientSide.Patches
                             }
                             else
                             {
-                                //go back into body, stop autopathing
+                                mls.LogMessage("attempting to stop ghost mode and hadn't died");
+
+                                string tpMessage = "No Longer Ghost!";
+                                tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, EnteredGhostModeAt, tpMessage));
+                                isGhostMode = false;
                             }
                         }
                     }
