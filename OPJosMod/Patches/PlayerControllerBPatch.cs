@@ -32,7 +32,7 @@ namespace OPJosMod.OPClientSide.Patches
             mls = logSource;
         }
 
-        public static bool allowKill = true;
+        public static bool allowKill = false;
         public static bool isGhostMode = false;
         private static float lastTimeJumped = Time.time;
 
@@ -80,7 +80,6 @@ namespace OPJosMod.OPClientSide.Patches
             try
             {
                 mls.LogMessage("hit reset ghost vars function");
-                allowKill = true;
                 isGhostMode = false;
                 isTogglingBrightMode = false;
                 consecutiveDeathExceptions = 0;
@@ -249,7 +248,7 @@ namespace OPJosMod.OPClientSide.Patches
         [HarmonyPostfix]
         static void updatePatch(PlayerControllerB __instance, ref Light ___nightVision)
         {
-            if(setupValuesYet == false && allowKill)
+            if(setupValuesYet == false)
             {
                 mls.LogMessage("setting default night vision values");
                 setupValuesYet = true;
@@ -269,62 +268,58 @@ namespace OPJosMod.OPClientSide.Patches
                 timeWhenSafe = Time.time;
             }
 
-            //mls.LogMessage($"update running, allowKill: {allowKill}, isGhostMode: {isGhostMode}");
-            if (!allowKill)
-            {
-                __instance.sprintMeter = 1f;
+            __instance.sprintMeter = 1f;
 
-                if (__instance.isSprinting)
+            if (__instance.isSprinting)
+            {
+                FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (sprintMultiplierField != null)
                 {
-                    FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
-                    if (sprintMultiplierField != null)
+                    var currentValue = sprintMultiplierField.GetValue(__instance);
+                    if (currentValue is float)
                     {
-                        var currentValue = sprintMultiplierField.GetValue(__instance);
-                        if (currentValue is float)
+                        if ((float)currentValue < maxSpeed)
                         {
-                            if ((float)currentValue < maxSpeed)
-                            {
-                                var newForce = (float)currentValue * 1.015f;
-                                sprintMultiplierField.SetValue(__instance, newForce);
-                            }
-                            else
-                            {
-                                //mls.LogMessage("max speed hit");
-                            }
+                            var newForce = (float)currentValue * 1.015f;
+                            sprintMultiplierField.SetValue(__instance, newForce);
                         }
                         else
                         {
-                            mls.LogError("current spritnMultiplier isn't a float?");
+                            //mls.LogMessage("max speed hit");
                         }
                     }
                     else
                     {
-                        mls.LogError("private field not found");
+                        mls.LogError("current spritnMultiplier isn't a float?");
                     }
                 }
-
-                listenForGhostHotkeys(__instance);
-
-                //round over reset player vars, and kill ghost
-                if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
+                else
                 {
-                    HUDManager.Instance.DisplayTip("Ship is leaving", "just wait");
+                    mls.LogError("private field not found");
+                }
+            }
 
-                    //rekill player
-                    if (isGhostMode)
-                    {
-                        setToSpectatemode(__instance);
-                    }
+            listenForGhostHotkeys(__instance);
 
-                    resetGhostModeVars(__instance);
+            //round over reset player vars, and kill ghost
+            if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
+            {
+                HUDManager.Instance.DisplayTip("Ship is leaving", "just wait");
+
+                //rekill player
+                if (isGhostMode)
+                {
+                    setToSpectatemode(__instance);
                 }
 
-                if (__instance.criticallyInjured == true)
-                {
-                    __instance.criticallyInjured = false;
-                    __instance.bleedingHeavily = false;
-                    HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
-                }
+                resetGhostModeVars(__instance);
+            }
+
+            if (__instance.criticallyInjured == true)
+            {
+                __instance.criticallyInjured = false;
+                __instance.bleedingHeavily = false;
+                HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
             }
         }
 
@@ -405,16 +400,6 @@ namespace OPJosMod.OPClientSide.Patches
 
                 try
                 {
-                    if (((ButtonControl)Keyboard.current[ConfigVariables.switchToSpectateButton]).wasPressedThisFrame)//O was pressed
-                    {
-                        mls.LogMessage("attempt to switch back to spectate mode");
-                        setToSpectatemode(__instance);
-                    }
-                }
-                catch { }
-
-                try
-                {
                     if (((ButtonControl)Keyboard.current[ConfigVariables.teleportToPlayerBackwardButton]).wasPressedThisFrame)//left was clicked
                     {
                         if (isTeleporting)
@@ -482,9 +467,9 @@ namespace OPJosMod.OPClientSide.Patches
 
                 try
                 {
-                    if (__instance.isPlayerDead && !isGhostMode)//not in ghost mode and player is dead
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.startGhostModeButton]).wasPressedThisFrame)//P was pressed
                     {
-                        if (((ButtonControl)Keyboard.current[ConfigVariables.startGhostModeButton]).wasPressedThisFrame)//P was pressed
+                        if (__instance.isPlayerDead && !isGhostMode)//not in ghost mode and player is dead
                         {
                             mls.LogMessage("attempting to revive");
                             reviveDeadPlayer(__instance);
@@ -492,19 +477,68 @@ namespace OPJosMod.OPClientSide.Patches
                     }
                 }
                 catch { }
+
+                try
+                {
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.switchToSpectateButton]).wasPressedThisFrame)//O was pressed
+                    {
+                        mls.LogMessage("attempt to switch back to spectate mode");
+                        setToSpectatemode(__instance);
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.godModeOffButton]).wasPressedThisFrame)//K was pressed
+                    {
+                        if (!isGhostMode)
+                        {
+                            HUDManager.Instance.DisplayTip("God mode off!", "");
+                            allowKill = true;
+                        }
+                        else
+                        {
+                            HUDManager.Instance.DisplayTip("Can't turn off death while a ghost", "");
+                        }
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.godModeButton]).wasPressedThisFrame)//L was pressed
+                    {
+                        HUDManager.Instance.DisplayTip("God mode on!", "");
+                        allowKill = false;
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.kysButton]).wasPressedThisFrame)//L was pressed
+                    {
+                        if (allowKill && !isGhostMode)
+                        {
+                            if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId)
+                            {
+                                deathLocation = __instance.transform.position;
+                                consecutiveDeathExceptions = 0;
+
+                                __instance.KillPlayer(new Vector3(0, 0, 0));
+
+                                mls.LogMessage("KYS called");
+                            }
+                        }
+                        else
+                        {
+                            HUDManager.Instance.DisplayTip("Can't KYS with God Mode ON", "Or as a ghost");
+                        }
+                    }
+                }
+                catch { }
             }
-        }
-
-        private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
-        {
-
-
-            return false;
-        }
-
-        private static bool canUse(PlayerControllerB __instance)
-        {
-            return true;
         }
 
         //a playercontrollerb private function manually written out

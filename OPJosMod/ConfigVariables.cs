@@ -23,5 +23,9 @@ namespace OPJosMod
         public static Key noClipRightButton;
         public static Key noClipUpButton;
         public static Key noClipDownButton;
+
+        public static Key godModeOffButton;
+        public static Key godModeButton;
+        public static Key kysButton;
     }
 }

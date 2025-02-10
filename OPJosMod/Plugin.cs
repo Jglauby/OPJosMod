@@ -127,6 +127,21 @@ namespace OPJosMod.OPClientSide
                             Key.LeftShift,
                             "Button to move down in no clip mode");
 
+            var configGodModeOffButton = Config.Bind("Turn Off God Mode Button",
+                            "TurnOffGodModeButton",
+                            Key.K,
+                            "Button to allow yourself to die");
+
+            var configGodModeButton = Config.Bind("Turn on God Mode",
+                            "GodModeButton",
+                            Key.L,
+                            "Button to turn on God Mode");
+
+            var configKYSButton = Config.Bind("Button to KYS",
+                            "KYSButton",
+                            Key.Semicolon,
+                            "Button that insta offs yourself, god mode must be off");
+
             ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
             ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;
             ConfigVariables.toggleBrightModeButton = configToggleBrightModeButton.Value;
@@ -145,6 +160,10 @@ namespace OPJosMod.OPClientSide
             ConfigVariables.noClipRightButton = configNoClipFlyRightButton.Value;
             ConfigVariables.noClipUpButton = configNoClipFlyUpButton.Value;
             ConfigVariables.noClipDownButton = configNoClipFlyDownButton.Value;
+
+            ConfigVariables.godModeOffButton = configGodModeOffButton.Value;
+            ConfigVariables.godModeButton = configGodModeButton.Value;
+            ConfigVariables.kysButton = configKYSButton.Value;
 
             Config.Save();
         }
