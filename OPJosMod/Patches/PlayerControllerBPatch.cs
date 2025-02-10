@@ -303,25 +303,7 @@ namespace OPJosMod.OPClientSide.Patches
                     }
                 }
 
-                if (!isGhostMode)
-                {
-                    try
-                    {
-                        if (((ButtonControl)Keyboard.current[ConfigVariables.startGhostModeButton]).wasPressedThisFrame)//P was pressed
-                        {
-                            mls.LogMessage("attempting to revive");
-                            reviveDeadPlayer(__instance);
-                        }
-                    }
-                    catch
-                    {
-                        //dont fail if no button is selected
-                    }
-                }
-                else //is a ghost
-                {
-                    listenForGhostHotkeys(__instance);
-                }
+                listenForGhostHotkeys(__instance);
 
                 //round over reset player vars, and kill ghost
                 if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
@@ -493,6 +475,19 @@ namespace OPJosMod.OPClientSide.Patches
                         {
                             isTogglingBrightMode = true;
                             togglingBrightModeCoroutine = __instance.StartCoroutine(toggleBrightMode(__instance));
+                        }
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (__instance.isPlayerDead && !isGhostMode)//not in ghost mode and player is dead
+                    {
+                        if (((ButtonControl)Keyboard.current[ConfigVariables.startGhostModeButton]).wasPressedThisFrame)//P was pressed
+                        {
+                            mls.LogMessage("attempting to revive");
+                            reviveDeadPlayer(__instance);
                         }
                     }
                 }
