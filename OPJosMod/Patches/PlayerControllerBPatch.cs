@@ -8,9 +8,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.Rendering;
 
 namespace OPJosMod.OPClientSide.Patches
 {
@@ -23,6 +32,8 @@ namespace OPJosMod.OPClientSide.Patches
             mls = logSource;
         }
 
+        public static bool allowKill = true;
+        public static bool isGhostMode = false;
         private static float lastTimeJumped = Time.time;
 
         private static Vector3 deathLocation;
@@ -69,6 +80,8 @@ namespace OPJosMod.OPClientSide.Patches
             try
             {
                 mls.LogMessage("hit reset ghost vars function");
+                allowKill = true;
+                isGhostMode = false;
                 isTogglingBrightMode = false;
                 consecutiveDeathExceptions = 0;
                 lastSafeLocations = new Vector3[10];
@@ -151,8 +164,8 @@ namespace OPJosMod.OPClientSide.Patches
 
         private static void showAliveUI(PlayerControllerB __instance, bool show)
         {
-            HUDManager.Instance.Clock.canvasGroup.gameObject.SetActive(show);            
-            HUDManager.Instance.selfRedCanvasGroup.gameObject.SetActive(show);
+            //HUDManager.Instance.Clock.canvasGroup.gameObject.SetActive(show);            
+            //HUDManager.Instance.selfRedCanvasGroup.gameObject.SetActive(show);
             __instance.sprintMeterUI.gameObject.SetActive(show);
             HUDManager.Instance.weightCounter.gameObject.SetActive(show);
 
@@ -203,7 +216,6 @@ namespace OPJosMod.OPClientSide.Patches
                     consecutiveDeathExceptions = 0;
 
                     mls.LogMessage("called kill player");
-                    savePostGameNotes();
                 }
                 else
                 {
@@ -232,31 +244,6 @@ namespace OPJosMod.OPClientSide.Patches
             return true;
         }
 
-        private static void savePostGameNotes()
-        {
-            ////save regualr stats
-            //for (int i = 0; i < RoundManager.Instance.playersManager.allPlayerScripts.Length; i++)
-            //{
-            //    if (RoundManager.Instance.playersManager.allPlayerScripts[i].playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
-            //    {
-            //        HUDManagerPatch.playerNotes = StartOfRound.Instance.gameStats.allPlayerStats[i]./;
-            //        mls.LogMessage($"saved player notes: {HUDManagerPatch.playerNotes.Count}");
-            //    }
-            //}
-            //
-            ////save stats for more company
-            //for (int i = 0; i < HUDManager.Instance.statsUIElements.playerNotesText.Length; i++)
-            //{
-            //    var player = RoundManager.Instance.playersManager.allPlayerScripts[i];
-            //    if (player.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
-            //    {
-            //        var text = HUDManager.Instance.statsUIElements.playerNotesText[i];
-            //
-            //        HUDManagerPatch.mcPlayerNotes = text;
-            //        mls.LogMessage($"saved MCplayer notes: {HUDManagerPatch.mcPlayerNotes.text}");
-            //    }
-            //}
-        }
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
@@ -513,135 +500,16 @@ namespace OPJosMod.OPClientSide.Patches
             }
         }
 
-        [HarmonyPatch("Interact_performed")]
-        [HarmonyPrefix]
-        private static bool interact_performedPatch(PlayerControllerB __instance)
-        {
-            if (!isGhostMode)
-                return true;
-
-            if (__instance.IsOwner && !__instance.isPlayerDead && (!__instance.IsServer || __instance.isHostPlayerObject))
-            {
-                if (!canUse(__instance))               
-                    return false;               
-                    
-                if (shouldHaveDelay(__instance))
-                {
-                    if (Time.time - lastInteractedTime > ConfigVariables.waitTimeBetweenInteractions)
-                    {
-                        lastInteractedTime = Time.time;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
         private static bool shouldHaveDelay(PlayerControllerB __instance, bool showDebug = true)
         {
-            if (!isGhostMode || ConfigVariables.OPness == OPnessModes.Unrestricted)
-                return false;
-
-            if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
-            {
-                var objectName = GeneralUtils.simplifyObjectNames(__instance.hoveringOverTrigger.gameObject.name);
-
-                if(showDebug)
-                    mls.LogMessage($"tried to interact with: {objectName}");
-
-                /**
-                 * Cube = Cabinent door, regular door, ship horn, move items in and out of cabnent, camera switch, open and close ship door
-                 * LadderTrigger = ladder
-                 * EntranceTeleportA = main door
-                 * StartGameLever = ship lever
-                 * TerminalScript = terminal
-                 * ButtonGlass = glass on teleport button
-                 * RedButton = either teleport button
-                 * Trigger = battery charger
-                 */
-                string[] noDelayObjects = { 
-                    "Cube", "EntranceTeleportA" , "StartGameLever", "TerminalScript", "ButtonGlass", "Trigger" 
-                };
-
-                if (noDelayObjects.Contains(objectName))
-                    return false;
-            }
-            else
-            {
-                if(showDebug)
-                    mls.LogMessage("faliled to find interacted with name");
-            }
 
 
-            return true;
+            return false;
         }
 
         private static bool canUse(PlayerControllerB __instance)
         {
-            if (!isGhostMode || ConfigVariables.OPness == OPnessModes.Unrestricted)
-                return true;
-
-            if (ConfigVariables.OPness == OPnessModes.Limited)
-                return false;
-
-            List<string> nonoObjects = new List<string> {
-                    "LadderTrigger", "RagdollGrabbableObject"
-            };
-
-            if (!ConfigVariables.canPressTeleportButtons)
-                nonoObjects.Add("RedButton");
-
-            //check interactions
-            if (__instance.hoveringOverTrigger != null && __instance.hoveringOverTrigger.gameObject != null)
-            {
-                var objectName = GeneralUtils.simplifyObjectNames(__instance.hoveringOverTrigger.gameObject.name);               
-
-                if (nonoObjects.Contains(objectName))
-                    return false;
-            }
-
-            //check grabbing objects
-            Ray interactRay = new Ray(__instance.gameplayCamera.transform.position, __instance.gameplayCamera.transform.forward);
-            Physics.Raycast(interactRay, out RaycastHit hit, __instance.grabDistance, interactableObjectsMask);
-            GrabbableObject currentlyGrabbingObject = hit.collider?.GetComponent<GrabbableObject>();        
-            if (currentlyGrabbingObject != null)
-            {
-                var objectName = GeneralUtils.simplifyObjectNames(currentlyGrabbingObject.name);
-
-                if (nonoObjects.Contains(objectName) || ConfigVariables.canPickupScrap == false)
-                    return false;
-            }
-
             return true;
-        }
-
-        [HarmonyPatch("SetHoverTipAndCurrentInteractTrigger")]
-        [HarmonyPostfix]
-        private static void setHoverTipAndCurrentInteractTriggerPatch(PlayerControllerB __instance)
-        {
-            if (!isGhostMode)
-                return;
-
-            if (shouldHaveDelay(__instance, false))
-            {
-                var lastITime = lastInteractedTime;
-                var waitTime = ConfigVariables.waitTimeBetweenInteractions;
-                var remainingTime = waitTime - (Time.time - lastITime);
-
-                if (Time.time - lastITime <= waitTime && __instance.cursorTip.text != "")
-                {
-                    __instance.cursorTip.text = $"Wait: {(int)remainingTime}";
-                }
-            }
-
-            if (!canUse(__instance) && __instance.cursorTip.text != "")
-            {
-                __instance.cursorTip.text = "Can't use as a ghost!";
-            }
         }
 
         //a playercontrollerb private function manually written out
