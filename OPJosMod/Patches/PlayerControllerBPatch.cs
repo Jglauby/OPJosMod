@@ -155,8 +155,8 @@ namespace OPJosMod.OPClientSide.Patches
 
         private static void showAliveUI(PlayerControllerB __instance, bool show)
         {
-            //HUDManager.Instance.Clock.canvasGroup.gameObject.SetActive(show);            
-            //HUDManager.Instance.selfRedCanvasGroup.gameObject.SetActive(show);
+            HUDManager.Instance.Clock.canvasGroup.gameObject.SetActive(show);            
+            HUDManager.Instance.selfRedCanvasGroup.gameObject.SetActive(show);
             __instance.sprintMeterUI.gameObject.SetActive(show);
             HUDManager.Instance.weightCounter.gameObject.SetActive(show);
 
