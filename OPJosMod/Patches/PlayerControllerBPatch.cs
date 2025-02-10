@@ -71,6 +71,7 @@ namespace OPJosMod.OPClientSide.Patches
             try
             {
                 mls.LogMessage("hit reset ghost vars function");
+
                 isGhostMode = false;
                 isTogglingBrightMode = false;
                 playerHasDied = false;
@@ -91,6 +92,11 @@ namespace OPJosMod.OPClientSide.Patches
                     __instance.StopAllCoroutines();
                     if (__instance.nightVision != null)
                         ((Component)__instance.nightVision).gameObject.SetActive(true);
+
+                    if (isGhostMode && !playerHasDied)
+                    {
+                        tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, EnteredGhostModeAt, "No longer Ghost"));
+                    }
 
                     FieldInfo isJumpingField = typeof(PlayerControllerB).GetField("isJumping", BindingFlags.NonPublic | BindingFlags.Instance);
                     FieldInfo playerSlidingTimerField = typeof(PlayerControllerB).GetField("playerSlidingTimer", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -356,20 +362,6 @@ namespace OPJosMod.OPClientSide.Patches
             }
 
             listenForKeys(__instance);
-
-            //round over reset player vars, and kill ghost
-            if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
-            {
-                HUDManager.Instance.DisplayTip("Ship is leaving", "just wait");
-
-                //rekill player
-                if (isGhostMode)
-                {
-                    setToSpectatemode(__instance);
-                }
-
-                resetGhostModeVars(__instance);
-            }
         }
 
         private static void listenForGhostHotkeys(PlayerControllerB __instance)
@@ -536,6 +528,7 @@ namespace OPJosMod.OPClientSide.Patches
                             {
                                 mls.LogMessage("attempting to enter ghost mode while alive");
 
+                                HUDManager.Instance.DisplayTip("You are a Ghost!", "");
                                 HUDManager.Instance.spectatingPlayerText.text = "You are a Ghost!";
                                 EnteredGhostModeAt = __instance.transform.position;
                                 isGhostMode = true;
@@ -560,6 +553,7 @@ namespace OPJosMod.OPClientSide.Patches
                             {
                                 mls.LogMessage("attempting to stop ghost mode and hadn't died");
 
+                                HUDManager.Instance.DisplayTip("No Longer Ghost!", "");
                                 string tpMessage = "No Longer Ghost!";
                                 tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, EnteredGhostModeAt, tpMessage));
                                 isGhostMode = false;

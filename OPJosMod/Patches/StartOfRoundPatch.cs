@@ -1,24 +1,7 @@
 ﻿using BepInEx.Logging;
-using Dissonance.Integrations.Unity_NFGO;
-using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.Rendering;
 
 namespace OPJosMod.OPClientSide.Patches
 {
@@ -29,15 +12,6 @@ namespace OPJosMod.OPClientSide.Patches
         public static void SetLogSource(ManualLogSource logSource)
         {
             mls = logSource;
-        }
-
-        [HarmonyPatch("ReviveDeadPlayers")]
-        [HarmonyPrefix]
-        static void reviveDeadPlayersPatch(StartOfRound __instance)
-        {
-            mls.LogMessage("revive dead players patch hit in start of round class");
-
-            PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
         }
 
         [HarmonyPatch("OnPlayerConnectedClientRpc")]
@@ -57,7 +31,7 @@ namespace OPJosMod.OPClientSide.Patches
         {
             mls.LogMessage("rekill player locally called from start of round, because ship is taking off");
 
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode  && !PlayerControllerBPatch.playerHasDied)
             {
                 PlayerControllerBPatch.resetGhostModeVars(__instance.localPlayerController);
                 PlayerControllerBPatch.setToSpectatemode(__instance.localPlayerController);
@@ -80,7 +54,7 @@ namespace OPJosMod.OPClientSide.Patches
         [HarmonyPrefix]
         public static bool updatePlayerVoiceEffectsPatch(StartOfRound __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && PlayerControllerBPatch.playerHasDied)
             {
                 //mls.LogMessage("UpdatePlayerVoiceEffects post hit");
 

@@ -103,11 +103,9 @@
   <ItemGroup>
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="GlobalVariables.cs" />
-    <Compile Include="Patches\ShovelPatch.cs" />
     <Compile Include="GeneralUtils.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="Patches\HUDManagerPatch.cs" />
-    <Compile Include="Patches\EnemyAIPatch.cs" />
     <Compile Include="Patches\StartOfRoundPatch.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Plugin.cs" />

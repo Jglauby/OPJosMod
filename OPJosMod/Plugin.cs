@@ -32,9 +32,7 @@ namespace OPJosMod.OPClientSide
 
             PlayerControllerBPatch.SetLogSource(mls);
             StartOfRoundPatch.SetLogSource(mls);
-            EnemyAIPatch.SetLogSource(mls);
             HUDManagerPatch.SetLogSource(mls);
-            ShovelPatch.SetLogSource(mls);
 
             harmony.PatchAll();
         }
