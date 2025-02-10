@@ -325,38 +325,43 @@ namespace OPJosMod.OPClientSide.Patches
                 timeWhenSafe = Time.time;
             }
 
-            __instance.sprintMeter = 1f;
-
-            if (__instance.isSprinting)
+            if (isGhostMode)
             {
-                FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (sprintMultiplierField != null)
+                __instance.sprintMeter = 1f;
+
+                if (__instance.isSprinting)
                 {
-                    var currentValue = sprintMultiplierField.GetValue(__instance);
-                    if (currentValue is float)
+                    FieldInfo sprintMultiplierField = typeof(PlayerControllerB).GetField("sprintMultiplier", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (sprintMultiplierField != null)
                     {
-                        if ((float)currentValue < maxSpeed)
+                        var currentValue = sprintMultiplierField.GetValue(__instance);
+                        if (currentValue is float)
                         {
-                            var newForce = (float)currentValue * 1.015f;
-                            sprintMultiplierField.SetValue(__instance, newForce);
+                            if ((float)currentValue < maxSpeed)
+                            {
+                                var newForce = (float)currentValue * 1.015f;
+                                sprintMultiplierField.SetValue(__instance, newForce);
+                            }
+                            else
+                            {
+                                //mls.LogMessage("max speed hit");
+                            }
                         }
                         else
                         {
-                            //mls.LogMessage("max speed hit");
+                            mls.LogError("current spritnMultiplier isn't a float?");
                         }
                     }
                     else
                     {
-                        mls.LogError("current spritnMultiplier isn't a float?");
+                        mls.LogError("private field not found");
                     }
                 }
-                else
-                {
-                    mls.LogError("private field not found");
-                }
+
+                listenForGhostHotkeys(__instance);
             }
 
-            listenForGhostHotkeys(__instance);
+            listenForKeys(__instance);
 
             //round over reset player vars, and kill ghost
             if (__instance.playersManager.livingPlayers == 0 || StartOfRound.Instance.shipIsLeaving)
@@ -416,6 +421,31 @@ namespace OPJosMod.OPClientSide.Patches
 
                 try
                 {
+                    var action = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump"); //games jump button
+                    if (action == null || !collisionsOn)
+                        return;
+
+                    if (action.IsPressed())
+                    {
+                        __instance.fallValue = __instance.jumpForce;
+                        __instance.fallValueUncapped = __instance.jumpForce;
+                    }
+                    else if (action.WasReleasedThisFrame())
+                    {
+                        ReflectionUtils.SetPropertyValue(__instance, "isJumping", false);
+                        ReflectionUtils.SetPropertyValue(__instance, "isFallingFromJump", true);
+                    }
+                }
+                catch { }                           
+            }
+        }
+
+        private static void listenForKeys(PlayerControllerB __instance)
+        {
+            if (!StartOfRound.Instance.localPlayerController.inTerminalMenu && !StartOfRound.Instance.localPlayerController.isTypingChat)
+            {
+                try
+                {
                     if (((ButtonControl)Keyboard.current[ConfigVariables.teleportFrontDoorButton]).wasPressedThisFrame)//up arrow was pressed
                     {
                         mls.LogMessage("attempt to tp to front door");
@@ -432,25 +462,6 @@ namespace OPJosMod.OPClientSide.Patches
                         mls.LogMessage("attempt to tp to ship");
                         var tpMessage = "(Teleported to: Ship)";
                         tpCoroutine = __instance.StartCoroutine(specialTeleportPlayer(__instance, RoundManager.Instance.playersManager.playerSpawnPositions[0].position, tpMessage));
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    var action = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump"); //games jump button
-                    if (action == null || !collisionsOn)
-                        return;
-
-                    if (action.IsPressed())
-                    {
-                        __instance.fallValue = __instance.jumpForce;
-                        __instance.fallValueUncapped = __instance.jumpForce;
-                    }
-                    else if (action.WasReleasedThisFrame())
-                    {
-                        ReflectionUtils.SetPropertyValue(__instance, "isJumping", false);
-                        ReflectionUtils.SetPropertyValue(__instance, "isFallingFromJump", true);
                     }
                 }
                 catch { }
@@ -479,7 +490,8 @@ namespace OPJosMod.OPClientSide.Patches
                             }
                         }
                     }
-                } catch { }
+                }
+                catch { }
 
                 try
                 {
