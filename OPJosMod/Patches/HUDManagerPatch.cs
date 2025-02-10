@@ -44,7 +44,7 @@ namespace OPJosMod.OPClientSide.Patches
         [HarmonyPrefix]
         static void updatePatch(HUDManager __instance)
         {
-            if (PlayerControllerBPatch.isGhostMode)
+            if (PlayerControllerBPatch.isGhostMode && PlayerControllerBPatch.playerHasDied)
             {
                 if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null ||
                GameNetworkManager.Instance.localPlayerController == null)
