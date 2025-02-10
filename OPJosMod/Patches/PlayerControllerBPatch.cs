@@ -34,6 +34,7 @@ namespace OPJosMod.OPClientSide.Patches
 
         public static bool allowKill = false;
         public static bool isGhostMode = false;
+        public static bool playerHasDied = false;
         private static float lastTimeJumped = Time.time;
 
         private static Vector3 deathLocation;
@@ -82,6 +83,7 @@ namespace OPJosMod.OPClientSide.Patches
                 mls.LogMessage("hit reset ghost vars function");
                 isGhostMode = false;
                 isTogglingBrightMode = false;
+                playerHasDied = false;
                 consecutiveDeathExceptions = 0;
                 lastSafeLocations = new Vector3[10];
                 timeWhenSafe = Time.time;
@@ -211,6 +213,7 @@ namespace OPJosMod.OPClientSide.Patches
                 if (allowKill)
                 {
                     allowKill = false;
+                    playerHasDied = true;
                     deathLocation = __instance.transform.position;
                     consecutiveDeathExceptions = 0;
 
@@ -469,10 +472,18 @@ namespace OPJosMod.OPClientSide.Patches
                 {
                     if (((ButtonControl)Keyboard.current[ConfigVariables.startGhostModeButton]).wasPressedThisFrame)//P was pressed
                     {
-                        if (__instance.isPlayerDead && !isGhostMode)//not in ghost mode and player is dead
+                        if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId && !isGhostMode)
                         {
-                            mls.LogMessage("attempting to revive");
-                            reviveDeadPlayer(__instance);
+                            if (playerHasDied)
+                            {
+                                mls.LogMessage("attempting to revive");
+                                reviveDeadPlayer(__instance);
+                            }
+                            else
+                            {
+                                //start player auto pathing
+                                //leave body?
+                            }
                         }
                     }
                 }
@@ -482,8 +493,18 @@ namespace OPJosMod.OPClientSide.Patches
                 {
                     if (((ButtonControl)Keyboard.current[ConfigVariables.switchToSpectateButton]).wasPressedThisFrame)//O was pressed
                     {
-                        mls.LogMessage("attempt to switch back to spectate mode");
-                        setToSpectatemode(__instance);
+                        if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId && isGhostMode)
+                        {
+                            if (playerHasDied)
+                            {
+                                mls.LogMessage("attempt to switch back to spectate mode");
+                                setToSpectatemode(__instance);
+                            }
+                            else
+                            {
+                                //go back into body, stop autopathing
+                            }
+                        }
                     }
                 }
                 catch { }
@@ -517,7 +538,7 @@ namespace OPJosMod.OPClientSide.Patches
 
                 try
                 {
-                    if (((ButtonControl)Keyboard.current[ConfigVariables.kysButton]).wasPressedThisFrame)//L was pressed
+                    if (((ButtonControl)Keyboard.current[ConfigVariables.kysButton]).wasPressedThisFrame)//; was pressed
                     {
                         if (allowKill && !isGhostMode)
                         {
