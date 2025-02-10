@@ -50,63 +50,6 @@ namespace OPJosMod.OPClientSide.Patches
             return true;
         }
 
-        [HarmonyPatch("PlayerIsTargetable")]
-        [HarmonyPrefix]
-        static void playerIsTargetablePatch(ref bool cannotBeInShip, ref PlayerControllerB playerScript)
-        {
-            //a way to make current player always return not tragetable in the enemy ai
-            if (PlayerControllerBPatch.isGhostMode && playerScript.IsOwner && !ConfigVariables.enemiesDetectYou)
-            {
-                //mls.LogMessage("set local player to not targetable");
-                playerScript.isInHangarShipRoom = true;
-                cannotBeInShip = true;
-            }
-        }
-
-        [HarmonyPatch("GetAllPlayersInLineOfSight")]
-        [HarmonyPostfix]
-        static void getAllPlayersInLineOfSightPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
-        {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
-            {
-                var allPlayerScripts = StartOfRound.Instance.allPlayerScripts;
-                var playerIndex = StartOfRound.Instance.localPlayerController.playerClientId;
-
-                if (__result != null && __result.Length > 0)
-                {
-                    // Find the index of the current player in the result array
-                    int currentPlayerIndex = -1;
-                    for (int i = 0; i < __result.Length; i++)
-                    {
-                        if (__result[i] == allPlayerScripts[playerIndex])
-                        {
-                            currentPlayerIndex = i;
-                            break;
-                        }
-                    }
-
-                    // If the current player is found in the result array, remove it
-                    if (currentPlayerIndex != -1)
-                    {
-                        // Create a new array to store the modified result
-                        PlayerControllerB[] modifiedResult = new PlayerControllerB[__result.Length - 1];
-                        int newIndex = 0;
-                        for (int i = 0; i < __result.Length; i++)
-                        {
-                            if (i != currentPlayerIndex)
-                            {
-                                modifiedResult[newIndex] = __result[i];
-                                newIndex++;
-                            }
-                        }
-
-                        // Assign the modified result back to the __result parameter
-                        __result = modifiedResult;
-                    }
-                }
-            }
-        }
-
         [HarmonyPatch("KillEnemy")]
         [HarmonyPrefix]
         static bool killEnemyPatch(EnemyAI __instance)
@@ -119,22 +62,6 @@ namespace OPJosMod.OPClientSide.Patches
         static bool patchKillEnemyOnOwnerClient(EnemyAI __instance)
         {
             return stopKill(__instance);
-        }
-
-        [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
-        [HarmonyPrefix]
-        static bool checkLineOfSightForClosestPlayerPatch(EnemyAI __instance)
-        {
-            if (PlayerControllerBPatch.isGhostMode && !ConfigVariables.enemiesDetectYou)
-            {
-                if (EnemyAIPatch.getClosestPlayerIncludingGhost(__instance).playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
-                {
-                    mls.LogMessage("enemy can't see if player is in line of sight");
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         public static PlayerControllerB getClosestPlayerIncludingGhost(EnemyAI enemy)

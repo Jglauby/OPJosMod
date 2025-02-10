@@ -7,8 +7,6 @@ namespace OPJosMod
 {
     public static class ConfigVariables
     {
-        public static bool seeOtherGhosts;
-        public static float waitTimeBetweenInteractions;
         public static Key startGhostModeButton;
         public static Key teleportBodyButton;
         public static Key toggleBrightModeButton;
@@ -17,9 +15,6 @@ namespace OPJosMod
         public static Key toggleNoClipButton;
         public static float noClipSpeed;
         public static Key teleportShipButton;
-        public static bool enemiesDetectYou;
-        public static bool canPickupScrap;
-        public static bool canPressTeleportButtons;
         public static Key teleportToPlayerForwardButton;
         public static Key teleportToPlayerBackwardButton;
         public static Key noClipForwardButton;

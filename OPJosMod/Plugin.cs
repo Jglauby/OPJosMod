@@ -34,7 +34,6 @@ namespace OPJosMod.OPClientSide
             StartOfRoundPatch.SetLogSource(mls);
             EnemyAIPatch.SetLogSource(mls);
             HUDManagerPatch.SetLogSource(mls);
-            StartMatchLeverPatch.SetLogSource(mls);
             ShovelPatch.SetLogSource(mls);
 
             harmony.PatchAll();
@@ -47,25 +46,11 @@ namespace OPJosMod.OPClientSide
             //                            false,
             //                            "Everyone needs this mod installed and have this toggled on for this to work, but it will allow ghosts to see eachother run around!");
 
-            var configWaitTimeBetweenInteractions = Config.Bind("GhostMode interaction delay", // The section under which the option is shown
-                                        "GhostModeInteractionDelay",  // The key of the configuration option in the configuration file
-                                        45f, // The default value
-                                        "How long you must wait between interactions when in ghost mode. Set to -1 to remove the ability to interact at all"); // Description of the option to show in the config file
 
             var configStartGhostModeButton = Config.Bind("Start Ghost Mode Button",
                                         "StartGhostModeButton",
                                         Key.P,
                                         "Button to turn into ghost");
-
-            var configCanGrabScrap = Config.Bind("Can Grab Scrap",
-                                        "CanGrabScrap",
-                                        true,
-                                        "this setting only has an effect if you are in balanced mode");
-
-            var configCanUseTeleporter = Config.Bind("Can Press Teleport Buttons",
-                                        "CanPressTeleportButtons",
-                                        false,
-                                        "this setting only has an effect if you are in balanced mode");
 
             var configTeleportBodyButton = Config.Bind("Teleport to Dead Body Button",
                                         "TeleportToDeadBodyButton",
@@ -91,11 +76,6 @@ namespace OPJosMod.OPClientSide
                                         "SwitchToSpectateModeButton",
                                         Key.O,
                                         "Button to switch back to specate mode");
-
-            var configEnemyDetection = Config.Bind("Enemies Detect Ghost",
-                                        "EnemiesDetectGhost",
-                                        false,
-                                        "Enemies are able to detect you as a ghost, true or false");
 
             var configTeleportPlayerToPlayer1 = Config.Bind("Teleport to Player 1",
                                         "TeleportToPlayerForward",
@@ -147,11 +127,6 @@ namespace OPJosMod.OPClientSide
                             Key.LeftShift,
                             "Button to move down in no clip mode");
 
-            //ConfigVariables.seeOtherGhosts = configSeeOtherGhosts.Value;
-            ConfigVariables.waitTimeBetweenInteractions = configWaitTimeBetweenInteractions.Value;
-            ConfigVariables.canPickupScrap = configCanGrabScrap.Value;
-            ConfigVariables.canPressTeleportButtons = configCanUseTeleporter.Value;
-
             ConfigVariables.startGhostModeButton = configStartGhostModeButton.Value;
             ConfigVariables.teleportBodyButton = configTeleportBodyButton.Value;
             ConfigVariables.toggleBrightModeButton = configToggleBrightModeButton.Value;
@@ -163,7 +138,6 @@ namespace OPJosMod.OPClientSide
             ConfigVariables.teleportToPlayerBackwardButton = configTeleportPlayerToPlayer2.Value;
 
             ConfigVariables.noClipSpeed = configNoClipFlySpeed.Value;
-            ConfigVariables.enemiesDetectYou = configEnemyDetection.Value;
 
             ConfigVariables.noClipForwardButton = configNoClipFlyForwardButton.Value;
             ConfigVariables.noClipBackwardButton = configNoClipFlyBackwardButton.Value;

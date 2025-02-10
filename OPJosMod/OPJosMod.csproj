@@ -104,7 +104,6 @@
     <Compile Include="ConfigVariables.cs" />
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="Patches\ShovelPatch.cs" />
-    <Compile Include="Patches\StartMatchLeverPatch.cs" />
     <Compile Include="GeneralUtils.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="Patches\HUDManagerPatch.cs" />
