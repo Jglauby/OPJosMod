@@ -1,26 +1,13 @@
 ﻿using BepInEx.Logging;
-using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
 using OPJosMod.Utils;
-using Steamworks.Ugc;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.Rendering;
 
 namespace OPJosMod.OPClientSide.Patches
 {
@@ -213,7 +200,7 @@ namespace OPJosMod.OPClientSide.Patches
 
             if (__instance.playerClientId == GameNetworkManager.Instance.localPlayerController.playerClientId)
             {
-                if (allowKill)
+                if (allowKill && playerHasDied == false)
                 {
                     allowKill = false;
                     playerHasDied = true;
@@ -359,6 +346,13 @@ namespace OPJosMod.OPClientSide.Patches
                 }
 
                 listenForGhostHotkeys(__instance);
+
+                if (__instance.criticallyInjured == true)
+                {
+                    __instance.criticallyInjured = false;
+                    __instance.bleedingHeavily = false;
+                    HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
+                }
             }
 
             listenForKeys(__instance);
@@ -375,13 +369,6 @@ namespace OPJosMod.OPClientSide.Patches
                 }
 
                 resetGhostModeVars(__instance);
-            }
-
-            if (__instance.criticallyInjured == true)
-            {
-                __instance.criticallyInjured = false;
-                __instance.bleedingHeavily = false;
-                HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
             }
         }
 
@@ -548,6 +535,8 @@ namespace OPJosMod.OPClientSide.Patches
                             else
                             {
                                 mls.LogMessage("attempting to enter ghost mode while alive");
+
+                                HUDManager.Instance.spectatingPlayerText.text = "You are a Ghost!";
                                 EnteredGhostModeAt = __instance.transform.position;
                                 isGhostMode = true;
                             }
@@ -692,6 +681,7 @@ namespace OPJosMod.OPClientSide.Patches
         {
             if (!allowKill)
             {
+                mls.LogMessage("healing player!");
                 __instance.health = 100;
                 __instance.criticallyInjured = false;
                 __instance.bleedingHeavily = false;
